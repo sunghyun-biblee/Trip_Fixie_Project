@@ -1,0 +1,30 @@
+.header_container {
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  padding-right: 1.5rem;
+  top: 0;
+}
+
+.header_items {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.Link {
+  padding: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  color: black;
+  border-radius: 10px;
+  border: 1px solid rgb(128, 128, 128, 0.8);
+  background-color: white;
+}
+.icon {
+  width: 100px;
+  height: 85px;
+}
