@@ -95,8 +95,11 @@ const Button = styled.button`
 `;
 
 function TripDate() {
-  const today = new Date().toISOString().split("T")[0];
-  const MaxDate = new Date();
+  const offset = new Date().getTimezoneOffset() * 60000;
+  // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
+
+  const today = new Date(Date.now() - offset).toISOString().split("T")[0];
+  const MaxDate = new Date(Date.now() - offset);
   MaxDate.setDate(MaxDate.getDate() + 7);
   const exportMaxDate = MaxDate.toISOString().split("T")[0];
 
