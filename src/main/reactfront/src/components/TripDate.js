@@ -264,7 +264,7 @@ function TripDate({ weather, getTripDate }) {
           <tbody>
             <tr>
               <th>
-                {startday === ""
+                {startday.startdate === ""
                   ? null
                   : startday.startdate.split("-")[1] +
                     "/" +
@@ -280,7 +280,7 @@ function TripDate({ weather, getTripDate }) {
             </tr>
             <tr>
               <th>
-                {endday === ""
+                {endday.enddate === ""
                   ? null
                   : endday.enddate.split("-")[1] +
                     "/" +
