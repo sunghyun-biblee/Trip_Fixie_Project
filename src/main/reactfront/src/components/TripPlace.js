@@ -39,19 +39,35 @@ function TripPlace({ weather, tripdate }) {
   const [locations, setLocations] = useState([]);
   const [arrays, setArrays] = useState(false);
 
-  const [url, setUrl] = useState("");
-  const headers = new Headers();
-  const clientSecret = "sRVFhnY_y7";
-  const clientKey = "a334rOkoOaZduh1GVUcc";
-  headers.append("X-Naver-Client-Id", clientKey);
-  headers.append("X-Naver-Client-Secret", clientSecret);
+  // const [url, setUrl] = useState('');
+  // const headers = new Headers();
+  // const clientSecret = 'sRVFhnY_y7';
+  // const clientKey = 'a334rOkoOaZduh1GVUcc';
+  // headers.append("X-Naver-Client-Id", clientKey);
+  // headers.append("X-Naver-Client-Secret", clientSecret);
+
+  const baseurl = "http://apis.data.go.kr/B551011/KorService1/searchFestival1";
+
+  const params = {
+    serviceKey: "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+    numOfRows: "50",
+    pageNo: "1",
+    MobileOS: "ETC",
+    MobileApp: "APPTest",
+    areaCode: "4",
+    arrange: "A",
+    _type: "json",
+    eventStartDate: "20240102",
+  };
+
+  const queryString = new URLSearchParams(params).toString();
+  const requrl = `${baseurl}?${queryString}`;
 
   const Sex = () => {
     //배열 초기화
 
-    fetch(url, {
+    fetch(requrl, {
       method: "GET",
-      headers: headers,
     })
       .then((response) => {
         // 응답 확인
@@ -61,7 +77,7 @@ function TripPlace({ weather, tripdate }) {
         return response.json(); // JSON 형태로 응답 파싱
       })
       .then((data) => {
-        console.log(url); //url출력
+        console.log(requrl); //url출력
         console.log(data); // API 응답 데이터 출력 (반환된 데이터는 여기서 처리할 수 있습니다.)
         const newLocations = data.items.map((item, index) => ({
           id: index,
@@ -80,7 +96,7 @@ function TripPlace({ weather, tripdate }) {
       target: { name, value },
     } = event;
     if (name === "keyword") {
-      setUrl("/api/v1/search/local.json?query=" + value + "&display=5");
+      //setUrl("/api/v1/search/local.json?query=" + value + "&display=5");
     }
   };
 
