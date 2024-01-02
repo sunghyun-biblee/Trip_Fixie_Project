@@ -11,4 +11,14 @@ module.exports = function (app) {
       },
     })
   )
+  app.use(
+    '/locapi',
+    createProxyMiddleware({
+      target: 'http://apis.data.go.kr',
+      changeOrigin: true,
+      pathRewrite:{
+        '^/locapi': '',
+      },
+    })
+  )
 }

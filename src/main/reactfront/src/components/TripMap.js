@@ -4,10 +4,22 @@ import "../css/TripMap.css";
 function TripMap() {
   useEffect(() => {
     const mapcontainer = document.getElementById("map");
-    new window.naver.maps.Map(mapcontainer);
+    const map = new window.naver.maps.Map(mapcontainer,{
+      center: new window.naver.maps.LatLng(37.56368589, 126.97558440),
+      zoom: 15
+    });
     // const map = new window.naver.maps.Map(mapcontainer);
+    const marker = [new window.naver.maps.Marker({
+      position: new window.naver.maps.LatLng(37.56368589, 126.97558440),
+      map: map
+    }),
+    new window.naver.maps.Marker({
+      position: new window.naver.maps.LatLng(37.56604319, 126.98230708),
+      map: map
+    })
+    ]
   }, []);
-  const [UserPosition, setUserPosition] = useState({
+  /*const [UserPosition, setUserPosition] = useState({
     latitude: "",
     longitude: "",
   });
@@ -25,7 +37,7 @@ function TripMap() {
       });
     };
     getUserLocation();
-  }, []);
+  }, []);*/
 
   return (
     <div id="map" className="Map">
