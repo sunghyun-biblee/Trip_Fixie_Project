@@ -1,44 +1,19 @@
 import React, { useEffect, useState } from "react";
-
-import { TripWrapper, Tripbox, Tripinfo } from "../components/TripComponent";
+import { TripWrapper, Header, Button } from "../components/TripComponents";
 import TripDate from "../components/TripDate";
 import TripPlace from "../components/TripPlace";
-import styled from "styled-components";
-import Header from "../components/Header";
 import TripMt from "../components/TripMt";
 import TripMap from "../components/TripMap";
+import {
+  StepContainer,
+  StepLi,
+  StepUl,
+  Stepbox,
+} from "../components/StepComponents";
 
-const StepContainer = styled.div`
-  padding-top: 62px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-const Stepbox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-`;
-const StepUl = styled.ul`
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-const StepLi = styled.li`
-  color: gray;
-  width: 100%;
-  text-align: center;
-  padding: 32px 0;
-  list-style: none;
-  text-transform: uppercase;
-  font-weight: 600;
-`;
-
-const Button = styled.button``;
 const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
+  const [tripdate, setTripDate] = useState({});
   const [mode, setMode] = useState("date");
   const [weather, setWeather] = useState({
     clouds: "",
@@ -51,11 +26,11 @@ function Trip() {
   });
 
   const [lastClickedId, setLastClickedId] = useState(null);
-
   const [mygeolocation, setMygeolocation] = useState({
     lat: "",
     long: "",
   });
+
   const geolocation = async () => {
     navigator.geolocation.getCurrentPosition((position) => {
       // console.log(position.coords);
@@ -124,9 +99,14 @@ function Trip() {
   useEffect(() => {
     geolocation();
   }, []);
-  console.log(weather);
-  console.log(weather.temp);
 
+  const getTripDate = (start, end) => {
+    setTripDate({ ...start, ...end });
+  };
+
+  const test = () => {
+    console.log(tripdate);
+  };
   return (
     <>
       <Header />
@@ -155,25 +135,16 @@ function Trip() {
                 {weather ? weather.sys.country : null}
               </StepLi>
             </StepUl>
-            <Button> 다음 </Button>
+            <Button onClick={test}> </Button>
           </Stepbox>
         </StepContainer>
         {mode === "date" ? (
-          <Tripbox>
-            <TripDate weather={weather}></TripDate>
-          </Tripbox>
+          <TripDate weather={weather} getTripDate={getTripDate}></TripDate>
         ) : mode === "space" ? (
-          <Tripbox>
-            <TripPlace weather={weather}></TripPlace>
-          </Tripbox>
+          <TripPlace weather={weather} tripdate={tripdate}></TripPlace>
         ) : mode === "mt" ? (
-          <Tripbox>
-            <TripMt></TripMt>
-          </Tripbox>
+          <TripMt></TripMt>
         ) : null}
-        <Tripinfo>
-          <p>sex</p>
-        </Tripinfo>
         <TripMap>3</TripMap>
       </TripWrapper>
     </>

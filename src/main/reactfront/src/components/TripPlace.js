@@ -1,58 +1,87 @@
 import { useEffect, useState } from "react";
-import fairy from "../img/fairy.png";
-import axios from "axios";
+import { TripWrapper, Tripbox } from "./TripComponents";
+import styled from "styled-components";
 
-function TripPlace() {
-  const [posts, setPosts] = useState([]);
+const TripSelect = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 30px;
+  background-color: antiquewhite;
+
+  &.on {
+    min-width: 300px;
+  }
+`;
+
+const PlaceWrapper = styled(TripWrapper)`
+  padding-top: 40px;
+`;
+const ModeController = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+  right: -45px;
+  width: 40px;
+  height: 50px;
+  padding: 25px;
+  background-color: white;
+  border-radius: 0 5px 5px 0;
+
+  cursor: pointer;
+`;
+
+function TripPlace({ weather, tripdate }) {
+  const [selectmode, setSelectmode] = useState(false);
   const [locations, setLocations] = useState([]);
   const [arrays, setArrays] = useState(false);
 
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const headers = new Headers();
-  const clientSecret = 'sRVFhnY_y7';
-  const clientKey = 'a334rOkoOaZduh1GVUcc';
+  const clientSecret = "sRVFhnY_y7";
+  const clientKey = "a334rOkoOaZduh1GVUcc";
   headers.append("X-Naver-Client-Id", clientKey);
   headers.append("X-Naver-Client-Secret", clientSecret);
 
-  const Sex = ()=>{
-         //배열 초기화
-    
+  const Sex = () => {
+    //배열 초기화
 
     fetch(url, {
-      method: 'GET',
-      headers: headers
+      method: "GET",
+      headers: headers,
     })
-    .then(response => {
-      // 응답 확인
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json(); // JSON 형태로 응답 파싱
-    })
-    .then(data => {
-  
-      console.log(url);   //url출력
-      console.log(data); // API 응답 데이터 출력 (반환된 데이터는 여기서 처리할 수 있습니다.)
-      const newLocations = data.items.map((item, index) => ({
-        id: index,
-        title: item.title
-      }));
-      setLocations(newLocations);
-      setArrays(true);
-
-    })
-    .catch(error => {
-      console.error('Fetch Error:', error); // 오류 발생 시 콘솔에 출력
-    });
-  }    
-  const onChange = (event) =>{
+      .then((response) => {
+        // 응답 확인
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // JSON 형태로 응답 파싱
+      })
+      .then((data) => {
+        console.log(url); //url출력
+        console.log(data); // API 응답 데이터 출력 (반환된 데이터는 여기서 처리할 수 있습니다.)
+        const newLocations = data.items.map((item, index) => ({
+          id: index,
+          title: item.title,
+        }));
+        setLocations(newLocations);
+        setArrays(true);
+      })
+      .catch((error) => {
+        console.error("Fetch Error:", error); // 오류 발생 시 콘솔에 출력
+      });
+  };
+  const onChange = (event) => {
     setArrays(false);
     const {
       target: { name, value },
     } = event;
-    if (name === "keyword"){
-      setUrl('/api/v1/search/local.json?query='+value+'&display=5');
-    } 
+    if (name === "keyword") {
+      setUrl("/api/v1/search/local.json?query=" + value + "&display=5");
+    }
   };
 
   function Content({ locations }) {
@@ -61,42 +90,87 @@ function TripPlace() {
         <h2>검색 목록</h2>
         <ul>
           {locations.map((location) => (
-            <li key={location.id} dangerouslySetInnerHTML={{ __html: location.title }}></li>
+            <li
+              key={location.id}
+              dangerouslySetInnerHTML={{ __html: location.title }}
+            ></li>
           ))}
         </ul>
       </div>
     );
   }
-
+  const handleSelectmode = () => {
+    setSelectmode((mode) => !mode);
+  };
+  // console.log(props);
+  console.log(weather);
+  console.log(tripdate);
   return (
-    <>
-    <div>
-      <div>
+    <PlaceWrapper>
+      <Tripbox style={{ width: "400px" }}>
+        <p>현재 지역 날씨는? </p>
         <p>
-          해당 지역 날씨는? <br /> 23"c, 흐림
+          {weather.name} , {weather.temp}도 입니다
         </p>
-
-        <p>경주</p>
-        <p>2024.01.02(화)~2024.01.03(수)</p>
+        <p>
+          {tripdate.start.startDate}({tripdate.start.startDayOfWeek}
+          )~{tripdate.end.endDate}({tripdate.end.endDayOfWeek})
+        </p>
         <div>
-          <p>장소선택</p>
-          <p>신규 장소 등록</p>
+          <p>관광지</p>
+          <p>행사</p>
         </div>
-        <input type="text" placeholder="장소명을 검색하세요(ex: 달서구 도원동)" 
+        <input
+          type="text"
+          placeholder="장소명을 검색하세요(ex: 달서구 도원동)"
           onChange={onChange}
           name="keyword"
         />
         <button>
-          <img src={fairy} alt="" />
+          <img
+            src={"/img/fairy2.svg"}
+            alt=""
+            style={{ width: "15px", height: "15px" }}
+          />
         </button>
         <button onClick={Sex}>dddd</button>
-        {arrays  ?
-          <Content locations = {locations}></Content> :null }
-      </div>
-    </div>
-    </>
+        {arrays ? <Content locations={locations}></Content> : null}
+      </Tripbox>
+      <Tripbox>
+        <TripSelect className={selectmode ? "on" : "off"}>
+          <div>
+            {selectmode ? (
+              <div style={{ textAlign: "center" }}>장소를 선택해주세요</div>
+            ) : (
+              <div
+                style={{
+                  fontWeight: 900,
+                  textAlign: "center",
+                  fontSize: "32px",
+                }}
+              >
+                0
+              </div>
+            )}
+          </div>
+        </TripSelect>
+
+        <ModeController onClick={handleSelectmode}>
+          {selectmode ? (
+            <img
+              src="/img/Left.svg"
+              style={{ width: "30px", height: "30px" }}
+            />
+          ) : (
+            <img
+              src="/img/Right.svg"
+              style={{ width: "30px", height: "30px" }}
+            />
+          )}
+        </ModeController>
+      </Tripbox>
+    </PlaceWrapper>
   );
-  
-  }
+}
 
 export default TripPlace;

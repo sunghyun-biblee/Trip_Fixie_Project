@@ -3,9 +3,13 @@ import styled from "styled-components";
 // import fairyImg from "../img/fairy.png";
 
 const DateContainer = styled.div`
+  min-width: 330px;
+  max-width: 530px;
   font-weight: 600;
+  padding: 20px;
   input[type="date"] {
-    background: url("/img/fairy.png") no-repeat right;
+    background: url("/img/Calendar.svg") no-repeat right;
+    font-weight: 900;
     border: none;
     position: relative;
 
@@ -54,7 +58,7 @@ const TripHour = styled.div`
     }
   }
 `;
-const Tripinfo = styled.div`
+const Triptime = styled.div`
   padding: 0 0.5rem 0.5rem 0.5rem;
   table {
     border-spacing: 0;
@@ -82,7 +86,7 @@ const Tripinfo = styled.div`
     text-align: center;
   }
 `;
-const Button = styled.button`
+const DateButton = styled.button`
   width: 100%;
   border: none;
   background-color: black;
@@ -93,8 +97,9 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
-function TripDate() {
+
+function TripDate({ weather, getTripDate }) {
+  /*
   // const [mygeolocation, setMygeolocation] = useState({
   //   lat: "",
   //   long: "",
@@ -114,7 +119,7 @@ function TripDate() {
   //     );
   //   });
   // };
-  const weather = () => {};
+ */
   const offset = new Date().getTimezoneOffset() * 60000;
   // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
 
@@ -123,9 +128,14 @@ function TripDate() {
   MaxDate.setDate(MaxDate.getDate() + 5);
   const exportMaxDate = MaxDate.toISOString().split("T")[0];
 
-  const [startday, setStartday] = useState("");
-  const [endday, setEndday] = useState("");
+  const KoreanDayOfWeek = ["일", "월", "화", "수", "목", "금", "토"]; // 날짜 요일을 구하기위함
+  const [startday, setStartday] = useState({
+    startdate: "",
+    startDayOfWeek: "",
+  });
+  const [endday, setEndday] = useState({ enddate: "", endDayOfWeek: "" });
   const [maxday, setMaxday] = useState(exportMaxDate);
+
   /*  
   input[type="date"] > min 속성값을 지정해주기 위함
   캘린더에서 오늘날짜부터 선택가능하게 만들기위하여 new Date()로 오늘 날짜를 받아오고 input 태그에 min을 적용하기위해 string 형식으로 작성해주어야함
@@ -158,15 +168,35 @@ function TripDate() {
   
   */
 
+  const givetripdate = () => {
+    getTripDate({
+      start: {
+        startDate: startday.startdate,
+        startDayOfWeek: startday.startDayOfWeek,
+      },
+      end: {
+        endDate: endday.enddate,
+        endDayOfWeek: endday.endDayOfWeek,
+      },
+    });
+  };
   const checkDate = (event) => {
     const selectday = event.target.value;
+    const dateObject = new Date(selectday).getDay();
+
     //선택한 날짜를 startday로 지정
     console.log(selectday);
     console.log(event.target.id);
     if (event.target.id === "tripstart") {
-      setStartday(selectday);
+      setStartday({
+        startdate: selectday,
+        startDayOfWeek: KoreanDayOfWeek[dateObject],
+      });
     } else {
-      setEndday(selectday);
+      setEndday({
+        enddate: selectday,
+        endDayOfWeek: KoreanDayOfWeek[dateObject],
+      });
     }
 
     if (selectday) {
@@ -177,17 +207,13 @@ function TripDate() {
       console.log("newMaxDay= " + newMaxday);
       setMaxday(newMaxday);
     }
-    if (startday < endday) {
-      setEndday("");
+    if (startday.startdate < endday.enddate) {
+      setEndday({ enddate: "", endDayOfWeek: "" });
     }
   };
-  // useEffect(() => {
-  //   geolocation();
-  // }, []);
 
-  // console.log(mygeolocation);
   return (
-    <DateContainer>
+    <DateContainer style={{ paddingTop: "40px" }}>
       <TripSelectDay>
         <div>
           <span>출발</span>
@@ -195,7 +221,7 @@ function TripDate() {
             type="date"
             id="tripstart"
             data-placeholder="시작일"
-            value={startday}
+            value={startday.startdate}
             onChange={checkDate}
             min={today}
             max={maxday}
@@ -207,9 +233,9 @@ function TripDate() {
             type="date"
             id="tripend"
             data-placeholder="종료일"
-            value={endday}
+            value={endday.enddate}
             onChange={checkDate}
-            min={startday}
+            min={startday.startdate}
             max={maxday}
           />
         </div>
@@ -219,7 +245,7 @@ function TripDate() {
         <p>총 120시간 00분</p>
       </TripHour>
 
-      <Tripinfo>
+      <Triptime>
         <p>
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolore quam
           quia dignissimos molestiae obcaecati! Obcaecati accusantium ipsum
@@ -240,9 +266,11 @@ function TripDate() {
               <th>
                 {startday === ""
                   ? null
-                  : startday.split("-")[1] + "/" + startday.split("-")[2]}
+                  : startday.startdate.split("-")[1] +
+                    "/" +
+                    startday.startdate.split("-")[2]}
               </th>
-              <td>수</td>
+              <td>{startday.startDayOfWeek}</td>
               <td>
                 <input type="time" name="" id="" />
               </td>
@@ -254,9 +282,11 @@ function TripDate() {
               <th>
                 {endday === ""
                   ? null
-                  : endday.split("-")[1] + "/" + endday.split("-")[2]}
+                  : endday.enddate.split("-")[1] +
+                    "/" +
+                    endday.enddate.split("-")[2]}
               </th>
-              <td>목</td>
+              <td>{endday.endDayOfWeek}</td>
               <td>
                 <input type="time" name="" id="" />
               </td>
@@ -266,8 +296,8 @@ function TripDate() {
             </tr>
           </tbody>
         </table>
-        <Button>시간 설정 완료</Button>
-      </Tripinfo>
+        <DateButton onClick={givetripdate}>시간 설정 완료</DateButton>
+      </Triptime>
     </DateContainer>
   );
 }
