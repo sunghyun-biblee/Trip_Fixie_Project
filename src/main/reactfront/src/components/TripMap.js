@@ -5,6 +5,10 @@ function TripMap() {
     const mapcontainer = document.getElementById("map");
     new window.naver.maps.Map(mapcontainer);
     // const map = new window.naver.maps.Map(mapcontainer);
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(126.97558440, 37.56368589),
+      map: map
+    })
   }, []);
   const [UserPosition, setUserPosition] = useState({
     latitude: "",
