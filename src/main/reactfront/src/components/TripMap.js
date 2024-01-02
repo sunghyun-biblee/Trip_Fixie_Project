@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "../css/TripMap.css";
 
 function TripMap() {
   useEffect(() => {
@@ -27,7 +28,7 @@ function TripMap() {
   }, []);
 
   return (
-    <div id="map">
+    <div id="map" className="Map">
       {/* {UserPosition.latitude === ""
         ? "loading"
         : `${Math.floor(UserPosition.latitude)}+${Math.floor(

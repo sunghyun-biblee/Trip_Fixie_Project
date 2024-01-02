@@ -93,14 +93,34 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
 `;
-
+const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function TripDate() {
+  // const [mygeolocation, setMygeolocation] = useState({
+  //   lat: "",
+  //   long: "",
+  // });
+  // const geolocation = () => {
+  //   navigator.geolocation.getCurrentPosition((position) => {
+  //     console.log(position.coords);
+  //     setMygeolocation({
+  //       long: position.coords.longitude,
+  //       lat: position.coords.latitude,
+  //     });
+  //     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${API_KEY}`;
+  //     fetch(url).then((response) =>
+  //       response.json().then((data) => {
+  //         console.log(data);
+  //       })
+  //     );
+  //   });
+  // };
+  const weather = () => {};
   const offset = new Date().getTimezoneOffset() * 60000;
   // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
 
   const today = new Date(Date.now() - offset).toISOString().split("T")[0];
   const MaxDate = new Date(Date.now() - offset);
-  MaxDate.setDate(MaxDate.getDate() + 7);
+  MaxDate.setDate(MaxDate.getDate() + 5);
   const exportMaxDate = MaxDate.toISOString().split("T")[0];
 
   const [startday, setStartday] = useState("");
@@ -152,7 +172,7 @@ function TripDate() {
     if (selectday) {
       const setMax = new Date(selectday);
       console.log(setMax);
-      setMax.setDate(setMax.getDate() + 7);
+      setMax.setDate(setMax.getDate() + 5);
       const newMaxday = setMax.toISOString().split("T")[0];
       console.log("newMaxDay= " + newMaxday);
       setMaxday(newMaxday);
@@ -161,7 +181,11 @@ function TripDate() {
       setEndday("");
     }
   };
+  // useEffect(() => {
+  //   geolocation();
+  // }, []);
 
+  // console.log(mygeolocation);
   return (
     <DateContainer>
       <TripSelectDay>

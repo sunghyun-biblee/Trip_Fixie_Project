@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import { TripWrapper, Tripbox } from "../components/TripComponent";
+import { TripWrapper, Tripbox, Tripinfo } from "../components/TripComponent";
 import TripDate from "../components/TripDate";
 import TripPlace from "../components/TripPlace";
 import styled from "styled-components";
@@ -35,14 +35,57 @@ const StepLi = styled.li`
   text-transform: uppercase;
   font-weight: 600;
 `;
+
 const Button = styled.button``;
+const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
   const [mode, setMode] = useState("date");
+  const [weather, setWeather] = useState({
+    clouds: "",
+    coord: { long: "", lat: "" },
+    sys: { country: "" },
+    id: "",
+    name: "",
+    weather: "",
+    temp: "",
+  });
 
   const [lastClickedId, setLastClickedId] = useState(null);
+
+  const [mygeolocation, setMygeolocation] = useState({
+    lat: "",
+    long: "",
+  });
+  const geolocation = async () => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      // console.log(position.coords);
+      setMygeolocation({
+        long: position.coords.longitude,
+        lat: position.coords.latitude,
+      });
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${API_KEY}&units=metric`;
+      fetch(url).then((response) =>
+        response.json().then((data) => {
+          const { clouds, sys, coord, id, name, weather, main } = data;
+          setWeather({
+            clouds,
+            sys,
+            coord,
+            id,
+            name,
+            weather,
+            temp: Math.floor(main.temp),
+          });
+          // { ...data, clouds: data.weather[0].main }
+        })
+      );
+    });
+  };
+
   const onChangeMode = (event) => {
     const clickTargetId = event.target.id;
-    if (clickTargetId != "date") {
+    if (clickTargetId !== "date") {
       document.getElementById("date").style.color = "gray";
     }
     event.target.style.color = "#03A9F4"; //#50DCEF > 연파랑 , #03A9F4> 찐파랑
@@ -78,6 +121,12 @@ function Trip() {
       setMode("mt");
     }
   };
+  useEffect(() => {
+    geolocation();
+  }, []);
+  console.log(weather);
+  console.log(weather.temp);
+
   return (
     <>
       <Header />
@@ -101,23 +150,30 @@ function Trip() {
                 step 3 <br />
                 숙소 설정
               </StepLi>
+              <StepLi onClick={onChangeMode} id="kr">
+                step 4 <br />
+                {weather ? weather.sys.country : null}
+              </StepLi>
             </StepUl>
             <Button> 다음 </Button>
           </Stepbox>
         </StepContainer>
         {mode === "date" ? (
           <Tripbox>
-            <TripDate></TripDate>
+            <TripDate weather={weather}></TripDate>
           </Tripbox>
         ) : mode === "space" ? (
           <Tripbox>
-            <TripPlace></TripPlace>
+            <TripPlace weather={weather}></TripPlace>
           </Tripbox>
         ) : mode === "mt" ? (
           <Tripbox>
             <TripMt></TripMt>
           </Tripbox>
         ) : null}
+        <Tripinfo>
+          <p>sex</p>
+        </Tripinfo>
         <TripMap>3</TripMap>
       </TripWrapper>
     </>

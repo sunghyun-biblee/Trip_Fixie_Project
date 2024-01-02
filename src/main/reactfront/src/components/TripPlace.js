@@ -1,6 +1,19 @@
-import fairy from "../img/fairy.png";
+import styled from "styled-components";
+import fairy from "../img/fairy2.svg";
+import axios from "axios";
 
+const Img = styled.img`
+  width: 15px;
+  height: 15px;
+`;
 function TripPlace() {
+  // https://openapi.naver.com/v1/search/local.json?query=상인동 내과&display=5
+
+  // X-Naver-Client-Id : a334rOkoOaZduh1GVUcc
+  //  X-Naver-Client-Secret : sRVFhnY_y7
+  const getdata = (event) => {
+    event.preventDefault();
+  };
   return (
     <div>
       <div>
@@ -14,10 +27,11 @@ function TripPlace() {
           <p>장소선택</p>
           <p>신규 장소 등록</p>
         </div>
-        <input type="text" placeholder="장소명을 등록하세요" />
+        <input type="text" placeholder="장소명을 검색하세요" />
         <button>
-          <img src={fairy} alt="" />
+          <Img src={fairy} alt="" />
         </button>
+        <button onClick={getdata}>!@# </button>
         {/* {contents.map((items) => {
           <div>
             <img src="" alt="" />
