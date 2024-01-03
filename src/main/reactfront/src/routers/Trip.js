@@ -108,46 +108,44 @@ function Trip() {
     console.log(tripdate);
   };
   return (
-    <>
+    <TripWrapper>
       <Header />
-      <TripWrapper>
-        <StepContainer>
-          <Stepbox>
-            <StepUl>
-              <StepLi
-                onClick={onChangeMode}
-                id="date"
-                style={{ color: "#03A9F4" }}
-              >
-                step 1 <br />
-                날짜 확인
-              </StepLi>
-              <StepLi onClick={onChangeMode} id="space">
-                step 2 <br />
-                장소 선택
-              </StepLi>
-              <StepLi onClick={onChangeMode} id="mt">
-                step 3 <br />
-                숙소 설정
-              </StepLi>
-              <StepLi onClick={onChangeMode} id="kr">
-                step 4 <br />
-                {weather ? weather.sys.country : null}
-              </StepLi>
-            </StepUl>
-            <Button onClick={test}> </Button>
-          </Stepbox>
-        </StepContainer>
-        {mode === "date" ? (
-          <TripDate weather={weather} getTripDate={getTripDate}></TripDate>
-        ) : mode === "space" ? (
-          <TripPlace weather={weather} tripdate={tripdate}></TripPlace>
-        ) : mode === "mt" ? (
-          <TripMt></TripMt>
-        ) : null}
-        <TripMap>3</TripMap>
-      </TripWrapper>
-    </>
+      <StepContainer>
+        <Stepbox>
+          <StepUl>
+            <StepLi
+              onClick={onChangeMode}
+              id="date"
+              style={{ color: "#03A9F4" }}
+            >
+              step 1 <br />
+              날짜 확인
+            </StepLi>
+            <StepLi onClick={onChangeMode} id="space">
+              step 2 <br />
+              장소 선택
+            </StepLi>
+            <StepLi onClick={onChangeMode} id="mt">
+              step 3 <br />
+              숙소 설정
+            </StepLi>
+            <StepLi onClick={onChangeMode} id="kr">
+              step 4 <br />
+              {weather ? weather.sys.country : null}
+            </StepLi>
+          </StepUl>
+          <Button onClick={test}> </Button>
+        </Stepbox>
+      </StepContainer>
+      {mode === "date" ? (
+        <TripDate weather={weather} getTripDate={getTripDate}></TripDate>
+      ) : mode === "space" ? (
+        <TripPlace weather={weather} tripdate={tripdate}></TripPlace>
+      ) : mode === "mt" ? (
+        <TripMt></TripMt>
+      ) : null}
+      <TripMap></TripMap>
+    </TripWrapper>
   );
 }
 
