@@ -30,22 +30,104 @@ const ModeController = styled.div`
   padding: 25px;
   background-color: white;
   border-radius: 0 5px 5px 0;
-
+  cursor: pointer;
+`;
+const SelectAreaUl = styled.ul`
+  display: grid;
+  list-style: none;
+  grid-template-columns: repeat(4, 90px);
+  padding: 10px 0 0 0;
+  gap: 4px;
+`;
+const Li = styled.li`
+  text-align: center;
+  padding: 10px 0;
+  color: darkcyan;
+  border: 1px solid #27d7ea;
+  border-radius: 5px;
+  background-color: #cbf0f4;
   cursor: pointer;
 `;
 
 function TripPlace({ weather, tripdate }) {
-  const [selectmode, setSelectmode] = useState(false);
-  const [locations, setLocations] = useState([]);
-  const [arrays, setArrays] = useState(false);
-  const [selectedAreaCode, setSelectedAreaCode] = useState("1");
-  const [areaNames, setAreaNames] = useState([]);
+  const [tripdate1, setTripdate1] = useState({ ...tripdate });
+  const [slidemode, setSlidemode] = useState(false); // 서브창 확장, 축소
+  const [locations, setLocations] = useState([]); //장소 검색 결과
+  const [selectedAreaCode, setSelectedAreaCode] = useState(""); // 메인지역 코드
+  const [subArea, setSubArea] = useState(); // 서브 지역 코드
+  const [baseurl, setBaseurl] = useState(""); // api 호출 url
+  const [params, setParams] = useState({}); // api 호출 쿼리문
 
-  const [baseurl, setBaseurl] = useState("");
-
-  const [params, setParams] = useState({});
-
-  console.log(arrays);
+  const cities = [
+    {
+      value: 1,
+      name: "서울",
+    },
+    {
+      value: 2,
+      name: "인천",
+    },
+    {
+      value: 3,
+      name: "대전",
+    },
+    {
+      value: 4,
+      name: "대구",
+    },
+    {
+      value: 5,
+      name: "광주",
+    },
+    {
+      value: 6,
+      name: "부산",
+    },
+    {
+      value: 7,
+      name: "울산",
+    },
+    {
+      value: 8,
+      name: "세종시",
+    },
+    {
+      value: 31,
+      name: "경기도",
+    },
+    {
+      value: 32,
+      name: "강원도",
+    },
+    {
+      value: 33,
+      name: "충청북도",
+    },
+    {
+      value: 34,
+      name: "충청남도",
+    },
+    {
+      value: 35,
+      name: "경상북도",
+    },
+    {
+      value: 36,
+      name: "경상남도",
+    },
+    {
+      value: 37,
+      name: "전라북도",
+    },
+    {
+      value: 38,
+      name: "전라남도",
+    },
+    {
+      value: 39,
+      name: "제주도",
+    },
+  ];
 
   // const queryString = new URLSearchParams(params).toString();
   // const requrl = `${baseurl}?${queryString}`;
@@ -53,9 +135,9 @@ function TripPlace({ weather, tripdate }) {
   useEffect(() => {
     if (baseurl && Object.keys(params).length > 0) {
       const queryString = new URLSearchParams(params).toString();
-      const requrl = `${baseurl}?${queryString}`;
+      const url = `${baseurl}?${queryString}`;
 
-      fetch(requrl, {
+      fetch(url, {
         method: "GET",
       })
         .then((response) => {
@@ -67,25 +149,27 @@ function TripPlace({ weather, tripdate }) {
         .then((data) => {
           console.log(data);
           console.log(Object.keys(params)[8]);
-          if(Object.keys(params)[8] === "eventStartDate"){
-              const newLocations = [...locations];
-              console.log(data.response.body.items);
-              for(let i=0; i<data.response.body.items.length; i++){
-              const newLocation = {id:i, title: data.items[i].title /*여러가지 더 추가*/};
+          if (Object.keys(params)[8] /*  === "eventStartDate"*/) {
+            const newLocations = [...locations];
+            console.log(data.response.body.items);
+            for (let i = 0; i < data.response.body.items.length; i++) {
+              const newLocation = {
+                id: i,
+                title: data.items[i].title /*여러가지 더 추가*/,
+              };
               newLocations.push(newLocation);
-              }
+            }
             setLocations(newLocations);
             console.log(newLocations);
-          }else{
-            const newAreaNames = data.items.map((item, index) => ({
-              id: index,
-              num: item.code,
-              title: item.name,
+          } else {
+            console.log("!@#");
+            const areadata = data.response.body.items.item;
+            const subAreadata = areadata.map((item) => ({
+              value: item.code,
+              subAreaname: item.name,
             }));
-            setAreaNames(newAreaNames);
-            console.log(newAreaNames);
-            setArrays(true);
-            console.log(arrays);
+            setSubArea(subAreadata);
+            console.log(subAreadata);
           }
         })
         .catch((error) => {
@@ -94,13 +178,14 @@ function TripPlace({ weather, tripdate }) {
     }
   }, [baseurl, params]);
 
-  const Sex = () => {
+  const searchPlace = () => {
     setLocations([]);
     const areaCode = selectedAreaCode;
     console.log(areaCode);
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
     setParams({
-      serviceKey: "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      serviceKey:
+        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
       numOfRows: "50",
       pageNo: "1",
       MobileOS: "ETC",
@@ -112,90 +197,46 @@ function TripPlace({ weather, tripdate }) {
     });
   };
 
-  const subCode = () =>{
-    setAreaNames([]);
-    const areaCode = selectedAreaCode;
-
-    console.log("지역코드 : "+areaCode);
-    setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1");
+  const SelectAreaCode = (event) => {
+    //메인 지역 선택
+    setSelectedAreaCode(event.target.value);
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
     setParams({
-      serviceKey: "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      serviceKey:
+        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
       numOfRows: "50",
       pageNo: "1",
       MobileOS: "ETC",
       MobileApp: "APPTest",
-      areaCode: areaCode,
+      areaCode: `${event.target.value}`,
       _type: "json",
     });
-   
-    // const queryString = new URLSearchParams(params).toString();
-    // const requrl = `${baseurl}?${queryString}`;
-
-    // fetch(requrl, {
-    //   method: "GET",
-    // })
-    //   .then((response) => {
-    //     // 응답 확인
-    //     if (!response.ok) {
-    //       throw new Error("Network response was not ok");
-    //     }
-    //     return response.json(); // JSON 형태로 응답 파싱
-    //   })
-    //   .then((data) => {
-    //     console.log(requrl); //url출력
-    //     console.log(data); // API 응답 데이터 출력 (반환된 데이터는 여기서 처리할 수 있습니다.)
-
-    //   })
-    //   .catch((error) => {
-    //     console.error("Fetch Error:", error); // 오류 발생 시 콘솔에 출력
-    //   });
   };
 
-  const onChange = (event) => {
-    setSelectedAreaCode(event.target.value);
-    console.log(selectedAreaCode);
+  const handleSlidemode = () => {
+    setSlidemode((mode) => !mode);
   };
-
-  function Content(props) {
-    return (
-      <div>
-        <h2>검색 목록</h2>
-        <ul>
-          {props.locations.map((location) => (
-            <li
-              key={location.id}
-              dangerouslySetInnerHTML={{ __html: location.title }}
-            ></li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-  const handleSelectmode = () => {
-    setSelectmode((mode) => !mode);
-  };
+  const SelectSubAreaCode = () => {};
 
   return (
     <PlaceWrapper>
       <Tripbox style={{ width: "400px" }}>
-        <p>현재 지역 날씨는? </p>
         <p>
-          {weather.name} , {weather.temp}도 입니다
+          현재 지역 날씨는? {weather.name} , {weather.temp}도 입니다
         </p>
-        <p>
-          {tripdate.start.startDate}({tripdate.start.startDayOfWeek}
-          )~{tripdate.end.endDate}({tripdate.end.endDayOfWeek})
-        </p>
-        <div>
-          <p>관광지</p>
-          <p>행사</p>
-        </div>
-        <input
-          type="text"
-          placeholder="장소명을 검색하세요(ex: 달서구 도원동)"
-          onChange={onChange}
-          name="keyword"
-        />
+
+        {tripdate1 && tripdate1.start ? (
+          <p>
+            {typeof tripdate.start.startDate === "undefined"
+              ? null
+              : `${tripdate.start.startDate}
+            (${tripdate.start.startDayOfWeek})~ ${tripdate.end.endDate}
+            (${tripdate.end.endDayOfWeek})`}
+          </p>
+        ) : (
+          <p>날짜를 선택해주세요</p>
+        )}
+
         <button>
           <img
             src={"/img/fairy2.svg"}
@@ -204,47 +245,42 @@ function TripPlace({ weather, tripdate }) {
           />
         </button>
 
-        <button onClick={Sex}>dddd</button>
-
-        <h1>지역</h1>
-        <select name="areacode" id="lang" onChange={onChange} value={selectedAreaCode}>
-          <option value="1">서울</option>
-          <option value="2">인천</option>
-          <option value="3">대전</option>
-          <option value="4">대구</option>
-          <option value="5">광주</option>
-          <option value="6">부산</option>
-          <option value="7">울산</option>
-          <option value="8">세종</option>
-          <option value="31">경기도</option>
-          <option value="32">강원도</option>
-          <option value="33">충청북도</option>
-          <option value="34">충청남도</option>
-          <option value="35">경상북도</option>
-          <option value="36">경상남도</option>
-          <option value="37">전라북도</option>
-          <option value="38">전라남도</option>
-          <option value="39">제주도</option>
-        </select>
-        <button onClick={subCode}>등록</button>
-        {arrays ? 
-        <>
-        <h1>군구</h1>
-        <select name="areaNamecode" id="nameCode" >
-          {areaNames.map((area) => (
-            <option key={area.id} value={area.num}>
-              {area.title}
-            </option>
-          ))}
-        </select>
-        </>
-        :null}
-
+        <button onClick={searchPlace}>Search</button>
+        {subArea ? (
+          <button
+            onClick={() => {
+              setSubArea();
+            }}
+          >
+            뒤로가기
+          </button>
+        ) : null}
+        <SelectAreaUl>
+          {!subArea
+            ? cities.map((city) => (
+                <Li
+                  key={city.value}
+                  value={city.value}
+                  onClick={SelectAreaCode}
+                >
+                  {city.name}
+                </Li>
+              ))
+            : subArea.map((subarea) => (
+                <Li
+                  key={subarea.value + Math.floor(Math.random() * 1000)}
+                  value={subarea.value}
+                  onClick={SelectSubAreaCode}
+                >
+                  {subarea.subAreaname}
+                </Li>
+              ))}
+        </SelectAreaUl>
       </Tripbox>
       <Tripbox>
-        <TripSelect className={selectmode ? "on" : "off"}>
+        <TripSelect className={slidemode ? "on" : "off"}>
           <div>
-            {selectmode ? (
+            {slidemode ? (
               <div style={{ textAlign: "center" }}>장소를 선택해주세요</div>
             ) : (
               <div
@@ -259,9 +295,8 @@ function TripPlace({ weather, tripdate }) {
             )}
           </div>
         </TripSelect>
-
-        <ModeController onClick={handleSelectmode}>
-          {selectmode ? (
+        <ModeController onClick={handleSlidemode}>
+          {slidemode ? (
             <img
               src="/img/Left.svg"
               style={{ width: "30px", height: "30px" }}
