@@ -115,6 +115,7 @@ export function SelectArea() {
     console.log(event.target.textContent);
     console.log(event.target.value);
   };
+
   return (
     <ul
       name="areacode"
