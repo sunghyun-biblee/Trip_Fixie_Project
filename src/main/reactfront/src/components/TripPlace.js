@@ -38,74 +38,130 @@ function TripPlace({ weather, tripdate }) {
   const [selectmode, setSelectmode] = useState(false);
   const [locations, setLocations] = useState([]);
   const [arrays, setArrays] = useState(false);
+  const [selectedAreaCode, setSelectedAreaCode] = useState("1");
+  const [areaNames, setAreaNames] = useState([]);
 
-  // const [url, setUrl] = useState('');
-  // const headers = new Headers();
-  // const clientSecret = 'sRVFhnY_y7';
-  // const clientKey = 'a334rOkoOaZduh1GVUcc';
-  // headers.append("X-Naver-Client-Id", clientKey);
-  // headers.append("X-Naver-Client-Secret", clientSecret);
+  const [baseurl, setBaseurl] = useState("");
 
-  const baseurl = "http://apis.data.go.kr/B551011/KorService1/searchFestival1";
+  const [params, setParams] = useState({});
 
-  const params = {
-    serviceKey: "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
-    numOfRows: "50",
-    pageNo: "1",
-    MobileOS: "ETC",
-    MobileApp: "APPTest",
-    areaCode: "4",
-    arrange: "A",
-    _type: "json",
-    eventStartDate: "20240102",
-  };
+  console.log(arrays);
 
-  const queryString = new URLSearchParams(params).toString();
-  const requrl = `${baseurl}?${queryString}`;
+  // const queryString = new URLSearchParams(params).toString();
+  // const requrl = `${baseurl}?${queryString}`;
+
+  useEffect(() => {
+    if (baseurl && Object.keys(params).length > 0) {
+      const queryString = new URLSearchParams(params).toString();
+      const requrl = `${baseurl}?${queryString}`;
+
+      fetch(requrl, {
+        method: "GET",
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          console.log(Object.keys(params)[8]);
+          if(Object.keys(params)[8] === "eventStartDate"){
+              const newLocations = [...locations];
+              console.log(data.response.body.items);
+              for(let i=0; i<data.response.body.items.length; i++){
+              const newLocation = {id:i, title: data.items[i].title /*여러가지 더 추가*/};
+              newLocations.push(newLocation);
+              }
+            setLocations(newLocations);
+            console.log(newLocations);
+          }else{
+            const newAreaNames = data.items.map((item, index) => ({
+              id: index,
+              num: item.code,
+              title: item.name,
+            }));
+            setAreaNames(newAreaNames);
+            console.log(newAreaNames);
+            setArrays(true);
+            console.log(arrays);
+          }
+        })
+        .catch((error) => {
+          console.error("Fetch Error:", error);
+        });
+    }
+  }, [baseurl, params]);
 
   const Sex = () => {
-    //배열 초기화
-
-    fetch(requrl, {
-      method: "GET",
-    })
-      .then((response) => {
-        // 응답 확인
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json(); // JSON 형태로 응답 파싱
-      })
-      .then((data) => {
-        console.log(requrl); //url출력
-        console.log(data); // API 응답 데이터 출력 (반환된 데이터는 여기서 처리할 수 있습니다.)
-        const newLocations = data.items.map((item, index) => ({
-          id: index,
-          title: item.title,
-        }));
-        setLocations(newLocations);
-        setArrays(true);
-      })
-      .catch((error) => {
-        console.error("Fetch Error:", error); // 오류 발생 시 콘솔에 출력
-      });
+    setLocations([]);
+    const areaCode = selectedAreaCode;
+    console.log(areaCode);
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
+    setParams({
+      serviceKey: "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      numOfRows: "50",
+      pageNo: "1",
+      MobileOS: "ETC",
+      MobileApp: "APPTest",
+      areaCode: areaCode,
+      arrange: "A",
+      _type: "json",
+      eventStartDate: "20240102",
+    });
   };
+
+  const subCode = () =>{
+    setAreaNames([]);
+    const areaCode = selectedAreaCode;
+
+    console.log("지역코드 : "+areaCode);
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1");
+    setParams({
+      serviceKey: "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      numOfRows: "50",
+      pageNo: "1",
+      MobileOS: "ETC",
+      MobileApp: "APPTest",
+      areaCode: areaCode,
+      _type: "json",
+    });
+   
+    // const queryString = new URLSearchParams(params).toString();
+    // const requrl = `${baseurl}?${queryString}`;
+
+    // fetch(requrl, {
+    //   method: "GET",
+    // })
+    //   .then((response) => {
+    //     // 응답 확인
+    //     if (!response.ok) {
+    //       throw new Error("Network response was not ok");
+    //     }
+    //     return response.json(); // JSON 형태로 응답 파싱
+    //   })
+    //   .then((data) => {
+    //     console.log(requrl); //url출력
+    //     console.log(data); // API 응답 데이터 출력 (반환된 데이터는 여기서 처리할 수 있습니다.)
+
+    //   })
+    //   .catch((error) => {
+    //     console.error("Fetch Error:", error); // 오류 발생 시 콘솔에 출력
+    //   });
+  };
+
   const onChange = (event) => {
-    setArrays(false);
-    const {
-      target: { name, value },
-    } = event;
-    if (name === "keyword") {
-      //setUrl("/api/v1/search/local.json?query=" + value + "&display=5");
-    }
+    setSelectedAreaCode(event.target.value);
+    console.log(selectedAreaCode);
   };
 
-  function Content({ locations }) {
+  function Content(props) {
     return (
       <div>
         <h2>검색 목록</h2>
         <ul>
-          {locations.map((location) => (
+          {props.locations.map((location) => (
             <li
               key={location.id}
               dangerouslySetInnerHTML={{ __html: location.title }}
@@ -118,9 +174,7 @@ function TripPlace({ weather, tripdate }) {
   const handleSelectmode = () => {
     setSelectmode((mode) => !mode);
   };
-  // console.log(props);
-  console.log(weather);
-  console.log(tripdate);
+
   return (
     <PlaceWrapper>
       <Tripbox style={{ width: "400px" }}>
@@ -149,8 +203,43 @@ function TripPlace({ weather, tripdate }) {
             style={{ width: "15px", height: "15px" }}
           />
         </button>
+
         <button onClick={Sex}>dddd</button>
-        {arrays ? <Content locations={locations}></Content> : null}
+
+        <h1>지역</h1>
+        <select name="areacode" id="lang" onChange={onChange} value={selectedAreaCode}>
+          <option value="1">서울</option>
+          <option value="2">인천</option>
+          <option value="3">대전</option>
+          <option value="4">대구</option>
+          <option value="5">광주</option>
+          <option value="6">부산</option>
+          <option value="7">울산</option>
+          <option value="8">세종</option>
+          <option value="31">경기도</option>
+          <option value="32">강원도</option>
+          <option value="33">충청북도</option>
+          <option value="34">충청남도</option>
+          <option value="35">경상북도</option>
+          <option value="36">경상남도</option>
+          <option value="37">전라북도</option>
+          <option value="38">전라남도</option>
+          <option value="39">제주도</option>
+        </select>
+        <button onClick={subCode}>등록</button>
+        {arrays ? 
+        <>
+        <h1>군구</h1>
+        <select name="areaNamecode" id="nameCode" >
+          {areaNames.map((area) => (
+            <option key={area.id} value={area.num}>
+              {area.title}
+            </option>
+          ))}
+        </select>
+        </>
+        :null}
+
       </Tripbox>
       <Tripbox>
         <TripSelect className={selectmode ? "on" : "off"}>
