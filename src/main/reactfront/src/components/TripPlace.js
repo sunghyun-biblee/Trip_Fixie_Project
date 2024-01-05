@@ -1,38 +1,24 @@
 import { useEffect, useState } from "react";
 import { TripWrapper, Tripbox } from "./TripComponents";
 import styled from "styled-components";
+import { AnimatePresence, motion } from "framer-motion";
+// const TripSelect = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   width: 30px;
+//   background-color: antiquewhite;
 
-const TripSelect = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 30px;
-  background-color: antiquewhite;
-
-  &.on {
-    min-width: 300px;
-  }
-`;
+//   &.on {
+//     min-width: 300px;
+//   }
+// `;
 
 const PlaceWrapper = styled(TripWrapper)`
-  padding-top: 40px;
+  padding-top: 2rem;
 `;
-const ModeController = styled.div`
-  position: absolute;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 50%;
-  z-index: 1;
-  transform: translateY(-50%);
-  right: -45px;
-  width: 40px;
-  height: 50px;
-  padding: 25px;
-  background-color: white;
-  border-radius: 0 5px 5px 0;
-  cursor: pointer;
-`;
+
 const SelectAreaUl = styled.ul`
+  width: 375px;
   display: grid;
   list-style: none;
   grid-template-columns: repeat(4, 90px);
@@ -48,17 +34,35 @@ const Li = styled.li`
   background-color: #cbf0f4;
   cursor: pointer;
 `;
+const TripArea = styled(motion.div)`
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Motion_AreaName = styled(motion.div)`
+  position: relative;
 
-function TripPlace({ weather, tripdate }) {
-  const [tripdate1, setTripdate1] = useState({ ...tripdate });
-  const [slidemode, setSlidemode] = useState(false); // 서브창 확장, 축소
+  width: 375px;
+  height: 100px;
+  display: flex;
+  box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+`;
+function TripPlace({ weather }) {
+  const [tripAreaName, setTripAreaName] = useState({
+    mainAreaName: "",
+    subAreaName: "",
+  });
   const [locations, setLocations] = useState([]); //장소 검색 결과
-  const [selectedAreaCode, setSelectedAreaCode] = useState(""); // 메인지역 코드
+  const [mainAreaCode, setMainAreaCode] = useState(""); // 메인지역 코드
+  const [subAreaCode, setSubAreaCode] = useState("");
   const [subArea, setSubArea] = useState(); // 서브 지역 코드
   const [baseurl, setBaseurl] = useState(""); // api 호출 url
   const [params, setParams] = useState({}); // api 호출 쿼리문
 
-  const cities = [
+  const Area = [
     {
       value: 1,
       name: "서울",
@@ -180,7 +184,7 @@ function TripPlace({ weather, tripdate }) {
 
   const searchPlace = () => {
     setLocations([]);
-    const areaCode = selectedAreaCode;
+    const areaCode = mainAreaCode;
     console.log(areaCode);
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
     setParams({
@@ -199,7 +203,13 @@ function TripPlace({ weather, tripdate }) {
 
   const SelectAreaCode = (event) => {
     //메인 지역 선택
-    setSelectedAreaCode(event.target.value);
+
+    setTripAreaName({
+      ...tripAreaName,
+      mainAreaName: event.target.textContent,
+    });
+
+    setMainAreaCode(event.target.value);
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
     setParams({
       serviceKey:
@@ -212,52 +222,99 @@ function TripPlace({ weather, tripdate }) {
       _type: "json",
     });
   };
-
-  const handleSlidemode = () => {
-    setSlidemode((mode) => !mode);
+  const AreaVariants = {
+    hidden: { opacity: 0, scale: 0.5 },
+    visable: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.5 },
   };
-  const SelectSubAreaCode = () => {};
+  const SelectSubAreaCode = (event) => {
+    setSubAreaCode(event.target.textContent);
+    setTripAreaName({
+      ...tripAreaName,
+      subAreaName: event.target.textContent,
+    });
+  };
 
   return (
     <PlaceWrapper>
-      <Tripbox style={{ width: "400px" }}>
-        <p>
-          현재 지역 날씨는? {weather.name} , {weather.temp}도 입니다
-        </p>
-
-        {tripdate1 && tripdate1.start ? (
-          <p>
-            {typeof tripdate.start.startDate === "undefined"
-              ? null
-              : `${tripdate.start.startDate}
-            (${tripdate.start.startDayOfWeek})~ ${tripdate.end.endDate}
-            (${tripdate.end.endDayOfWeek})`}
-          </p>
-        ) : (
-          <p>날짜를 선택해주세요</p>
-        )}
-
-        <button>
-          <img
-            src={"/img/fairy2.svg"}
-            alt=""
-            style={{ width: "15px", height: "15px" }}
-          />
-        </button>
-
-        <button onClick={searchPlace}>Search</button>
+      <Tripbox>
         {subArea ? (
           <button
             onClick={() => {
+              setMainAreaCode();
               setSubArea();
+              setTripAreaName({ mainAreaName: "", subAreaName: "" });
             }}
           >
             뒤로가기
           </button>
         ) : null}
+        <AnimatePresence>
+          <Motion_AreaName style={{ marginTop: "5px" }}>
+            {tripAreaName.mainAreaName !== "" ? (
+              <TripArea
+                key="main"
+                initial="hidden"
+                animate="visable"
+                exit="exit"
+                variants={AreaVariants}
+              >
+                <p>
+                  {tripAreaName.mainAreaName ? tripAreaName.mainAreaName : null}
+                </p>
+              </TripArea>
+            ) : null}
+            {tripAreaName.mainAreaName !== "" ? (
+              <>
+                {/* <motion.div
+                  initial={{ opacity: "0", scale: 0.5 }}
+                  animate={{ opacity: "1", scale: 1 }}
+                  exit={{ opacity: "0", scale: 0.5 }}
+                  style={{
+                    width: "2px",
+                    height: "50%",
+                    position: "absolute",
+                    top: "25%",
+                    right: "50%",
+                    zIndex: "1",
+
+                    backgroundColor: "rgba(0, 0,0, 0.1)",
+                  }}
+                ></motion.div> */}
+                <motion.img
+                  initial={{ opacity: "1", scale: 0.5 }}
+                  animate={{ opacity: "1", scale: 1 }}
+                  exit={{ opacity: "0", scale: 0.5 }}
+                  src="/img/Right.svg"
+                  style={{
+                    position: "absolute",
+                    top: "30%",
+                    right: "44%",
+                    zIndex: "1",
+                    width: "40px",
+                    Color: "gray",
+                  }}
+                ></motion.img>
+              </>
+            ) : null}
+            {tripAreaName.subAreaName !== "" ? (
+              <TripArea
+                key="sub"
+                initial="hidden"
+                animate="visable"
+                variants={AreaVariants}
+                exit="exit"
+              >
+                <p>
+                  {tripAreaName.subAreaName ? tripAreaName.subAreaName : null}
+                </p>
+              </TripArea>
+            ) : null}
+          </Motion_AreaName>
+        </AnimatePresence>
         <SelectAreaUl>
           {!subArea
-            ? cities.map((city) => (
+            ? Area.map((city) => (
                 <Li
                   key={city.value}
                   value={city.value}
@@ -276,38 +333,9 @@ function TripPlace({ weather, tripdate }) {
                 </Li>
               ))}
         </SelectAreaUl>
-      </Tripbox>
-      <Tripbox>
-        <TripSelect className={slidemode ? "on" : "off"}>
-          <div>
-            {slidemode ? (
-              <div style={{ textAlign: "center" }}>장소를 선택해주세요</div>
-            ) : (
-              <div
-                style={{
-                  fontWeight: 900,
-                  textAlign: "center",
-                  fontSize: "32px",
-                }}
-              >
-                0
-              </div>
-            )}
-          </div>
-        </TripSelect>
-        <ModeController onClick={handleSlidemode}>
-          {slidemode ? (
-            <img
-              src="/img/Left.svg"
-              style={{ width: "30px", height: "30px" }}
-            />
-          ) : (
-            <img
-              src="/img/Right.svg"
-              style={{ width: "30px", height: "30px" }}
-            />
-          )}
-        </ModeController>
+        <button onClick={searchPlace} style={{ marginTop: "20px" }}>
+          Search
+        </button>
       </Tripbox>
     </PlaceWrapper>
   );
