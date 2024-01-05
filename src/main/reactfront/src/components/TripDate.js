@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import styled from "styled-components";
 // import fairyImg from "../img/fairy.png";
 
@@ -120,6 +120,7 @@ function TripDate({ weather, getTripDate }) {
   //   });
   // };
  */
+
   const offset = new Date().getTimezoneOffset() * 60000;
   // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
 
