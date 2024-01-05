@@ -416,6 +416,7 @@ function TripPlace({ weather, dateinfo }) {
         </button>
         <button onClick={SelectTourList}>관광지 검색</button>
         <button onClick={update}>update</button>
+        <button>123</button>
       </Tripbox>
     </PlaceWrapper>
   );
