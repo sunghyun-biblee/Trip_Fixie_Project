@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { TripWrapper, Tripbox } from "./TripComponents";
 import styled from "styled-components";
+import axios from "axios";
+import { auth } from "../firebase";
 
 const TripSelect = styled.div`
   display: flex;
@@ -57,6 +59,7 @@ function TripPlace({ weather, tripdate }) {
   const [subArea, setSubArea] = useState(); // 서브 지역 코드
   const [baseurl, setBaseurl] = useState(""); // api 호출 url
   const [params, setParams] = useState({}); // api 호출 쿼리문
+  const [citycode, setCitycode] = useState({citycode: 1, subCitycode: 2}); //활동추천api전용 시군구 코드
 
   const cities = [
     {
@@ -129,9 +132,6 @@ function TripPlace({ weather, tripdate }) {
     },
   ];
 
-  // const queryString = new URLSearchParams(params).toString();
-  // const requrl = `${baseurl}?${queryString}`;
-
   useEffect(() => {
     if (baseurl && Object.keys(params).length > 0) {
       const queryString = new URLSearchParams(params).toString();
@@ -147,9 +147,10 @@ function TripPlace({ weather, tripdate }) {
           return response.json();
         })
         .then((data) => {
+          console.log("citycode: " +`${citycode.citycode}` + "subcitycode: " +`${citycode.subCitycode}`)
           console.log(data);
-          console.log(Object.keys(params)[8]);
-          if (Object.keys(params)[8] /*  === "eventStartDate"*/) {
+          //console.log(Object.keys(params)[8]);
+          if (Object.keys(params)[8] === "eventStartDate") {
             const newLocations = [...locations];
             console.log(data.response.body.items);
             for (let i = 0; i < data.response.body.items.length; i++) {
@@ -161,6 +162,12 @@ function TripPlace({ weather, tripdate }) {
             }
             setLocations(newLocations);
             console.log(newLocations);
+          } else if(Object.keys(params)[7] === "contentTypeId"){
+            console.log("관광지");
+            console.log(data);
+          } else if(Object.keys(params)[5] === "_type"){
+            console.log("축제");
+            console.log(data);
           } else {
             console.log("!@#");
             const areadata = data.response.body.items.item;
@@ -199,6 +206,7 @@ function TripPlace({ weather, tripdate }) {
 
   const SelectAreaCode = (event) => {
     //메인 지역 선택
+    setCitycode({citycode: event.target.value, subCitycode: citycode.subCitycode});
     setSelectedAreaCode(event.target.value);
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
     setParams({
@@ -213,10 +221,74 @@ function TripPlace({ weather, tripdate }) {
     });
   };
 
+  const SelectTourList = ()=>{        //관광지 조회
+    console.log(citycode);
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaBasedList1");
+    setParams({
+      serviceKey:
+        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      numOfRows: "50",
+      pageNo: "1",
+      MobileOS: "ETC",
+      MobileApp: "APPTest",
+      areaCode: `${citycode.citycode}`,
+      sigunguCode: `${citycode.subCitycode}`,
+      contentTypeId: "12",
+      _type: "json",
+    });
+  };
+
+  const SelectFestivalList = () =>{   //행사,축제 조회
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
+    setParams({
+      serviceKey:
+        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      numOfRows: "50",
+      pageNo: "1",
+      MobileOS: "ETC",
+      MobileApp: "APPTest",
+      _type: "json",
+      eventStartDate: `${tripdate1.start.startDate}`,
+      areaCode: `${citycode.citycode}`,
+    });
+  }
+
   const handleSlidemode = () => {
     setSlidemode((mode) => !mode);
   };
   const SelectSubAreaCode = () => {};
+
+  const update = () =>{
+    axios.get('/test/send')
+    .then(response =>{
+      alert(response.data);
+      console.log(response);
+    })
+    .catch(error =>{
+      console.error('에러', error);
+    });
+  };
+
+  //const sampledata = {areacode: 1};
+
+  const codeOut = () =>{
+    axios.post('/test/codeout', {
+      areacode: 1
+    })
+    .then(response =>{
+      console.log(response.data);
+    })
+    .catch(error =>{
+      console.error("에러떴어요 시발", error);
+    });
+  }
+
+  const loadingAuth = () =>{
+    console.log("사용자");
+    console.log(auth.currentUser);
+  }
+
+  
 
   return (
     <PlaceWrapper>
@@ -270,11 +342,17 @@ function TripPlace({ weather, tripdate }) {
                 <Li
                   key={subarea.value + Math.floor(Math.random() * 1000)}
                   value={subarea.value}
-                  onClick={SelectSubAreaCode}
+                  onClick={()=>{setCitycode({subCitycode: subarea.value, citycode:citycode.citycode})
+                                console.log({tripdate1})}}
                 >
                   {subarea.subAreaname}
                 </Li>
               ))}
+              <button onClick={update}>api test</button>
+              <button onClick={codeOut}>222 test</button>
+              <button onClick={SelectTourList}>tourList</button>
+              <button onClick={SelectFestivalList}>festivalList</button>
+              <button onClick={loadingAuth}>loadingAuth</button>
         </SelectAreaUl>
       </Tripbox>
       <Tripbox>
