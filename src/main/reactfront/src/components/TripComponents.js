@@ -1,20 +1,57 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import "../css/header.css";
+import { useState } from "react";
+import DatePicker from "react-datepicker";
+export const MainContainer = styled.div`
+  max-width: 500px;
+  padding: 7.5rem 2rem;
+`;
+export const DateBox = styled.div`
+  padding: 1rem;
+  p {
+    font-size: 2rem;
+  }
+  .date__info {
+    padding: 1rem;
+    font-size: 1.6rem;
+    letter-spacing: 0.03rem;
+    b {
+      color: #3181c7;
+      font-size: 1.6rem;
+      font-weight: 900;
+    }
+  }
+`;
 
+export const GuidTitle = styled.h1`
+  padding: 1rem;
+  font-size: 2.5rem;
+  color: gray;
+`;
+export const DateWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid gray;
+  border-radius: 10px;
+`;
 export const TripWrapper = styled.div`
   display: flex;
   height: 100vh;
 `;
 export const Tripbox = styled.div`
-  padding: 20px;
-  position: relative;
+  padding: 1rem;
 `;
 export const Tripinfo = styled.div`
-  font-size: 100px;
+  font-size: 10rem;
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+export const CustomDatePicker = styled(DatePicker)`
+  font-size: 20px;
 `;
 export const Button = styled.button``;
 export function Header() {
@@ -134,5 +171,36 @@ export function SelectArea() {
         </Li>
       ))}
     </ul>
+  );
+}
+export function ModeControll() {
+  const ModeController = styled.div`
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    z-index: 1;
+    transform: translateY(-50%);
+    right: -45px;
+    width: 40px;
+    height: 50px;
+    padding: 25px;
+    background-color: white;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+  `;
+  const [slidemode, setSlidemode] = useState(false); // 서브창 확장, 축소
+  const handleSlidemode = () => {
+    setSlidemode((mode) => !mode);
+  };
+  return (
+    <ModeController onClick={handleSlidemode}>
+      {slidemode ? (
+        <img src="/img/Left.svg" style={{ width: "30px", height: "30px" }} />
+      ) : (
+        <img src="/img/Right.svg" style={{ width: "30px", height: "30px" }} />
+      )}
+    </ModeController>
   );
 }

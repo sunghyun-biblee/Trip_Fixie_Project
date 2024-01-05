@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { TripWrapper, Header, Button } from "../components/TripComponents";
-import TripDate from "../components/TripDate";
+import {
+  TripWrapper,
+  Header,
+  Button,
+  DateWrapper,
+  DateBox,
+  MainContainer,
+  CustomDatePicker,
+  GuidTitle,
+} from "../components/TripComponents";
 import TripPlace from "../components/TripPlace";
 import TripMt from "../components/TripMt";
 import TripMap from "../components/TripMap";
@@ -11,8 +19,25 @@ import {
   Stepbox,
 } from "../components/StepComponents";
 
+// import "../css/react-datepicker/dist/react-datepicker.css";
+import "../css/react-datepicker.css";
+import { ko } from "date-fns/locale";
+
 const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
+  // const offset = new Date().getTimezoneOffset() * 60000;
+  // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
+  const KoreanDayOfWeek = ["일", "월", "화", "수", "목", "금", "토"]; // 날짜 요일을 구하기위함
+  const [dateinfo, setDateinfo] = useState({
+    startDay: "",
+    startDayofWeek: "",
+    endDay: "",
+    endDayofWeek: "",
+  });
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState(null);
+  const [minDate, setMinDate] = useState(new Date(Date.now()));
+  const [maxDate, setMaxDate] = useState();
   const [tripdate, setTripDate] = useState({});
   const [mode, setMode] = useState("date");
   const [weather, setWeather] = useState({
@@ -31,39 +56,42 @@ function Trip() {
     long: "",
   });
 
-  const geolocation = async () => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      // console.log(position.coords);
-      setMygeolocation({
-        long: position.coords.longitude,
-        lat: position.coords.latitude,
+  useEffect(() => {
+    const geolocation = async () => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        // console.log(position.coords);
+        setMygeolocation({
+          long: position.coords.longitude,
+          lat: position.coords.latitude,
+        });
+
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${API_KEY}&units=metric`;
+        fetch(url).then((response) =>
+          response.json().then((data) => {
+            const { clouds, sys, coord, id, name, weather, main } = data;
+            setWeather({
+              clouds,
+              sys,
+              coord,
+              id,
+              name,
+              weather,
+              temp: Math.floor(main.temp),
+            });
+            // { ...data, clouds: data.weather[0].main }
+          })
+        );
       });
-
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${API_KEY}&units=metric`;
-      fetch(url).then((response) =>
-        response.json().then((data) => {
-          const { clouds, sys, coord, id, name, weather, main } = data;
-          setWeather({
-            clouds,
-            sys,
-            coord,
-            id,
-            name,
-            weather,
-            temp: Math.floor(main.temp),
-          });
-          // { ...data, clouds: data.weather[0].main }
-        })
-      );
-    });
-  };
-
+    };
+    geolocation();
+  }, []);
   const onChangeMode = (event) => {
     const clickTargetId = event.target.id;
     if (clickTargetId !== "date") {
       document.getElementById("date").style.color = "gray";
     }
     event.target.style.color = "#03A9F4"; //#50DCEF > 연파랑 , #03A9F4> 찐파랑
+    event.target.style.fontWeight = 900;
     setLastClickedId(clickTargetId);
     // console.log(lastClickedId);
 
@@ -85,6 +113,7 @@ function Trip() {
       const lastClicked = document.getElementById(lastClickedId);
       if (lastClicked) {
         lastClicked.style.color = "gray";
+        lastClicked.style.fontWeight = 600;
       }
     }
 
@@ -96,17 +125,49 @@ function Trip() {
       setMode("mt");
     }
   };
-  useEffect(() => {
-    geolocation();
-  }, []);
 
-  const getTripDate = (start, end) => {
-    setTripDate({ ...start, ...end });
+  const highlightStartDate = (date) => {
+    return startDate && date.getTime() === startDate.getTime()
+      ? "start-date"
+      : "";
   };
 
-  const test = () => {
-    console.log(tripdate);
+  const highlightEndDate = (date) => {
+    return endDate && date.getTime() === endDate.getTime() ? "end-date" : "";
   };
+
+  const onChange = (dates) => {
+    let [start, end] = dates;
+    const startDateObeject = new Date(start).getDay();
+    const startDateISO = new Date(start).toISOString().split("T")[0];
+    const endDateObeject = new Date(end).getDay();
+    const endDateISO = new Date(end).toISOString().split("T")[0];
+
+    console.log(startDateISO.replace(/-/g, ".")); // "-"문자 모두 "."으로 변환
+    if (start && end === null) {
+      setStartDate(start);
+      setMaxDate(new Date(start.getTime() + 4 * 24 * 60 * 60 * 1000));
+      setMinDate(start);
+      setDateinfo({
+        startDay: startDateISO.replace(/-/g, "."),
+        startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
+        ...dateinfo,
+      });
+      console.log(`(${KoreanDayOfWeek[startDateObeject]})`);
+    } else if (start && end) {
+      setStartDate(start);
+      setEndDate(end);
+      setMaxDate();
+      setDateinfo({
+        startDay: startDateISO.replace(/-/g, "."),
+        startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
+        endDay: endDateISO.replace(/-/g, "."),
+        endDayofWeek: `(${KoreanDayOfWeek[endDateObeject]})`,
+      });
+    }
+    setEndDate(end);
+  };
+  console.log(dateinfo.startDayofWeek);
   return (
     <TripWrapper>
       <Header />
@@ -134,16 +195,55 @@ function Trip() {
               {weather ? weather.sys.country : null}
             </StepLi>
           </StepUl>
-          <Button onClick={test}> </Button>
+          <Button> </Button>
         </Stepbox>
       </StepContainer>
-      {mode === "date" ? (
-        <TripDate weather={weather} getTripDate={getTripDate}></TripDate>
-      ) : mode === "space" ? (
-        <TripPlace weather={weather} tripdate={tripdate}></TripPlace>
-      ) : mode === "mt" ? (
-        <TripMt></TripMt>
-      ) : null}
+      <MainContainer>
+        <GuidTitle>언제?</GuidTitle>
+        <DateWrapper>
+          <CustomDatePicker
+            dateFormat="yyyy/MM/dd"
+            onChange={onChange}
+            startDate={startDate}
+            endDate={endDate}
+            minDate={minDate}
+            selectsRange
+            maxDate={maxDate}
+            locale={ko}
+            placeholderText="날짜를 선택해주세요"
+            dayClassName={(date) =>
+              `react-datepicker-day ${highlightStartDate(
+                date
+              )} ${highlightEndDate(date)}`
+            }
+            value={
+              dateinfo.startDay
+                ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
+                : null
+            }
+            withPortal
+            className="calendar_input"
+          />
+        </DateWrapper>
+        <DateBox>
+          <p className="date__info">
+            여행 추천서비스에 <b>날씨 예보</b>
+            도 포함되어
+            <br />
+            일정은 최대 5일까지 선택 가능합니다
+          </p>
+        </DateBox>
+        <DateBox>
+          <GuidTitle>어디로?</GuidTitle>
+          <TripPlace weather={weather} tripdate={tripdate}></TripPlace>
+        </DateBox>
+
+        {/* {mode === "space" ? (
+          
+        ) : mode === "mt" ? (
+          <TripMt></TripMt>
+        ) : null} */}
+      </MainContainer>
       <TripMap></TripMap>
     </TripWrapper>
   );
