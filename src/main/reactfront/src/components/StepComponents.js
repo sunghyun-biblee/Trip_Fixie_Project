@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const StepContainer = styled.div`
-  padding-top: 62px;
+  padding-top: 6.2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -21,10 +21,11 @@ export const StepUl = styled.ul`
 `;
 export const StepLi = styled.li`
   color: gray;
-  width: 110px;
+  width: 11rem;
   text-align: center;
-  padding: 32px 0;
+  padding: 3.2rem 0;
   list-style: none;
   text-transform: uppercase;
+  font-size: 1.6rem;
   font-weight: 600;
 `;
