@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TripWrapper, Tripbox } from "./TripComponents";
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
+import axios from "axios";
 // const TripSelect = styled.div`
 //   display: flex;
 //   flex-direction: column;
@@ -50,7 +51,7 @@ const Motion_AreaName = styled(motion.div)`
   border-radius: 5px;
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
-function TripPlace({ weather }) {
+function TripPlace({ weather, dateinfo }) {
   const [tripAreaName, setTripAreaName] = useState({
     mainAreaName: "",
     subAreaName: "",
@@ -61,7 +62,7 @@ function TripPlace({ weather }) {
   const [subArea, setSubArea] = useState(); // 서브 지역 코드
   const [baseurl, setBaseurl] = useState(""); // api 호출 url
   const [params, setParams] = useState({}); // api 호출 쿼리문
-
+  const [citycode, setCitycode] = useState({ citycode: 1, subCitycode: 2 });
   const Area = [
     {
       value: 1,
@@ -151,9 +152,12 @@ function TripPlace({ weather }) {
           return response.json();
         })
         .then((data) => {
+          console.log(
+            `citycode:  +${citycode.citycode} + subcitycode:  +${citycode.subCitycode}`
+          );
           console.log(data);
-          console.log(Object.keys(params)[8]);
-          if (Object.keys(params)[8] /*  === "eventStartDate"*/) {
+          //console.log(Object.keys(params)[8]);
+          if (Object.keys(params)[8] === "eventStartDate") {
             const newLocations = [...locations];
             console.log(data.response.body.items);
             for (let i = 0; i < data.response.body.items.length; i++) {
@@ -165,6 +169,12 @@ function TripPlace({ weather }) {
             }
             setLocations(newLocations);
             console.log(newLocations);
+          } else if (Object.keys(params)[7] === "contentTypeId") {
+            console.log("관광지");
+            console.log(data);
+          } else if (Object.keys(params)[5] === "_type") {
+            console.log("축제");
+            console.log(data);
           } else {
             console.log("!@#");
             const areadata = data.response.body.items.item;
@@ -203,7 +213,10 @@ function TripPlace({ weather }) {
 
   const SelectAreaCode = (event) => {
     //메인 지역 선택
-
+    setCitycode({
+      citycode: event.target.value,
+      ...citycode,
+    });
     setTripAreaName({
       ...tripAreaName,
       mainAreaName: event.target.textContent,
@@ -222,19 +235,84 @@ function TripPlace({ weather }) {
       _type: "json",
     });
   };
-  const AreaVariants = {
-    hidden: { opacity: 0, scale: 0.5 },
-    visable: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.5 },
-  };
   const SelectSubAreaCode = (event) => {
+    console.log(event.target.value);
+    setCitycode({
+      subCitycode: event.target.value,
+      ...citycode,
+    });
     setSubAreaCode(event.target.textContent);
     setTripAreaName({
       ...tripAreaName,
       subAreaName: event.target.textContent,
     });
   };
+  const AreaVariants = {
+    hidden: { opacity: 0, scale: 0.5 },
+    visable: { opacity: 1, scale: 1 },
+    exit: { opacity: 0, scale: 0.5 },
+  };
 
+  const SelectTourList = () => {
+    //관광지 조회
+    console.log(citycode);
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaBasedList1");
+    setParams({
+      serviceKey:
+        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      numOfRows: "50",
+      pageNo: "1",
+      MobileOS: "ETC",
+      MobileApp: "APPTest",
+      areaCode: citycode.citycode,
+      sigunguCode: citycode.subCitycode,
+      contentTypeId: "12",
+      _type: "json",
+    });
+  };
+
+  const SelectFestivalList = () => {
+    //행사,축제 조회
+    setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
+    setParams({
+      serviceKey:
+        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+      numOfRows: "50",
+      pageNo: "1",
+      MobileOS: "ETC",
+      MobileApp: "APPTest",
+      _type: "json",
+      eventStartDate: dateinfo.startDay,
+      areaCode: citycode.citycode,
+    });
+  };
+
+  const update = () => {
+    axios
+      .get("/test/send")
+      .then((response) => {
+        alert(response.data);
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error("에러", error);
+      });
+  };
+
+  //const sampledata = {areacode: 1};
+
+  const codeOut = () => {
+    axios
+      .post("/test/codeout", {
+        areacode: 1,
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("에러떴어요 시발", error);
+      });
+  };
   return (
     <PlaceWrapper>
       <Tripbox>
@@ -336,6 +414,8 @@ function TripPlace({ weather }) {
         <button onClick={searchPlace} style={{ marginTop: "20px" }}>
           Search
         </button>
+        <button onClick={SelectTourList}>관광지 검색</button>
+        <button onClick={update}>update</button>
       </Tripbox>
     </PlaceWrapper>
   );
