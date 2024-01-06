@@ -3,9 +3,14 @@ import { Link } from "react-router-dom";
 import "../css/header.css";
 import { useState } from "react";
 import DatePicker from "react-datepicker";
-export const MainContainer = styled.div`
-  max-width: 500px;
-  padding: 7.5rem 2rem;
+export const Mainitem = styled.div`
+  padding: 8rem 1rem 0 1rem;
+  /* position: absolute; */
+  height: 100vh;
+  top: 0;
+`;
+export const MotionBox = styled.div`
+  overflow: hidden;
 `;
 export const DateBox = styled.div`
   padding: 1rem;
@@ -42,7 +47,7 @@ export const TripWrapper = styled.div`
   height: 100vh;
 `;
 export const Tripbox = styled.div`
-  padding: 1rem;
+  width: 100%;
 `;
 export const Tripinfo = styled.div`
   font-size: 10rem;
@@ -68,13 +73,40 @@ export function Header() {
     </div>
   );
 }
-const Li = styled.li`
+export const Li = styled.li`
+  font-size: 1.4rem;
   text-align: center;
   padding: 10px 0;
   color: darkcyan;
   border: 1px solid #27d7ea;
   border-radius: 5px;
+  cursor: pointer;
   background-color: #cbf0f4;
+`;
+export const Areabox = styled.div`
+  display: grid;
+  list-style: none;
+  grid-template-columns: repeat(4, 24%);
+  padding: 10px 0 0 0;
+  gap: 4px;
+  overflow: hidden;
+
+  &.on {
+    display: flex;
+    justify-content: center;
+  }
+`;
+export const AreaSelectBtn = styled(Link)`
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  background-color: black;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
   cursor: pointer;
 `;
 export function SelectArea() {
@@ -173,34 +205,53 @@ export function SelectArea() {
     </ul>
   );
 }
-export function ModeControll() {
-  const ModeController = styled.div`
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 50%;
-    z-index: 1;
-    transform: translateY(-50%);
-    right: -45px;
-    width: 40px;
-    height: 50px;
-    padding: 25px;
-    background-color: white;
-    border-radius: 0 5px 5px 0;
-    cursor: pointer;
-  `;
-  const [slidemode, setSlidemode] = useState(false); // 서브창 확장, 축소
-  const handleSlidemode = () => {
-    setSlidemode((mode) => !mode);
-  };
-  return (
-    <ModeController onClick={handleSlidemode}>
-      {slidemode ? (
-        <img src="/img/Left.svg" style={{ width: "30px", height: "30px" }} />
-      ) : (
-        <img src="/img/Right.svg" style={{ width: "30px", height: "30px" }} />
-      )}
-    </ModeController>
-  );
-}
+
+export const ModeController = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  top: 50%;
+  z-index: 1;
+  transform: translateY(-50%);
+  right: -45px;
+  width: 40px;
+  height: 50px;
+  padding: 25px;
+  background-color: white;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+`;
+/* 
+  export function ModeControll() {
+    const ModeController = styled.div`
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      top: 50%;
+      z-index: 1;
+      transform: translateY(-50%);
+      right: -45px;
+      width: 40px;
+      height: 50px;
+      padding: 25px;
+      background-color: white;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+    `;
+    const [slidemode, setSlidemode] = useState(false); // 서브창 확장, 축소
+    const handleSlidemode = () => {
+      setSlidemode((mode) => !mode);
+    };
+    return (
+      <ModeController onClick={handleSlidemode}>
+        {slidemode ? (
+          <img src="/img/Left.svg" style={{ width: "30px", height: "30px" }} />
+        ) : (
+          <img src="/img/Right.svg" style={{ width: "30px", height: "30px" }} />
+        )}
+      </ModeController>
+    );
+  }
+*/
