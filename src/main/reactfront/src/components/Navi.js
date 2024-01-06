@@ -8,12 +8,14 @@ const StyleLink = styled(Link)`
   color: gray;
   padding: 28px 8px;
   text-decoration: none;
+  font-size: 1.5rem;
 `;
 const Span = styled.span`
   color: gray;
   padding: 28px 8px;
   text-decoration: none;
   cursor: pointer;
+  font-size: 1.5rem;
 `;
 function Navi() {
   const [modalOpen, setModalOpen] = useState(false);
