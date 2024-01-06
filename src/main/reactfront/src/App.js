@@ -7,19 +7,17 @@ import Register from "./routers/Register";
 
 function App() {
   return (
-    <div>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Main></Main>}></Route>
-          <Route path="/notfound" element={<NotFound></NotFound>}></Route>
-          <Route path="/login" element={<Login></Login>}></Route>
-          <Route path="/trip" element={<Trip></Trip>}></Route>
-          <Route path="/help" element={<Main></Main>}></Route>
-          <Route path="/how" element={<Main></Main>}></Route>
-          <Route path="/register" element={<Register></Register>}></Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Main></Main>}></Route>
+        <Route path="/notfound" element={<NotFound></NotFound>}></Route>
+        <Route path="/login" element={<Login></Login>}></Route>
+        <Route path="/trip" element={<Trip />}></Route>
+        <Route path="/help" element={<Main></Main>}></Route>
+        <Route path="/how" element={<Main></Main>}></Route>
+        <Route path="/register" element={<Register></Register>}></Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
