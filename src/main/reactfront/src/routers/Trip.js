@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
   TripWrapper,
-  Header,
   Button,
   DateWrapper,
   DateBox,
   MainContainer,
   CustomDatePicker,
   GuidTitle,
+  Mainitem,
+  MotionBox,
 } from "../components/TripComponents";
 import TripPlace from "../components/TripPlace";
-import TripMt from "../components/TripMt";
+
 import TripMap from "../components/TripMap";
 import {
   StepContainer,
@@ -18,11 +19,22 @@ import {
   StepUl,
   Stepbox,
 } from "../components/StepComponents";
+import { AnimatePresence, motion } from "framer-motion";
 
-// import "../css/react-datepicker/dist/react-datepicker.css";
 import "../css/react-datepicker.css";
 import { ko } from "date-fns/locale";
 
+import Header from "../components/Header";
+import styled from "styled-components";
+import { SaveTripInfo } from "../components/SaveTripInfo";
+const MotionMainContainer = styled.div`
+  position: relative;
+
+  display: flex;
+  height: 100vh;
+`;
+const MotionTripWrapper = motion(TripWrapper);
+const Motionitem = motion(Mainitem);
 const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
   // const offset = new Date().getTimezoneOffset() * 60000;
@@ -34,12 +46,16 @@ function Trip() {
     endDay: "",
     endDayofWeek: "",
   });
+  const [selectedAreaName, setSelectedAreaName] = useState({
+    mainAreaName: "",
+    subAreaName: "",
+  });
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState(null);
   const [minDate, setMinDate] = useState(new Date(Date.now()));
   const [maxDate, setMaxDate] = useState();
-  const [tripdate, setTripDate] = useState({});
   const [mode, setMode] = useState("date");
+  const [lastClickedId, setLastClickedId] = useState(null);
   const [weather, setWeather] = useState({
     clouds: "",
     coord: { long: "", lat: "" },
@@ -50,7 +66,6 @@ function Trip() {
     temp: "",
   });
 
-  const [lastClickedId, setLastClickedId] = useState(null);
   const [mygeolocation, setMygeolocation] = useState({
     lat: "",
     long: "",
@@ -89,9 +104,11 @@ function Trip() {
     const clickTargetId = event.target.id;
     if (clickTargetId !== "date") {
       document.getElementById("date").style.color = "gray";
+      document.getElementById("date").style.transform = "scale(1)";
     }
     event.target.style.color = "#03A9F4"; //#50DCEF > 연파랑 , #03A9F4> 찐파랑
     event.target.style.fontWeight = 900;
+    event.target.style.scale = 1;
     setLastClickedId(clickTargetId);
     // console.log(lastClickedId);
 
@@ -114,6 +131,7 @@ function Trip() {
       if (lastClicked) {
         lastClicked.style.color = "gray";
         lastClicked.style.fontWeight = 600;
+        lastClicked.style.scale = 0.8;
       }
     }
 
@@ -167,85 +185,232 @@ function Trip() {
     }
     setEndDate(end);
   };
-  console.log(dateinfo.startDayofWeek);
+  console.log(mode);
   return (
-    <TripWrapper>
-      <Header />
-      <StepContainer>
-        <Stepbox>
-          <StepUl>
-            <StepLi
-              onClick={onChangeMode}
-              id="date"
-              style={{ color: "#03A9F4" }}
-            >
-              step 1 <br />
-              날짜 확인
-            </StepLi>
-            <StepLi onClick={onChangeMode} id="space">
-              step 2 <br />
-              장소 선택
-            </StepLi>
-            <StepLi onClick={onChangeMode} id="mt">
-              step 3 <br />
-              숙소 설정
-            </StepLi>
-            <StepLi onClick={onChangeMode} id="kr">
-              step 4 <br />
-              {weather ? weather.sys.country : null}
-            </StepLi>
-          </StepUl>
-          <Button> </Button>
-        </Stepbox>
-      </StepContainer>
-      <MainContainer>
-        <GuidTitle>언제?</GuidTitle>
-        <DateWrapper>
-          <CustomDatePicker
-            dateFormat="yyyy/MM/dd"
-            onChange={onChange}
-            startDate={startDate}
-            endDate={endDate}
-            minDate={minDate}
-            selectsRange
-            maxDate={maxDate}
-            locale={ko}
-            placeholderText="날짜를 선택해주세요"
-            dayClassName={(date) =>
-              `react-datepicker-day ${highlightStartDate(
-                date
-              )} ${highlightEndDate(date)}`
-            }
-            value={
-              dateinfo.startDay
-                ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
-                : null
-            }
-            withPortal
-            className="calendar_input"
-          />
-        </DateWrapper>
-        <DateBox>
-          <p className="date__info">
-            여행 추천서비스에 <b>날씨 예보</b>
-            도 포함되어
-            <br />
-            일정은 최대 5일까지 선택 가능합니다
-          </p>
-        </DateBox>
-        <DateBox>
-          <GuidTitle>어디로?</GuidTitle>
-          <TripPlace weather={weather} tripdate={tripdate}></TripPlace>
-        </DateBox>
+    <AnimatePresence mode="wait">
+      <MotionTripWrapper
+        initial={{ opacity: 0, x: "100%" }}
+        animate={{
+          opacity: 1,
+          x: 0,
+          transition: {
+            type: "spring", // 스프링 효과 사용
+            damping: 11, // 감쇠 설정
+            stiffness: 40, // 강성 설정
+          },
+        }}
+        exit={{ opacity: 0, x: "-100%" }}
+      >
+        <Header></Header>
+        <StepContainer>
+          <Stepbox>
+            <StepUl>
+              <StepLi
+                onClick={onChangeMode}
+                id="date"
+                style={{
+                  color: "#03A9F4",
+                  transform: "scale(1.2)",
+                  fontWeight: 900,
+                }}
+              >
+                step 1 <br />
+                날짜 확인
+              </StepLi>
+              <StepLi onClick={onChangeMode} id="space">
+                step 2 <br />
+                장소 선택
+              </StepLi>
+              <StepLi onClick={onChangeMode} id="mt">
+                step 3 <br />
+                숙소 설정
+              </StepLi>
+              <StepLi onClick={onChangeMode} id="kr">
+                step 4 <br />
+                {weather ? weather.sys.country : null}
+              </StepLi>
+            </StepUl>
+            <Button> </Button>
+          </Stepbox>
+        </StepContainer>
+        <MotionMainContainer>
+          <MotionBox>
+            <AnimatePresence mode="out-in">
+              {mode === "date" ? (
+                <Motionitem
+                  key="date"
+                  initial={{ opacity: 0, x: "100%" }}
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      type: "spring", // 스프링 효과 사용
+                      damping: 11, // 감쇠 설정
+                      stiffness: 40, // 강성 설정
+                    },
+                  }}
+                  exit={{ opacity: 0, x: "-100%" }}
+                >
+                  <GuidTitle>언제?</GuidTitle>
+                  <DateWrapper>
+                    <CustomDatePicker
+                      dateFormat="yyyy/MM/dd"
+                      onChange={onChange}
+                      startDate={startDate}
+                      endDate={endDate}
+                      minDate={minDate}
+                      selectsRange
+                      maxDate={maxDate}
+                      locale={ko}
+                      placeholderText="날짜를 선택해주세요"
+                      dayClassName={(date) =>
+                        `react-datepicker-day ${highlightStartDate(
+                          date
+                        )} ${highlightEndDate(date)}`
+                      }
+                      value={
+                        dateinfo.startDay
+                          ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
+                          : null
+                      }
+                      withPortal
+                      className="calendar_input"
+                    />
+                  </DateWrapper>
+                  <DateBox style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src="/img/bell.png"
+                      style={{ width: "30px", height: "30px" }}
+                    />
+                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
+                      <b>날씨예보</b>는<b style={{ color: "black" }}>접속일</b>
+                      로부터 <br />
+                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
+                      지원합니다
+                    </p>
+                  </DateBox>
+                  <DateBox>
+                    <GuidTitle>어디로?</GuidTitle>
 
-        {/* {mode === "space" ? (
-          
-        ) : mode === "mt" ? (
-          <TripMt></TripMt>
-        ) : null} */}
-      </MainContainer>
-      <TripMap></TripMap>
-    </TripWrapper>
+                    <TripPlace
+                      weather={weather}
+                      dateinfo={dateinfo}
+                      setSelectedAreaName={setSelectedAreaName}
+                      setMode={setMode}
+                    ></TripPlace>
+                  </DateBox>
+                </Motionitem>
+              ) : mode === "space" ? (
+                <Motionitem
+                  key="space"
+                  initial={{ opacity: 0, x: "100%" }}
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      type: "spring", // 스프링 효과 사용
+                      damping: 11, // 감쇠 설정
+                      stiffness: 40, // 강성 설정
+                    },
+                  }}
+                  exit={{ opacity: 0, x: "-100%" }}
+                >
+                  <GuidTitle>언제?</GuidTitle>
+
+                  <DateBox style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src="/img/bell.png"
+                      style={{ width: "30px", height: "30px" }}
+                    />
+                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
+                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
+                      로부터 <br />
+                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
+                      지원합니다
+                    </p>
+                  </DateBox>
+                  <DateBox>
+                    <GuidTitle>어디로?</GuidTitle>
+                    <TripPlace
+                      weather={weather}
+                      dateinfo={dateinfo}
+                    ></TripPlace>
+                  </DateBox>
+                </Motionitem>
+              ) : mode === "mt" ? (
+                <Motionitem
+                  key="mt"
+                  initial={{ opacity: 0, x: "100%" }}
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      type: "spring", // 스프링 효과 사용
+                      damping: 11, // 감쇠 설정
+                      stiffness: 40, // 강성 설정
+                    },
+                  }}
+                  exit={{ opacity: 0, x: "-100%" }}
+                >
+                  <GuidTitle>언제?</GuidTitle>
+                  <DateWrapper>
+                    <CustomDatePicker
+                      dateFormat="yyyy/MM/dd"
+                      onChange={onChange}
+                      startDate={startDate}
+                      endDate={endDate}
+                      minDate={minDate}
+                      selectsRange
+                      maxDate={maxDate}
+                      locale={ko}
+                      placeholderText="날짜를 선택해주세요"
+                      dayClassName={(date) =>
+                        `react-datepicker-day ${highlightStartDate(
+                          date
+                        )} ${highlightEndDate(date)}`
+                      }
+                      value={
+                        dateinfo.startDay
+                          ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
+                          : null
+                      }
+                      withPortal
+                      className="calendar_input"
+                    />
+                  </DateWrapper>
+                  <DateBox style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src="/img/bell.png"
+                      style={{ width: "30px", height: "30px" }}
+                    />
+                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
+                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
+                      로부터 <br />
+                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
+                      지원합니다
+                    </p>
+                  </DateBox>
+                  <DateBox>
+                    <GuidTitle>어디로?</GuidTitle>
+
+                    <TripPlace
+                      weather={weather}
+                      dateinfo={dateinfo}
+                    ></TripPlace>
+                  </DateBox>
+                </Motionitem>
+              ) : null}
+            </AnimatePresence>
+          </MotionBox>
+          <SaveTripInfo
+            dateinfo={dateinfo}
+            selectedAreaName={selectedAreaName}
+          ></SaveTripInfo>
+        </MotionMainContainer>
+
+        <TripMap></TripMap>
+      </MotionTripWrapper>
+    </AnimatePresence>
   );
 }
 
