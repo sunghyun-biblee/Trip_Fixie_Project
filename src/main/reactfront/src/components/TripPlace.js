@@ -1,40 +1,27 @@
 import { useEffect, useState } from "react";
-import { TripWrapper, Tripbox } from "./TripComponents";
+import {
+  TripWrapper,
+  Tripbox,
+  Li,
+  Areabox,
+  AreaSelectBtn,
+  Tripinfo,
+} from "./TripComponents";
 import styled from "styled-components";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, animate, motion } from "framer-motion";
 import axios from "axios";
-// const TripSelect = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   width: 30px;
-//   background-color: antiquewhite;
-
-//   &.on {
-//     min-width: 300px;
-//   }
-// `;
 
 const PlaceWrapper = styled(TripWrapper)`
   padding-top: 2rem;
+
+  height: 100%;
+`;
+const SelectAreaUl = styled.ul`
+  padding: 10px 0 0 0;
+  overflow: hidden;
+  width: 100%;
 `;
 
-const SelectAreaUl = styled.ul`
-  width: 375px;
-  display: grid;
-  list-style: none;
-  grid-template-columns: repeat(4, 90px);
-  padding: 10px 0 0 0;
-  gap: 4px;
-`;
-const Li = styled.li`
-  text-align: center;
-  padding: 10px 0;
-  color: darkcyan;
-  border: 1px solid #27d7ea;
-  border-radius: 5px;
-  background-color: #cbf0f4;
-  cursor: pointer;
-`;
 const TripArea = styled(motion.div)`
   width: 50%;
   display: flex;
@@ -44,25 +31,36 @@ const TripArea = styled(motion.div)`
 const Motion_AreaName = styled(motion.div)`
   position: relative;
 
-  width: 375px;
   height: 100px;
   display: flex;
   box-shadow: rgba(0, 0, 0, 0.04) 0px 3px 5px;
   border-radius: 5px;
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
-function TripPlace({ weather, dateinfo }) {
+const AreaVariants = {
+  hidden: { opacity: 0, scale: 0.7 },
+  visable: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 0.7 },
+};
+const LiVariants = {
+  hidden: { opacity: 0, scale: 0.7 },
+  visable: { opacity: 1, scale: 1 },
+};
+const MotionLi = motion(Li);
+const MotionAreaSelectBtn = motion(AreaSelectBtn);
+function TripPlace({ weather, dateinfo, setSelectedAreaName, setMode }) {
   const [tripAreaName, setTripAreaName] = useState({
     mainAreaName: "",
     subAreaName: "",
   });
   const [locations, setLocations] = useState([]); //장소 검색 결과
   const [mainAreaCode, setMainAreaCode] = useState(""); // 메인지역 코드
-  const [subAreaCode, setSubAreaCode] = useState("");
-  const [subArea, setSubArea] = useState(); // 서브 지역 코드
+  const [subAreaCode, setSubAreaCode] = useState();
+  const [subArea, setSubArea] = useState([]); // 서브 지역 코드
   const [baseurl, setBaseurl] = useState(""); // api 호출 url
   const [params, setParams] = useState({}); // api 호출 쿼리문
   const [citycode, setCitycode] = useState({ citycode: 1, subCitycode: 2 });
+  const [disableSubArea, setdDisableSubArea] = useState(false);
   const Area = [
     {
       value: 1,
@@ -213,6 +211,7 @@ function TripPlace({ weather, dateinfo }) {
 
   const SelectAreaCode = (event) => {
     //메인 지역 선택
+    setMainAreaCode(event.target.value);
     setCitycode({
       citycode: event.target.value,
       ...citycode,
@@ -222,7 +221,6 @@ function TripPlace({ weather, dateinfo }) {
       mainAreaName: event.target.textContent,
     });
 
-    setMainAreaCode(event.target.value);
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
     setParams({
       serviceKey:
@@ -236,21 +234,20 @@ function TripPlace({ weather, dateinfo }) {
     });
   };
   const SelectSubAreaCode = (event) => {
-    console.log(event.target.value);
+    if (event.target.value == subAreaCode) {
+    }
+    setdDisableSubArea((mode) => !mode);
+
     setCitycode({
       subCitycode: event.target.value,
       ...citycode,
     });
-    setSubAreaCode(event.target.textContent);
+    console.log(event.target.value);
+    setSubAreaCode(event.target.value);
     setTripAreaName({
       ...tripAreaName,
       subAreaName: event.target.textContent,
     });
-  };
-  const AreaVariants = {
-    hidden: { opacity: 0, scale: 0.5 },
-    visable: { opacity: 1, scale: 1 },
-    exit: { opacity: 0, scale: 0.5 },
   };
 
   const SelectTourList = () => {
@@ -313,31 +310,61 @@ function TripPlace({ weather, dateinfo }) {
         console.error("에러떴어요 시발", error);
       });
   };
+  const resetArea = async (event) => {
+    if (event.target.className == "main") {
+      setdDisableSubArea((mode) => !mode);
+      setSubAreaCode();
+      setSubArea([]);
+      setMainAreaCode();
+      setTripAreaName({ mainAreaName: "", subAreaName: "" });
+    } else if (event.target.className == "sub") {
+      setdDisableSubArea((mode) => !mode);
+
+      console.log(subAreaCode);
+    }
+  };
+  const submitAreaName = (event) => {
+    if (tripAreaName.mainAreaName !== "" && tripAreaName.subAreaName !== "") {
+      setSelectedAreaName({
+        mainAreaName: tripAreaName.mainAreaName,
+        subAreaName: tripAreaName.subAreaName,
+      });
+      setMode("space");
+      console.log("submit AreaName !!");
+    }
+  };
   return (
     <PlaceWrapper>
-      <Tripbox>
-        {subArea ? (
+      <Tripbox
+        className="one
+      "
+      >
+        {tripAreaName.subAreaName ? (
           <button
             onClick={() => {
               setMainAreaCode();
-              setSubArea();
+              setSubAreaCode();
+              setSubArea([]);
               setTripAreaName({ mainAreaName: "", subAreaName: "" });
+              setdDisableSubArea((mode) => !mode);
             }}
           >
-            뒤로가기
+            초기화
           </button>
         ) : null}
         <AnimatePresence>
           <Motion_AreaName style={{ marginTop: "5px" }}>
             {tripAreaName.mainAreaName !== "" ? (
               <TripArea
+                className="main"
                 key="main"
                 initial="hidden"
                 animate="visable"
                 exit="exit"
                 variants={AreaVariants}
+                onClick={resetArea}
               >
-                <p>
+                <p className="main">
                   {tripAreaName.mainAreaName ? tripAreaName.mainAreaName : null}
                 </p>
               </TripArea>
@@ -377,13 +404,15 @@ function TripPlace({ weather, dateinfo }) {
             ) : null}
             {tripAreaName.subAreaName !== "" ? (
               <TripArea
+                className="sub"
                 key="sub"
                 initial="hidden"
                 animate="visable"
                 variants={AreaVariants}
                 exit="exit"
+                onClick={resetArea}
               >
-                <p>
+                <p className="sub">
                   {tripAreaName.subAreaName ? tripAreaName.subAreaName : null}
                 </p>
               </TripArea>
@@ -391,32 +420,54 @@ function TripPlace({ weather, dateinfo }) {
           </Motion_AreaName>
         </AnimatePresence>
         <SelectAreaUl>
-          {!subArea
-            ? Area.map((city) => (
-                <Li
+          {!mainAreaCode ? (
+            <Areabox>
+              {Area.map((city) => (
+                <MotionLi
                   key={city.value}
                   value={city.value}
                   onClick={SelectAreaCode}
+                  initial="hidden"
+                  animate="visable"
+                  variants={LiVariants}
                 >
                   {city.name}
-                </Li>
-              ))
-            : subArea.map((subarea) => (
-                <Li
-                  key={subarea.value + Math.floor(Math.random() * 1000)}
-                  value={subarea.value}
-                  onClick={SelectSubAreaCode}
-                >
-                  {subarea.subAreaname}
-                </Li>
+                </MotionLi>
               ))}
+            </Areabox>
+          ) : (
+            <Areabox className={!disableSubArea ? "off" : "on"}>
+              {!disableSubArea ? (
+                subArea.map((subarea) => (
+                  <MotionLi
+                    key={subarea.value + Math.floor(Math.random() * 1000)}
+                    value={subarea.value}
+                    onClick={SelectSubAreaCode}
+                    initial="hidden"
+                    animate="visable"
+                    variants={LiVariants}
+                  >
+                    {subarea.subAreaname}
+                  </MotionLi>
+                ))
+              ) : (
+                <MotionAreaSelectBtn
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={submitAreaName}
+                >
+                  <p>선택 완료</p>
+                </MotionAreaSelectBtn>
+              )}
+            </Areabox>
+          )}
         </SelectAreaUl>
         <button onClick={searchPlace} style={{ marginTop: "20px" }}>
           Search
         </button>
         <button onClick={SelectTourList}>관광지 검색</button>
         <button onClick={update}>update</button>
-        <button>123</button>
       </Tripbox>
     </PlaceWrapper>
   );
