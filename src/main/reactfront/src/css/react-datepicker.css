@@ -119,6 +119,9 @@
   display: inline-block;
   position: relative;
 }
+.react-datepicker::before {
+  background: rgba(255, 255, 255, 0.6);
+}
 
 .react-datepicker--time-only .react-datepicker__triangle {
   left: 35px;
@@ -911,9 +914,9 @@
 
 .react-datepicker__portal {
   position: fixed;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 60%;
+  backdrop-filter: blur(2px);
   left: 0;
   top: 0;
   justify-content: center;
@@ -921,11 +924,12 @@
   display: flex;
   z-index: 2147483647;
 }
+
 .react-datepicker__portal .react-datepicker__day-name,
 .react-datepicker__portal .react-datepicker__day,
 .react-datepicker__portal .react-datepicker__time-name {
-  width: 6rem;
-  line-height: 6rem;
+  width: 5rem;
+  line-height: 5rem;
 }
 /* sunghyun */
 @media (max-width: 400px), (max-height: 550px) {
