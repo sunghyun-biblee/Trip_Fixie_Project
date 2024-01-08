@@ -48,7 +48,7 @@ const LiVariants = {
 };
 const MotionLi = motion(Li);
 const MotionAreaSelectBtn = motion(AreaSelectBtn);
-function TripPlace({ weather, dateinfo, setSelectedAreaName, setMode }) {
+function TripPlace({ weather, dateinfo, setSelectedArea, setMode }) {
   const [tripAreaName, setTripAreaName] = useState({
     mainAreaName: "",
     subAreaName: "",
@@ -312,22 +312,25 @@ function TripPlace({ weather, dateinfo, setSelectedAreaName, setMode }) {
   };
   const resetArea = async (event) => {
     if (event.target.className == "main") {
-      setdDisableSubArea((mode) => !mode);
+      setdDisableSubArea(false);
       setSubAreaCode();
       setSubArea([]);
       setMainAreaCode();
       setTripAreaName({ mainAreaName: "", subAreaName: "" });
     } else if (event.target.className == "sub") {
-      setdDisableSubArea((mode) => !mode);
+      setdDisableSubArea(false);
 
       console.log(subAreaCode);
     }
   };
   const submitAreaName = (event) => {
     if (tripAreaName.mainAreaName !== "" && tripAreaName.subAreaName !== "") {
-      setSelectedAreaName({
+      
+      setSelectedArea({
         mainAreaName: tripAreaName.mainAreaName,
         subAreaName: tripAreaName.subAreaName,
+        mainAreaCode: mainAreaCode,
+        subAreaCode: subAreaCode,
       });
       setMode("space");
       console.log("submit AreaName !!");

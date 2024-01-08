@@ -27,6 +27,9 @@ import { ko } from "date-fns/locale";
 import Header from "../components/Header";
 import styled from "styled-components";
 import { SaveTripInfo } from "../components/SaveTripInfo";
+
+import TourSpot from "../components/TourSpot";
+
 const MotionMainContainer = styled.div`
   position: relative;
 
@@ -46,9 +49,15 @@ function Trip() {
     endDay: "",
     endDayofWeek: "",
   });
-  const [selectedAreaName, setSelectedAreaName] = useState({
+  const [selectedArea, setSelectedArea] = useState({
     mainAreaName: "",
     subAreaName: "",
+    mainAreaCode: "",
+    subAreaCode: "",
+    
+  });
+  const [tripAreaCode, setTripAreaCode] = useState({
+    
   });
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState(null);
@@ -70,6 +79,17 @@ function Trip() {
     lat: "",
     long: "",
   });
+
+  //추가
+  const [saveTourList, setSaveTourList] = useState([]);
+  const handleAddList = (tourList) =>{
+    setSaveTourList(prevList => [...prevList, tourList]);
+    console.log(saveTourList);
+  }
+  const handleDeleteList = (indexToRemove) => {
+    setSaveTourList(prevList => prevList.filter((_, index) => index !== indexToRemove));
+    console.log(saveTourList);
+  };
 
   useEffect(() => {
     const geolocation = async () => {
@@ -295,7 +315,7 @@ function Trip() {
                     <TripPlace
                       weather={weather}
                       dateinfo={dateinfo}
-                      setSelectedAreaName={setSelectedAreaName}
+                      setSelectedArea={setSelectedArea}
                       setMode={setMode}
                     ></TripPlace>
                   </DateBox>
@@ -315,27 +335,10 @@ function Trip() {
                   }}
                   exit={{ opacity: 0, x: "-100%" }}
                 >
-                  <GuidTitle>언제?</GuidTitle>
-
-                  <DateBox style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/img/bell.png"
-                      style={{ width: "30px", height: "30px" }}
-                    />
-                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
-                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
-                      로부터 <br />
-                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
-                      지원합니다
-                    </p>
-                  </DateBox>
-                  <DateBox>
-                    <GuidTitle>어디로?</GuidTitle>
-                    <TripPlace
-                      weather={weather}
-                      dateinfo={dateinfo}
-                    ></TripPlace>
-                  </DateBox>
+                <TourSpot
+                  selectedArea = {selectedArea}
+                  setSaveTourList = {handleAddList}                 
+                ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
                 <Motionitem
@@ -404,7 +407,9 @@ function Trip() {
           </MotionBox>
           <SaveTripInfo
             dateinfo={dateinfo}
-            selectedAreaName={selectedAreaName}
+            selectedAreaName={selectedArea}
+            saveTourList={saveTourList}
+            deleteSaveTourList={handleDeleteList}
           ></SaveTripInfo>
         </MotionMainContainer>
 
