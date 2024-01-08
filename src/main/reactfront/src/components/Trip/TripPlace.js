@@ -419,7 +419,7 @@ function TripPlace({
                   transition={{ duration: 0.2 }}
                   onClick={submitAreaName}
                 >
-                  <p>선택 완료</p>
+                  <p>선택 완료 !</p>
                 </MotionAreaSelectBtn>
               )}
             </Areabox>
