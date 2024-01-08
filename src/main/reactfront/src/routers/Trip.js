@@ -1,40 +1,51 @@
 import React, { useEffect, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import "../components/Trip/css/react-datepicker.css";
+import { ko } from "date-fns/locale";
+import Header from "../components/atoms/Header";
+import styled from "styled-components";
 import {
-  TripWrapper,
-  Button,
-  DateWrapper,
-  DateBox,
-  MainContainer,
-  CustomDatePicker,
-  GuidTitle,
-  Mainitem,
-  MotionBox,
-} from "../components/TripComponents";
-import TripPlace from "../components/TripPlace";
-
-import TripMap from "../components/TripMap";
+  MotionTripWrapper,
+  Motionitem,
+} from "../components/Trip/tripmotion_components";
 import {
   StepContainer,
   StepLi,
   StepUl,
   Stepbox,
-} from "../components/StepComponents";
-import { AnimatePresence, motion } from "framer-motion";
+} from "../components/Trip/trip_step_components";
+import {
+  Button,
+  CustomDatePicker,
+  DateBox,
+  DateWrapper,
+  GuidTitle,
+  MotionBox,
+} from "../components/Trip/TripComponents";
+import TripPlace from "../components/Trip/TripPlace";
+import { SaveTripInfo } from "../components/Trip/SaveTripInfo";
+import TripMap from "../components/Trip/TripMap";
 
-import "../css/react-datepicker.css";
-import { ko } from "date-fns/locale";
-
-import Header from "../components/Header";
-import styled from "styled-components";
-import { SaveTripInfo } from "../components/SaveTripInfo";
 const MotionMainContainer = styled.div`
   position: relative;
 
   display: flex;
   height: 100vh;
 `;
-const MotionTripWrapper = motion(TripWrapper);
-const Motionitem = motion(Mainitem);
+const variants = {
+  itemSet: { opacity: 0, x: "100%" },
+  itemIn: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring", // 스프링 효과 사용
+      damping: 11, // 감쇠 설정
+      stiffness: 40, // 강성 설정
+    },
+  },
+  itemOut: { opacity: 0, x: "-100%" },
+};
+
 const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
   // const offset = new Date().getTimezoneOffset() * 60000;
@@ -171,7 +182,6 @@ function Trip() {
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
         ...dateinfo,
       });
-      console.log(`(${KoreanDayOfWeek[startDateObeject]})`);
     } else if (start && end) {
       setStartDate(start);
       setEndDate(end);
@@ -239,17 +249,10 @@ function Trip() {
               {mode === "date" ? (
                 <Motionitem
                   key="date"
-                  initial={{ opacity: 0, x: "100%" }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                    transition: {
-                      type: "spring", // 스프링 효과 사용
-                      damping: 11, // 감쇠 설정
-                      stiffness: 40, // 강성 설정
-                    },
-                  }}
-                  exit={{ opacity: 0, x: "-100%" }}
+                  initial="itemSet"
+                  animate="itemIn"
+                  exit="itemOut"
+                  variants={variants}
                 >
                   <GuidTitle>언제?</GuidTitle>
                   <DateWrapper>
@@ -281,6 +284,7 @@ function Trip() {
                     <img
                       src="/img/bell.png"
                       style={{ width: "30px", height: "30px" }}
+                      alt=""
                     />
                     <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
                       <b>날씨예보</b>는<b style={{ color: "black" }}>접속일</b>
@@ -296,6 +300,7 @@ function Trip() {
                       weather={weather}
                       dateinfo={dateinfo}
                       setSelectedAreaName={setSelectedAreaName}
+                      selectedAreaName={selectedAreaName}
                       setMode={setMode}
                     ></TripPlace>
                   </DateBox>
@@ -303,17 +308,10 @@ function Trip() {
               ) : mode === "space" ? (
                 <Motionitem
                   key="space"
-                  initial={{ opacity: 0, x: "100%" }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                    transition: {
-                      type: "spring", // 스프링 효과 사용
-                      damping: 11, // 감쇠 설정
-                      stiffness: 40, // 강성 설정
-                    },
-                  }}
-                  exit={{ opacity: 0, x: "-100%" }}
+                  initial="itemSet"
+                  animate="itemIn"
+                  exit="itemOut"
+                  variants={variants}
                 >
                   <GuidTitle>언제?</GuidTitle>
 
@@ -321,6 +319,7 @@ function Trip() {
                     <img
                       src="/img/bell.png"
                       style={{ width: "30px", height: "30px" }}
+                      alt=""
                     />
                     <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
                       <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
@@ -340,17 +339,10 @@ function Trip() {
               ) : mode === "mt" ? (
                 <Motionitem
                   key="mt"
-                  initial={{ opacity: 0, x: "100%" }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                    transition: {
-                      type: "spring", // 스프링 효과 사용
-                      damping: 11, // 감쇠 설정
-                      stiffness: 40, // 강성 설정
-                    },
-                  }}
-                  exit={{ opacity: 0, x: "-100%" }}
+                  initial="itemSet"
+                  animate="itemIn"
+                  exit="itemOut"
+                  variants={variants}
                 >
                   <GuidTitle>언제?</GuidTitle>
                   <DateWrapper>
@@ -382,6 +374,7 @@ function Trip() {
                     <img
                       src="/img/bell.png"
                       style={{ width: "30px", height: "30px" }}
+                      alt=""
                     />
                     <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
                       <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
