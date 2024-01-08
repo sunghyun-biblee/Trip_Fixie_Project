@@ -1,5 +1,6 @@
 package com.main.trip.fixied.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,16 @@ public class apiController {
 		}else {
 			return "조땠서요";
 		}
+	}
+	
+	@RequestMapping("/addFavorite")
+	public String addFavorite(@RequestBody Map<String, Object> requestBody) {
+		String uid = (String) requestBody.get("uid");
+        Map<String, String> saveTourList = (Map<String, String>) requestBody.get("saveTourList");
+
+        System.out.println("UID: " + uid);
+        System.out.println("Save Tour List: " + saveTourList);
+		return "성공";
 	}
 
 }
