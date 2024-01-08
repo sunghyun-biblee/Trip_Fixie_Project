@@ -1,0 +1,28 @@
+label {
+  display: block;
+  padding: 10px 20px;
+  border: 1px solid rgba(0, 123, 50, 0.5);
+  border-radius: 10px;
+}
+.stepbox > div {
+  text-align: center;
+  padding: 10px;
+  font-weight: 700;
+}
+.stepbox > div:first-child {
+  margin: 10px 0;
+}
+
+.stepcontainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+#next {
+  display: none;
+}
+.stepcontainer > :nth-child(2) {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+}

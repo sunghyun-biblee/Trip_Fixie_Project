@@ -1,12 +1,7 @@
-import LoginForm from "../components/LoginForm.js";
+import LoginForm from "../components/atoms/LoginForm";
 
-
-
-
-function Login(){
-    return(
-        <LoginForm></LoginForm>
-    );
+function Login() {
+  return <LoginForm></LoginForm>;
 }
 
 export default Login;

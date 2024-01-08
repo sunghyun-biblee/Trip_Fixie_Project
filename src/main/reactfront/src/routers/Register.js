@@ -1,10 +1,7 @@
-import RegisterForm from "../components/RegisterForm.js";
+import RegisterForm from "../components/atoms/RegisterForm";
 
 function Register() {
-
-    return (
-        <RegisterForm></RegisterForm>
-    );
+  return <RegisterForm></RegisterForm>;
 }
 
 export default Register;
