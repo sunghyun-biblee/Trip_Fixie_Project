@@ -40,7 +40,7 @@ function MainSection() {
             <button className="main_btn" onClick={onClicks}>
               여행시작 하기
             </button>
-            <button onClick={signOut}>로그아웃</button>
+            <button onClick={signOut}>로그 아웃</button>
           </div>
           <div>
             <img
