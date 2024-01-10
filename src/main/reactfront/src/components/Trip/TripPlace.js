@@ -115,7 +115,7 @@ function TripPlace({
 
   // const queryString = new URLSearchParams(params).toString();
   // const requrl = `${baseurl}?${queryString}`;
-  console.log(getSelectedAreaName.mainAreaName);
+  
   useEffect(() => {
     if (baseurl && Object.keys(params).length > 0) {
       const queryString = new URLSearchParams(params).toString();
@@ -300,6 +300,8 @@ function TripPlace({
       setSelectedAreaName({
         mainAreaName: tripAreaName.mainAreaName,
         subAreaName: tripAreaName.subAreaName,
+        mainAreaCode: mainAreaCode,
+        subAreaCode: subAreaCode,
       });
       setMode("space");
       console.log("submit AreaName !!");

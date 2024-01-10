@@ -1,5 +1,9 @@
 package com.main.trip.fixied.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.main.trip.fixied.model.biz.Biz;
 import com.main.trip.fixied.model.dto.AreaCodeDto;
 import com.main.trip.fixied.model.dto.CHUser;
+import com.main.trip.fixied.model.dto.ContentList;
+import com.main.trip.fixied.model.dto.Favorite;
+import com.main.trip.fixied.model.dto.FavoriteList;
+
 
 @RestController
 @RequestMapping("/test")
@@ -52,12 +60,73 @@ public class apiController {
 	}
 	
 	@RequestMapping("/addFavorite")
-	public String addFavorite(@RequestBody Map<String, Object> requestBody) {
-		String uid = (String) requestBody.get("uid");
-        Map<String, String> saveTourList = (Map<String, String>) requestBody.get("saveTourList");
+	public String addFavorite(@RequestBody Map<String, Object> requestBody) {        
 
-        System.out.println("UID: " + uid);
-        System.out.println("Save Tour List: " + saveTourList);
+		//favorite 목록 생성
+		Favorite favorite = new Favorite();
+		favorite.setUid((String)requestBody.get("uid"));
+		favorite.setFtitle((String)requestBody.get("ftitle"));
+
+		//생성된 favorite목록에서 auto increment된 fid값을 불러오는 작업
+		//ftitle 미리 검사하는 로직 짜야함 *****************************
+		
+		
+		
+		String ftitle = (String)requestBody.get("ftitle");
+		biz.addFavorite(favorite);
+		int fid = biz.getFid(ftitle);
+		//System.out.println(fid);
+		
+		//tour목록의 contentid들을 위에서 뽑아둔 fid값으로 묶어서 favoriteList에 저장
+		Map<String, Object> saveTourList = (Map<String, Object>)requestBody.get("saveTourList");                
+        ArrayList<Map<String,String>> saveTourList1 = 
+        		(ArrayList<Map<String,String>>)saveTourList.get("saveTourList");
+
+        for(int i=0; i<saveTourList1.size(); i++) {
+        	FavoriteList favoriteList = new FavoriteList();
+        	favoriteList.setFid(fid);
+        	favoriteList.setContentid(Integer.parseInt(saveTourList1.get(i).get("contentid")));
+        	
+        	biz.addFavoriteList(favoriteList);
+        }
+        
+        //contentlist에 저장 => 저장하기 전 tour목록에서 기존의 contentlist와 중복저장 막기 위하여 검사진행
+        //contentlist에서 겹치는 항목 검사하기위해 먼저 불러오기
+        List<Integer> cList = biz.contentSelectAll();
+        List<Map<String, String>> removeList = new ArrayList<>();
+        for (Map<String, String> item : saveTourList1) {
+            String contentIdStr = item.get("contentid");  // contentid 값을 문자열변환            
+
+            // cList에 해당 contentId가 있는지 확인
+            if (cList.contains(Integer.parseInt(contentIdStr))) {
+                removeList.add(item);  // 일치하는 경우 제거할 리스트에 추가
+            }
+        }
+        // 제거할 리스트의 항목을 saveTourList1에서 제거
+        saveTourList1.removeAll(removeList);
+        System.out.println("수정된 saveTourList1 : " + saveTourList1);
+        
+        for(int i=0; i<saveTourList1.size(); i++) {
+        	ContentList contentlist = new ContentList();
+            contentlist.setContentid(Integer.parseInt(saveTourList1.get(i).get("contentid")));
+            contentlist.setCtitle(saveTourList1.get(i).get("ctitle"));
+            contentlist.setCaddr(saveTourList1.get(i).get("caddr"));
+            contentlist.setCtel(saveTourList1.get(i).get("ctel"));
+            contentlist.setCfirstimage(saveTourList1.get(i).get("cfirstimage"));
+            contentlist.setCsecondimage(saveTourList1.get(i).get("csecondimage"));
+            contentlist.setClatitude(Double.parseDouble(saveTourList1.get(i).get("clatitude")));
+            contentlist.setClongitude(Double.parseDouble(saveTourList1.get(i).get("clongitude")));
+            contentlist.setCeventstartdate(saveTourList1.get(i).get("ceventstartdate"));
+            contentlist.setCeventenddate(saveTourList1.get(i).get("ceventenddate"));
+            System.out.println(saveTourList1.get(i).get("cfirstimg"));
+            System.out.println(contentlist.getClatitude());
+            System.out.println(contentlist.getClongitude());
+            
+            
+            //새로운 contentList저장
+            biz.addContentList(contentlist);
+        }      
+        
 		return "성공";
 	}
 

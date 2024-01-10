@@ -12,6 +12,9 @@ import {
   Saveitems,
 } from "./trip_save_components";
 import { motion } from "framer-motion";
+import { auth } from "../../firebase";
+import axios from "axios";
+
 
 const MotionSaveContainer = motion(SaveContainer);
 
@@ -19,12 +22,30 @@ const variants = {
   small: { width: "30px" },
   large: { width: "300px" },
 };
-export function SaveTripInfo({ dateinfo, selectedAreaName }) {
-  const [isSlideMode, setIsSlideMode] = useState(false); // 서브창 확장,
+export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, deleteSaveTourList, isSlideMode, handleSlidemode }) {
   const [isAlarm, setIsAlarm] = useState(true);
-  const handleSlidemode = () => {
-    setIsSlideMode((mode) => !mode);
-  };
+   
+  const saveServer = ()=>{
+    const ftitle = document.getElementById("ftitle").value;
+    
+    auth.onAuthStateChanged((user) =>{
+        console.log("adfdsafdafadf");
+        console.log(saveTourList);
+        console.log(user.uid);
+        console.log(ftitle);
+      axios.post('/test/addFavorite',{
+        saveTourList : {saveTourList},
+        uid : user.uid,
+        ftitle: ftitle,
+      })
+      .then(response =>{
+        console.log(response);
+      })
+      .catch(error =>{
+        console.error("favorite오류", error);
+      });
+    })
+  }
 
   return (
     <>
@@ -46,6 +67,19 @@ export function SaveTripInfo({ dateinfo, selectedAreaName }) {
             </SaveTextItems>
             <SaveTextItems>{selectedAreaName.mainAreaName}</SaveTextItems>
             <SaveTextItems>{selectedAreaName.subAreaName}</SaveTextItems>
+            {saveTourList.map((tour, index) =>(
+              <>
+              <SaveTextItems 
+              style={{cursor: "pointer"}}
+              onClick={() => deleteSaveTourList(index)}
+              key={index}>{tour.ctitle}</SaveTextItems>
+              </>
+            ))}
+            <input type="text" id="ftitle" placeholder="별명을 지어주세요"></input>
+            <button>중복확인</button>
+            <button onClick={saveServer}>
+              저장
+            </button>
           </Saveitems>
         </SaveBox>
 
