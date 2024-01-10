@@ -25,6 +25,7 @@ import {
 import TripPlace from "../components/Trip/TripPlace";
 import { SaveTripInfo } from "../components/Trip/SaveTripInfo";
 import TripMap from "../components/Trip/TripMap";
+import TourSpot from "../components/TourSpot";
 
 const MotionMainContainer = styled.div`
   position: relative;
@@ -60,6 +61,8 @@ function Trip() {
   const [selectedAreaName, setSelectedAreaName] = useState({
     mainAreaName: "",
     subAreaName: "",
+    mainAreaCode: "",
+    subAreaCode: "",
   });
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState(null);
@@ -81,6 +84,22 @@ function Trip() {
     lat: "",
     long: "",
   });
+
+  const [isSlideMode, setIsSlideMode] = useState(false); // 서브창 확장,
+  const handleSlidemode = () => {
+    setIsSlideMode((mode) => !mode);
+  };
+
+  //추가
+  const [saveTourList, setSaveTourList] = useState([]);
+  const handleAddList = (tourList) =>{
+    setSaveTourList(prevList => [...prevList, tourList]);
+    console.log(saveTourList);
+  }
+  const handleDeleteList = (indexToRemove) => {
+    setSaveTourList(prevList => prevList.filter((_, index) => index !== indexToRemove));
+    console.log(saveTourList);
+  };
 
   useEffect(() => {
     const geolocation = async () => {
@@ -313,28 +332,13 @@ function Trip() {
                   exit="itemOut"
                   variants={variants}
                 >
-                  <GuidTitle>언제?</GuidTitle>
-
-                  <DateBox style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/img/bell.png"
-                      style={{ width: "30px", height: "30px" }}
-                      alt=""
-                    />
-                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
-                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
-                      로부터 <br />
-                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
-                      지원합니다
-                    </p>
-                  </DateBox>
-                  <DateBox>
-                    <GuidTitle>어디로?</GuidTitle>
-                    <TripPlace
-                      weather={weather}
-                      dateinfo={dateinfo}
-                    ></TripPlace>
-                  </DateBox>
+                  <TourSpot
+                     selectedAreaName = {selectedAreaName}
+                     setSaveTourList={handleAddList}
+                     dateinfo={dateinfo}
+                     setIsSlideMode={setIsSlideMode}
+                  >
+                  </TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
                 <Motionitem
@@ -398,6 +402,10 @@ function Trip() {
           <SaveTripInfo
             dateinfo={dateinfo}
             selectedAreaName={selectedAreaName}
+            saveTourList={saveTourList}
+            deleteSaveTourList={handleDeleteList}
+            handleSlidemode={handleSlidemode}
+            isSlideMode={isSlideMode}
           ></SaveTripInfo>
         </MotionMainContainer>
 
