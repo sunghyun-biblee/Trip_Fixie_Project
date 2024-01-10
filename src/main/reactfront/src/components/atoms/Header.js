@@ -8,8 +8,8 @@ export default function Header() {
         <img src={"/img/CHlogo.png"} alt="" className="icon" />
       </div>
       <div className="header_items two">
-        <Link to="/how" className="Link">
-          이용방법
+        <Link to="/mypage" className="Link">
+          마이페이지
         </Link>
       </div>
     </div>
