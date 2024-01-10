@@ -13,9 +13,21 @@ import {
   // Routes,
   createBrowserRouter,
 } from "react-router-dom";
+import { Mypage } from "./components/Mypage/Mypage";
 const LoadingScreen = styled.div`
   width: 100vw;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  h1 {
+    font-size: 100px;
+  }
+  img {
+    margin-left: 20px;
+    width: 100px;
+    height: 100px;
+  }
 `;
 
 const router = createBrowserRouter([
@@ -72,7 +84,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/mypage",
-    element: <Loot />,
+    element: <Mypage />,
   },
 ]);
 function App() {
@@ -96,7 +108,8 @@ function App() {
     <>
       {isLoading ? (
         <LoadingScreen>
-          <h1>Loading...</h1>
+          <h1>Loading</h1>
+          <img src="/img/Root_Loading.png" alt="" />
         </LoadingScreen>
       ) : (
         <RouterProvider router={router} />
