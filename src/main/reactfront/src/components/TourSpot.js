@@ -219,6 +219,7 @@ function TourSpot({
               tourList={tourList}
               addList={addList}
               setListpage={setListpage}
+              selectedAreaName={selectedAreaName}
             ></TourSpotList>
           </>
         ) : tourMode === "festivals" ? (
@@ -241,6 +242,8 @@ function TourSpot({
               addList={addList}
               isMainLoading={isMainLoading}
               setListpage={setListpage}
+              selectedAreaName={selectedAreaName}
+              dateinfo={dateinfo}
             ></FestivalSpotList>
           </>
         ) : null}
