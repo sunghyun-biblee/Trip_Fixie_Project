@@ -8,6 +8,7 @@ export const Mainitem = styled.div`
   padding: 8rem 1rem 0 1rem;
   /* position: absolute; */
   height: 100vh;
+  /* width: 650px; */
   top: 0;
 `;
 export const MotionBox = styled.div`

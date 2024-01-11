@@ -11,19 +11,16 @@ export const MypageWrapper = styled.div`
 `;
 
 export const MypageContainer = styled.div`
-  height: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  padding-top: 10%;
 `;
-export const MypageSection = styled.div`
-  height: 80%;
-`;
+export const MypageSection = styled.div``;
 export const MypageBox = styled.div`
   position: relative;
   padding: 0 3rem;
   width: 100%;
-  height: 80%;
+  height: 100%;
 `;
 export const UserImgBox = styled.div`
   padding-top: 4rem;
@@ -37,11 +34,9 @@ export const UserIMG = styled.img`
 `;
 export const UserInfo = styled.div`
   width: 270px;
-  height: 600px;
-
+  height: 500px;
   display: flex;
   flex-direction: column;
-
   align-items: center;
   border-radius: 15px;
   border: 2px solid rgba(0, 0, 0, 0.3);
@@ -52,6 +47,7 @@ export const UserInfoList = styled.ul`
   list-style: none;
   padding: 2rem 1rem;
   width: 100%;
+  height: 50%;
 `;
 export const UserInfoItem = styled.li`
   width: 100%;
@@ -66,14 +62,15 @@ export const UserEditBtn = styled.button`
   width: 80px;
   cursor: pointer;
   height: 40px;
-  position: relative;
-  bottom: -10rem;
-  right: -8rem;
+  position: absolute;
+  bottom: 1rem;
+  right: 50px;
   padding: 1rem;
   border-radius: 10px;
   background-color: black;
   color: white;
   font-size: 1.3rem;
+  margin-bottom: 1rem;
 `;
 export const EditInput = styled.input`
   padding: 1rem;
@@ -163,8 +160,6 @@ export const TripPlanItem = ({ startDay, endDay, nickname, area }) => {
   );
 };
 const PageSection = styled.div`
-  position: absolute;
-  bottom: 2rem;
   width: 1000px;
   display: flex;
   justify-content: center;
