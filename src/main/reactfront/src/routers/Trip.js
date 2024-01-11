@@ -96,12 +96,18 @@ function Trip() {
     setSaveTourList((prevList) => [...prevList, tourList]);
     console.log(saveTourList);
   };
-  const handleDeleteList = (indexToRemove) => {
-    setSaveTourList((prevList) =>
-      prevList.filter((_, index) => index !== indexToRemove)
-    );
-    console.log(saveTourList);
-  };
+  //0112
+  const handleDeleteList = (contentid) => {
+    console.log(saveTourList); // saveTourList의 현재 상태를 콘솔에 출력
+    
+    const newSaveTourList = [...saveTourList];
+
+    // contentid 값이 일치하는 항목을 필터링하여 새로운 배열을 생성합니다.
+    const filteredList = newSaveTourList.filter(item => item.contentid !== contentid);
+
+    // 필터링된 배열을 원래의 saveTourList 상태로 업데이트합니다.
+    setSaveTourList(filteredList);
+};
 
   useEffect(() => {
     const geolocation = async () => {
@@ -339,6 +345,8 @@ function Trip() {
                     setSaveTourList={handleAddList}
                     dateinfo={dateinfo}
                     setIsSlideMode={setIsSlideMode}
+                    handleDeleteList={handleDeleteList}
+                    saveTourList={saveTourList}
                   ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
@@ -404,7 +412,6 @@ function Trip() {
             dateinfo={dateinfo}
             selectedAreaName={selectedAreaName}
             saveTourList={saveTourList}
-            deleteSaveTourList={handleDeleteList}
             handleSlidemode={handleSlidemode}
             isSlideMode={isSlideMode}
           ></SaveTripInfo>

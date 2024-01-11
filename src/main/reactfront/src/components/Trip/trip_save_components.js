@@ -62,3 +62,8 @@ export const Saveitems = styled.div`
 export const SaveTextItems = styled.div`
   font-size: 3rem;
 `;
+export const SaveItemContainer = styled.div`
+  width: 260px;
+  height: 300px;
+  border: 1px solid black;
+`;

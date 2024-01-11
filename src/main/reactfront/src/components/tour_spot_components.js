@@ -137,9 +137,9 @@ const TButton = styled.button`
 export const TourSpotList = ({
   tourList,
   addList,
-
+  handleDeleteList,
   isMainLoading,
-
+  saveTourList,
   selectedAreaName,
 }) => {
   const scrollBoxRef = useRef();
@@ -147,6 +147,18 @@ export const TourSpotList = ({
   const [max, setMax] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [currtourList, setCurrTourList] = useState([...tourList]);
+
+  //0112
+  const [isArray, setIsArray] = useState([]);
+
+  useEffect(()=>{
+    setIsArray([]);
+    const newIsArrays = saveTourList.map((lists)=>(
+      lists.contentid
+    ));
+    setIsArray(newIsArrays);
+  },[saveTourList])
+
   const handleScroll = () => {
     const scrollBox = scrollBoxRef.current;
     if (
@@ -232,7 +244,10 @@ export const TourSpotList = ({
                     </TourAddr>
                   </TourSpotItem>
                   <TourSpotItem>
-                    <TButton onClick={() => addList(index)}>추가</TButton>
+                    {isArray.includes(tour.contentid) ? 
+                      <TButton style={{backgroundColor: "red"}} onClick={() => {handleDeleteList(tour.contentid);}}>삭제</TButton>
+                      : <TButton onClick={() => {addList(index);}}>추가</TButton>
+                    }
                     <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
                   </TourSpotItem>
                 </TourSpotItemWrapper>
@@ -260,15 +275,27 @@ export const FestivalSpotList = ({
   festivalList,
   addList,
   isMainLoading,
-
+  handleDeleteList,
   selectedAreaName,
   dateinfo,
+  saveTourList,
 }) => {
   const scrollBoxRef = useRef();
   const [list, setList] = useState(1);
   const [max, setMax] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [currtourList, setCurrTourList] = useState([...festivalList]);
+
+  //0112
+  const [isArray, setIsArray] = useState([]);
+
+  useEffect(()=>{
+    setIsArray([]);
+    const newIsArrays = saveTourList.map((list)=>(
+      list.contentid
+    ));
+    setIsArray(newIsArrays);
+  },[saveTourList])
 
   const handleScroll = () => {
     const scrollBox = scrollBoxRef.current;
@@ -361,7 +388,10 @@ export const FestivalSpotList = ({
                     </TourAddr>
                   </TourSpotItem>
                   <TourSpotItem>
-                    <TButton onClick={() => addList(index)}>추가</TButton>
+                    {isArray.includes(festival.contentid) ? 
+                      <TButton style={{backgroundColor: "red"}} onClick={() => {handleDeleteList(festival.contentid);}}>삭제</TButton>
+                      : <TButton onClick={() => {addList(index);}}>추가</TButton>
+                    }
                     <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
                   </TourSpotItem>
                 </TourSpotItemWrapper>

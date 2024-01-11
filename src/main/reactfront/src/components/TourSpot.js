@@ -23,6 +23,8 @@ function TourSpot({
   setSaveTourList,
   dateinfo,
   setIsSlideMode,
+  handleDeleteList,
+  saveTourList,
 }) {
   const [listpage, setListpage] = useState(1);
   const [tourList, setTourList] = useState([]);
@@ -104,7 +106,7 @@ function TourSpot({
   }, [listpage]);
 
   useEffect(() => {
-    if (maxPage <= listpage) {
+    if (maxPage < listpage) {
       return;
     }
     setIsMainLoading(true);
@@ -141,6 +143,7 @@ function TourSpot({
                 ceventstartdate: fd.eventstartdate,
                 ceventenddate: fd.eventenddate,
                 ctel: fd.tel,
+                contenttypeid: fd.contenttypeid,
               }));
               SetFestivalList((prev) => [...prev, ...festivals]);
               setIsMainLoading(false);
@@ -166,6 +169,7 @@ function TourSpot({
                 csecondimage: td.firstimage2,
                 clatitude: td.mapy,
                 clongitude: td.mapx,
+                contenttypeid: td.contenttypeid,
               }));
               console.log(isMainLoading);
               setTourList((prev) => [...prev, ...tours]);
@@ -220,6 +224,8 @@ function TourSpot({
               addList={addList}
               setListpage={setListpage}
               selectedAreaName={selectedAreaName}
+              handleDeleteList={handleDeleteList}
+              saveTourList={saveTourList}
             ></TourSpotList>
           </>
         ) : tourMode === "festivals" ? (
@@ -244,6 +250,8 @@ function TourSpot({
               setListpage={setListpage}
               selectedAreaName={selectedAreaName}
               dateinfo={dateinfo}
+              handleDeleteList={handleDeleteList}
+              saveTourList={saveTourList}
             ></FestivalSpotList>
           </>
         ) : null}
