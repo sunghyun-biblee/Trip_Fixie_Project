@@ -137,74 +137,85 @@ const TButton = styled.button`
 export const TourSpotList = ({
   tourList,
   addList,
-  setListpage,
+
   isMainLoading,
+
+  selectedAreaName,
 }) => {
   const scrollBoxRef = useRef();
+  const [list, setList] = useState(1);
+  const [max, setMax] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currtourList, setCurrTourList] = useState([...tourList]);
   const handleScroll = () => {
     const scrollBox = scrollBoxRef.current;
-
-    // console.log(scrollBox);
-    // console.log("height: " + scrollBox.scrollHeight);
-    /*
-     scrollHeight는 스크롤박스 요소의 전체 높이를 나타냅니다.
-     보이지 않는 콘텐츠까지 포함한 요소의 전체 높이를 말합니다.
-     일반적으로, scrollHeight 값은 offsetHeight보다 크거나 같습니다. 만약 콘텐츠가 스크롤되지 않는 경우에는 둘의 값이 같을 수 있습니다.
-     */
-    // console.log("Top: " + scrollBox.scrollTop);
-    /*
-     scrollTop은 스크롤된 컨테이너의 상단에서 현재 보이는 부분의 상단까지의 픽셀 수를 나타냅니다.
-     즉, 사용자가 스크롤을 얼마나 내렸는지를 나타냅니다.
-     scrollTop 값은 0부터 시작하여 컨테이너의 맨 위에 도달하면 증가하게 됩니다. */
-    // console.log("innerHeight: " + scrollBox.offsetHeight);
-    /*
-     offsetHeight는 요소의 높이를 픽셀 단위로 나타내는 속성입니다. 이 속성은 요소의 총 높이를 반환하며, 여기에는 요소의 높이, 패딩(Padding), 그리고 위아래 테두리(Border)가 포함됩니다. 하지만, 마진(Margin)은 포함되지 않습니다.
-     
-     즉, scrollheight은 overflow된 범위의 크기,길이까지 포함하고있고,
-      offsetHeight은 눈에보이는 영역의 크기,길이를 뜻합니다
-     */
-
     if (
       scrollBox.offsetHeight + scrollBox.scrollTop + 1 >=
       scrollBox.scrollHeight
     ) {
-      setListpage((prev) => prev + 1);
-
-      //scrollBox.offsetHeight + scrollBox.scrollTop + 1 값이 scrollBox.scrollHeight 값과 크거나 같으면 스크롤 박스가 맨 아래에 도달한 것으로 간주합니다
-
-      /*
-      이전 상태 값을 안전하게 참조하기 위한 것입니다. listpage+1로 직접 값을 계산하는 경우, 비동기적인 업데이트에서 예상치 못한 결과가 발생할 수 있습니다.
-      */
+      setList((prev) => prev + 1);
     }
-    /* 
-     +1 한 이유는 일부 브라우저에서는 scrollBox.offsetHeight + scrollBox.scrollTop 합계가
-     scrollBox.scrollHeight 높이와 같지 않기 때문입니다.
-     스크롤 내부의 박스의 길이와 , 스크롤박스의 TOP길이 +1 한 값이
-     */
   };
   useEffect(() => {
     const scrollBox = scrollBoxRef.current;
     if (scrollBox) {
       scrollBox.addEventListener("scroll", handleScroll);
-
       return () => {
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 정리
         scrollBox.removeEventListener("scroll", handleScroll);
       };
     }
   }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (max < list) {
+        return;
+      }
+      setIsLoading(true);
 
+      // 여기에 데이터를 가져오는 비동기 로직 추가
+      try {
+        const response = await fetch(
+          `http://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&numOfRows=5&pageNo=${list}&MobileOS=ETC&MobileApp=APPTest&areaCode=${selectedAreaName.mainAreaCode}&sigunguCode=${selectedAreaName.subAreaCode}&contentTypeId=12&_type=json`
+        );
+        const data = await response.json();
+        console.log("이렇게도 되나요?");
+        console.log(data);
+        // 데이터 처리 로직 추가
+        const tourData = data.response.body.items.item;
+        const totalcount = data.response.body.totalCount;
+        setMax(Math.ceil(totalcount / 5));
+        const tours = tourData.map((td) => ({
+          contentid: td.contentid,
+          ctitle: td.title,
+          caddr1: td.addr1,
+          caddr2: td.addr2,
+          cfirstimage: td.firstimage,
+          csecondimage: td.firstimage2,
+          clatitude: td.mapy,
+          clongitude: td.mapx,
+        }));
+        setCurrTourList((prev) => [...prev, ...tours]);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [list]);
+  console.log(currtourList);
   return (
     <TourSpotContainer className={isMainLoading ? "off" : null}>
       <TourWrapper ref={scrollBoxRef}>
-        {tourList.length === 0 ? (
+        {currtourList.length === 0 ? (
           <TourLoadingWrapper className="ABC">
             <div style={{ fontSize: "3rem" }}>
               등록된 광광지가 없습니다 ㅠㅠ
             </div>
           </TourLoadingWrapper>
         ) : (
-          tourList.map((tour, index) => (
+          currtourList.map((tour, index) => (
             <TourSpotBox key={index}>
               <TourSpotLi>
                 {tour.cfirstimage ? (
@@ -229,6 +240,18 @@ export const TourSpotList = ({
             </TourSpotBox>
           ))
         )}
+        {isLoading ? (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loading></Loading>
+          </div>
+        ) : null}
       </TourWrapper>
     </TourSpotContainer>
   );
@@ -236,43 +259,92 @@ export const TourSpotList = ({
 export const FestivalSpotList = ({
   festivalList,
   addList,
-  setListpage,
   isMainLoading,
+
+  selectedAreaName,
+  dateinfo,
 }) => {
   const scrollBoxRef = useRef();
+  const [list, setList] = useState(1);
+  const [max, setMax] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currtourList, setCurrTourList] = useState([...festivalList]);
+
   const handleScroll = () => {
     const scrollBox = scrollBoxRef.current;
-    // console.log("height: " + scrollBox.scrollHeight);
-    // console.log("Top: " + scrollBox.scrollTop);
-    // console.log("innerHeight: " + scrollBox.offsetHeight);
-
     if (
       scrollBox.offsetHeight + scrollBox.scrollTop + 1 >=
       scrollBox.scrollHeight
     ) {
-      setListpage((prev) => prev + 1);
+      setList((prev) => prev + 1);
     }
   };
+
   useEffect(() => {
     const scrollBox = scrollBoxRef.current;
     if (scrollBox) {
       scrollBox.addEventListener("scroll", handleScroll);
-
       return () => {
-        // 컴포넌트가 언마운트될 때 이벤트 리스너 정리
         scrollBox.removeEventListener("scroll", handleScroll);
       };
     }
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (max < list) {
+        return;
+      }
+      setIsLoading(true);
+      console.log(list);
+      // 여기에 데이터를 가져오는 비동기 로직 추가
+      try {
+        const response = await fetch(
+          `http://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&numOfRows=5&pageNo=${list}&MobileOS=ETC&MobileApp=APPTest&_type=json&eventStartDate=${dateinfo.startDay}&areaCode=${selectedAreaName.mainAreaCode}`
+        );
+        const data = await response.json();
+        console.log("행사결과");
+        console.log(data);
+        // 데이터 처리 로직 추가
+        const festivalData = data.response.body.items.item;
+        const totalcount = data.response.body.totalCount;
+
+        setMax(Math.ceil(totalcount / 5));
+        const festivals = festivalData.map((fd) => ({
+          contentid: fd.contentid,
+          ctitle: fd.title,
+          caddr1: fd.addr1,
+          caddr2: fd.addr2,
+          cfirstimage: fd.firstimage,
+          csecondimage: fd.firstimage2,
+          clatitude: fd.mapy,
+          clongitude: fd.mapx,
+          ceventstartdate: fd.eventstartdate,
+          ceventenddate: fd.eventenddate,
+          ctel: fd.tel,
+        }));
+        setCurrTourList((prev) => [...prev, ...festivals]);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [list]);
+  console.log("max:" + max);
+  console.log("list:" + list);
+  console.log(currtourList);
   return (
     <TourSpotContainer className={isMainLoading ? "off" : null}>
       <TourWrapper ref={scrollBoxRef}>
-        {festivalList.length === 0 ? (
+        {currtourList.length === 0 ? (
           <TourLoadingWrapper className="ABC">
             <div style={{ fontSize: "3rem" }}>등록된 행사가 없습니다 ㅠㅠ</div>
           </TourLoadingWrapper>
         ) : (
-          festivalList.map((festival, index) => (
+          currtourList.map((festival, index) => (
             <TourSpotBox key={index}>
               <TourSpotLi>
                 {festival.cfirstimage ? (
@@ -297,6 +369,18 @@ export const FestivalSpotList = ({
             </TourSpotBox>
           ))
         )}
+        {isLoading ? (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loading></Loading>
+          </div>
+        ) : null}
       </TourWrapper>
     </TourSpotContainer>
   );
