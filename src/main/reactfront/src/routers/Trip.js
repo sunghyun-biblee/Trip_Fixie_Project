@@ -92,12 +92,14 @@ function Trip() {
 
   //추가
   const [saveTourList, setSaveTourList] = useState([]);
-  const handleAddList = (tourList) =>{
-    setSaveTourList(prevList => [...prevList, tourList]);
+  const handleAddList = (tourList) => {
+    setSaveTourList((prevList) => [...prevList, tourList]);
     console.log(saveTourList);
-  }
+  };
   const handleDeleteList = (indexToRemove) => {
-    setSaveTourList(prevList => prevList.filter((_, index) => index !== indexToRemove));
+    setSaveTourList((prevList) =>
+      prevList.filter((_, index) => index !== indexToRemove)
+    );
     console.log(saveTourList);
   };
 
@@ -333,12 +335,11 @@ function Trip() {
                   variants={variants}
                 >
                   <TourSpot
-                     selectedAreaName = {selectedAreaName}
-                     setSaveTourList={handleAddList}
-                     dateinfo={dateinfo}
-                     setIsSlideMode={setIsSlideMode}
-                  >
-                  </TourSpot>
+                    selectedAreaName={selectedAreaName}
+                    setSaveTourList={handleAddList}
+                    dateinfo={dateinfo}
+                    setIsSlideMode={setIsSlideMode}
+                  ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
                 <Motionitem
