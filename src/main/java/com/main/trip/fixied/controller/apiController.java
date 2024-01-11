@@ -6,12 +6,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.trip.fixied.model.biz.Biz;
@@ -66,17 +68,18 @@ public class apiController {
 		Favorite favorite = new Favorite();
 		favorite.setUid((String)requestBody.get("uid"));
 		favorite.setFtitle((String)requestBody.get("ftitle"));
+		Random rd = new Random();
+		int fid = rd.nextInt(10000);
+		System.out.println("fid ------ " + fid);
+		favorite.setFid(fid);
+		favorite.setFstart((String)requestBody.get("fstart"));
+		favorite.setFend((String)requestBody.get("fend"));
+		favorite.setFarea((String)requestBody.get("farea"));
+		biz.addFavorite(favorite);
 
 		//생성된 favorite목록에서 auto increment된 fid값을 불러오는 작업
-		//ftitle 미리 검사하는 로직 짜야함 *****************************
-		
-		
-		
-		String ftitle = (String)requestBody.get("ftitle");
-		biz.addFavorite(favorite);
-		int fid = biz.getFid(ftitle);
-		//System.out.println(fid);
-		
+		//ftitle 미리 검사하는 로직 짜야함 *****************************혹시라도 같은 난수 생성으로 조회 안될떄를대비해야함 (나중에)
+				
 		//tour목록의 contentid들을 위에서 뽑아둔 fid값으로 묶어서 favoriteList에 저장
 		Map<String, Object> saveTourList = (Map<String, Object>)requestBody.get("saveTourList");                
         ArrayList<Map<String,String>> saveTourList1 = 
@@ -128,6 +131,31 @@ public class apiController {
         }      
         
 		return "성공";
+	}
+	
+	@RequestMapping("/loadProfile")
+	public CHUser loadProfile(@RequestBody Map<String, String> uid) {
+		String userid = uid.get("uid");
+		System.out.println(userid);
+		CHUser user = biz.loadProfile(userid);
+		System.out.println(user);
+		return user;
+	}
+	
+	@RequestMapping("/loadFavorite")
+	public ArrayList<Favorite> loadFavorite(@RequestBody Map<String, String> uid){
+		String userid = uid.get("uid");
+		
+		ArrayList<Favorite> list = biz.loadFavorites(userid);
+		
+		return list;
+	}
+	
+	@RequestMapping("/loadFavoriteList")
+	public ArrayList<ContentList> loadFavoriteList(@RequestBody String favorFid){
+		ArrayList<ContentList> list = biz.loadFavoriteList(favorFid);
+		
+		return list;
 	}
 
 }
