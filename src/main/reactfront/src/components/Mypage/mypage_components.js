@@ -37,7 +37,7 @@ export const UserIMG = styled.img`
 `;
 export const UserInfo = styled.div`
   width: 270px;
-  height: 600px;
+  
 
   display: flex;
   flex-direction: column;
@@ -67,8 +67,8 @@ export const UserEditBtn = styled.button`
   cursor: pointer;
   height: 40px;
   position: relative;
-  bottom: -10rem;
-  right: -8rem;
+  bottom: -20%;
+  right: -25%;
   padding: 1rem;
   border-radius: 10px;
   background-color: black;
@@ -122,6 +122,7 @@ const PlanLi = styled.li`
   padding: 1rem;
   font-size: 2rem;
   text-align: center;
+  cursor: pointer;
 `;
 export const PlanHeader = () => {
   return (
@@ -138,21 +139,30 @@ export const PlanHeader = () => {
     </div>
   );
 };
-export const TripPlanList = ({ data }) => {
+export const TripPlanList = ({ data, setFavorNickname, setIsDetail, setFavorFid }) => {
   return (
     <TripPlanListWrapper>
       <PlanHeader></PlanHeader>
       {data.map((items) => (
-        <TripPlanItem key={items.id} {...items}></TripPlanItem>
+        <TripPlanItem key={items.id} {...items}
+        setFavorNickname = {setFavorNickname}
+        setIsDetail = {setIsDetail}
+        setFavorFid = {setFavorFid}
+        ></TripPlanItem>
       ))}
     </TripPlanListWrapper>
   );
 };
 
-export const TripPlanItem = ({ startDay, endDay, nickname, area }) => {
+export const TripPlanItem = ({ startDay, endDay, nickname, area, fid, setFavorNickname, setIsDetail, setFavorFid }) => {
   return (
     <div>
-      <PlanUl>
+      <PlanUl 
+        onClick={()=>{
+          setFavorNickname(nickname)
+          setFavorFid(fid)
+          setIsDetail(true)
+        }}>
         <PlanLi>
           {startDay}~{endDay}
         </PlanLi>
@@ -265,6 +275,84 @@ export const Pagenagtion = ({ postLimit, totalPlan, page, setPage }) => {
     </PageSection>
   );
 };
+
+export const DetailContainer = styled.div`
+width:100vw;
+height:100vh;
+z-index:1;
+position: fixed;  
+top:0;
+left:0;
+display: flex;
+justify-content: center;
+align-items: center;
+`;
+
+export const Detail = ({nickname, favoriteList})=>{
+  
+  const DetailWrap = styled.div`
+  
+  background-color: white;
+  margin: 0 auto;
+  margin-left: 2%; 
+  margin-bottom: 5%;
+  width:1350px;
+  height:80%;
+  padding: 10px;
+  border: 5px solid black;
+  border-radius: 20px;
+  position: absolute;
+  z-index: 2;
+  background-color: white;
+  
+  `;
+  const DetailHeader = styled.header``;
+  const DetailHeaderUl = styled.ul``;
+  const DetailHeaderLi = styled.li`
+  float: left;
+  font-size: 50px;
+  list-style: none;
+  `;
+
+  const ListContainer = styled.div`
+  position: absolute;
+  top: 15%;
+  width:98%;
+  height:80%;
+  border:2px solid black;
+  overflow-y: scroll;
+  
+  `;
+  const ListOne = styled.div`
+  display: inline-block;
+  width: 100%;
+  height: 40%;
+  border:1px solid black;
+  `;
+
+  let today = new Date().toLocaleDateString();
+
+  return (
+    <DetailWrap>
+      <DetailHeader>
+        <DetailHeaderUl>
+          <DetailHeaderLi>{today}</DetailHeaderLi>
+          <DetailHeaderLi>{nickname}</DetailHeaderLi>
+        </DetailHeaderUl>  
+      </DetailHeader>
+      <ListContainer>
+        {favoriteList.map((list)=>(
+          <ListOne>
+            <img src={list.cfirstimage} style={{height: "100%", width: "30%"}}></img>
+            {list.ctitle}
+          </ListOne>
+        ))}
+      </ListContainer>
+  
+    </DetailWrap>
+  )
+}
+
 
 // motion block
 export const MotionMypageWrapper = motion(MypageContainer);

@@ -5,16 +5,38 @@ public class Favorite {
 	private String uid;
 	private String ftitle;
 	private int fid;
+	private String fstart;
+	private String fend;
+	private String farea;
 	
 	public Favorite() {
 		super();
 	}
 
-	public Favorite(String uid, String ftitle, int fid) {
+	public Favorite(String uid, String ftitle, int fid, String fstart, String fend, String farea) {
 		super();
 		this.uid = uid;
 		this.ftitle = ftitle;
 		this.fid = fid;
+		this.fstart = fstart;
+		this.fend = fend;
+		this.farea = farea;
+	}
+
+	public String getFstart() {
+		return fstart;
+	}
+
+	public void setFstart(String fstart) {
+		this.fstart = fstart;
+	}
+
+	public String getFend() {
+		return fend;
+	}
+
+	public void setFend(String fend) {
+		this.fend = fend;
 	}
 
 	public String getUid() {
@@ -39,6 +61,14 @@ public class Favorite {
 
 	public void setFid(int fid) {
 		this.fid = fid;
+	}
+
+	public String getFarea() {
+		return farea;
+	}
+
+	public void setFarea(String farea) {
+		this.farea = farea;
 	}
 	
 	

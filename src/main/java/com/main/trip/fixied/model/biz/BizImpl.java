@@ -1,5 +1,6 @@
 package com.main.trip.fixied.model.biz;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,21 @@ public class BizImpl implements Biz{
 	@Override
 	public int addFavoriteList(FavoriteList favoriteList) {
 		return mapper.addFavoriteList(favoriteList);
+	}
+
+	@Override
+	public CHUser loadProfile(String userid) {
+		return mapper.loadProfile(userid);
+	}
+
+	@Override
+	public ArrayList<Favorite> loadFavorites(String userid) {	
+		return mapper.loadFavorites(userid);
+	}
+
+	@Override
+	public ArrayList<ContentList> loadFavoriteList(String favorFid) {
+		return mapper.loadFavoriteList(favorFid);
 	}
 	
 

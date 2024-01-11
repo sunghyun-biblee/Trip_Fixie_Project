@@ -4,7 +4,7 @@ import axios from "axios";
 
 
 function TourSpot({selectedAreaName, setSaveTourList, dateinfo, setIsSlideMode}){
-   const [baseurl, setBaseurl] = useState("http://apis.data.go.kr/B551011/KorService1/areaBasedList1");
+   const [baseurl, setBaseurl] = useState("");
    const [params, setParams] = useState({
     serviceKey:
         "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
