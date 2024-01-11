@@ -7,6 +7,7 @@ import {
   MypageSection,
   MypageWrapper,
   Pagenagtion,
+  PlanHeader,
   TripPlanList,
   UserEditBtn,
   UserIMG,
@@ -320,6 +321,7 @@ export function Mypage() {
         {/* 나의 여행 계획 */}
         <MypageSection>
           <MypageBox>
+            <PlanHeader></PlanHeader>
             <TripPlanList data={planData(testArray)}></TripPlanList>
             {/* 최대 5개까지의 plan이 한 페이지에 출력 */}
             <Pagenagtion
