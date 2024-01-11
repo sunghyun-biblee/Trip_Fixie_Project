@@ -22,6 +22,8 @@ function TourSpot({
   setSaveTourList,
   dateinfo,
   setIsSlideMode,
+  handleDeleteList,
+  saveTourList,
 }) {
   const [listpage, setListpage] = useState(1);
   const [tourList, setTourList] = useState([]);
@@ -122,6 +124,7 @@ function TourSpot({
                 ceventstartdate: fd.eventstartdate,
                 ceventenddate: fd.eventenddate,
                 ctel: fd.tel,
+                contenttypeid: fd.contenttypeid,
               }));
               SetFestivalList((prev) => [...prev, ...festivals]);
               setIsLoading(false);
@@ -147,6 +150,7 @@ function TourSpot({
                 csecondimage: td.firstimage2,
                 clatitude: td.mapy,
                 clongitude: td.mapx,
+                contenttypeid: td.contenttypeid,
               }));
               console.log(isLoading);
               setTourList((prev) => [...prev, ...tours]);
@@ -188,6 +192,8 @@ function TourSpot({
               <TourSpotList
                 tourList={tourList}
                 addList={addList}
+                handleDeleteList = {handleDeleteList}
+                saveTourList={saveTourList}
               ></TourSpotList>
             ) : (
               <TourLoadingWrapper className="ABC">
@@ -195,7 +201,7 @@ function TourSpot({
               </TourLoadingWrapper>
             )
           ) : (
-            <TourSpotList tourList={tourList} addList={addList}></TourSpotList>
+            <TourSpotList tourList={tourList} addList={addList} handleDeleteList = {handleDeleteList} saveTourList={saveTourList}></TourSpotList>
           )
         ) : tourMode === "festivals" ? (
           isLoading ? (
@@ -203,6 +209,8 @@ function TourSpot({
               <FestivalSpotList
                 festivalList={festivalList}
                 addList={addList}
+                handleDeleteList = {handleDeleteList}
+                saveTourList={saveTourList}
               ></FestivalSpotList>
             ) : (
               <TourLoadingWrapper className="ABC">
@@ -213,6 +221,8 @@ function TourSpot({
             <FestivalSpotList
               festivalList={festivalList}
               addList={addList}
+              handleDeleteList = {handleDeleteList}
+              saveTourList={saveTourList}
             ></FestivalSpotList>
           )
         ) : null}

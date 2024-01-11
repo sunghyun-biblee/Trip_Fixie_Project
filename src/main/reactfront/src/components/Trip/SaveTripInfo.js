@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ModeController } from "./TripComponents";
 import {
   AlarmText,
@@ -10,10 +10,12 @@ import {
   SaveContainer,
   SaveTextItems,
   Saveitems,
+  SaveItemContainer,
 } from "./trip_save_components";
 import { motion } from "framer-motion";
 import { auth } from "../../firebase";
 import axios from "axios";
+import { list } from "firebase/storage";
 
 
 const MotionSaveContainer = motion(SaveContainer);
@@ -22,7 +24,7 @@ const variants = {
   small: { width: "30px" },
   large: { width: "300px" },
 };
-export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, deleteSaveTourList, isSlideMode, handleSlidemode }) {
+export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlideMode, handleSlidemode }) {
   const [isAlarm, setIsAlarm] = useState(true);
    
   const saveServer = ()=>{
@@ -70,14 +72,30 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, deleteS
             </SaveTextItems>
             <SaveTextItems>{selectedAreaName.mainAreaName}</SaveTextItems>
             <SaveTextItems>{selectedAreaName.subAreaName}</SaveTextItems>
-            {saveTourList.map((tour, index) =>(
+           
               <>
-              <SaveTextItems 
-              style={{cursor: "pointer"}}
-              onClick={() => deleteSaveTourList(index)}
-              key={index}>{tour.ctitle}</SaveTextItems>
+                <SaveItemContainer>
+                {saveTourList.map((tour, index)=>(
+                  tour.contenttypeid === "12" ?
+                    (<SaveTextItems 
+                    style={{cursor: "pointer"}}
+                    key={index}>{tour.ctitle}</SaveTextItems>  
+                    ): null                  
+                  ))
+                }
+                </SaveItemContainer>        
+                <SaveItemContainer>
+                {saveTourList.map((tour, index)=>(
+                  tour.contenttypeid === "12" ?
+                    null: (<SaveTextItems 
+                      style={{cursor: "pointer"}}
+                      key={index}>{tour.ctitle}</SaveTextItems>  
+                      )
+                  ))
+                }
+                </SaveItemContainer> 
               </>
-            ))}
+               
             <input type="text" id="ftitle" placeholder="별명을 지어주세요"></input>
             <button>중복확인</button>
             <button onClick={saveServer}>

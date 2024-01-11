@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { TourLoadingWrapper } from "./TourSpot";
+import { useEffect, useState } from "react";
 
 const ModeWrapper = styled.div`
   display: flex;
@@ -32,6 +33,7 @@ const ModeName = styled.button`
     transition: color, border-bottom 0.3s;
   }
 `;
+
 
 export const SelectTourMode = ({ viewTour, viewFestival, tourMode }) => {
   return (
@@ -129,7 +131,17 @@ const TButton = styled.button`
   border: 1px solid rgba(0, 0, 0, 0.3);
   cursor: pointer;
 `;
-export const TourSpotList = ({ tourList, addList }) => {
+export const TourSpotList = ({ tourList, addList, handleDeleteList, saveTourList }) => {
+  const [isArray, setIsArray] = useState([]);
+
+  useEffect(()=>{
+    setIsArray([]);
+    const newIsArrays = saveTourList.map((list)=>(
+      list.contentid
+    ));
+    setIsArray(newIsArrays);
+  },[saveTourList])  
+
   return (
     <TourSpotContainer>
       <TourWrapper>
@@ -157,7 +169,10 @@ export const TourSpotList = ({ tourList, addList }) => {
                     </TourAddr>
                   </TourSpotItem>
                   <TourSpotItem>
-                    <TButton onClick={() => addList(index)}>추가</TButton>
+                    {isArray.includes(tour.contentid) ? 
+                      <TButton style={{backgroundColor: "red"}} onClick={() => {handleDeleteList(tour.contentid);}}>삭제</TButton>
+                      : <TButton onClick={() => {addList(index);}}>추가</TButton>
+                    }
                     <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
                   </TourSpotItem>
                 </TourSpotItemWrapper>
@@ -169,7 +184,17 @@ export const TourSpotList = ({ tourList, addList }) => {
     </TourSpotContainer>
   );
 };
-export const FestivalSpotList = ({ festivalList, addList }) => {
+export const FestivalSpotList = ({ festivalList, addList, handleDeleteList, saveTourList }) => {
+ const [isArray, setIsArray] = useState([]);
+
+  useEffect(()=>{
+    setIsArray([]);
+    const newIsArrays = saveTourList.map((list)=>(
+      list.contentid
+    ));
+    setIsArray(newIsArrays);
+  },[saveTourList])  
+  
   return (
     <TourSpotContainer>
       <TourWrapper>
@@ -190,12 +215,15 @@ export const FestivalSpotList = ({ festivalList, addList }) => {
                   <TourSpotItem>
                     <TourTitle>{festival.ctitle}</TourTitle>
                     <TourAddr>
-                      {festival.caddr1}
+                      {festival.caddr1} 
                       {festival.caddr2 ? ` ${festival.caddr2}` : null}
                     </TourAddr>
                   </TourSpotItem>
                   <TourSpotItem>
-                    <TButton onClick={() => addList(index)}>추가</TButton>
+                    {isArray.includes(festival.contentid) ? 
+                      <TButton style={{backgroundColor: "red"}} onClick={() => {handleDeleteList(festival.contentid);}}>삭제</TButton>
+                      : <TButton onClick={() => {addList(index);}}>추가</TButton>
+                    }
                     <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
                   </TourSpotItem>
                 </TourSpotItemWrapper>

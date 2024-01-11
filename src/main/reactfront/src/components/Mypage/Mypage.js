@@ -20,239 +20,6 @@ import {
 import styled from "styled-components";
 import { auth } from "../../firebase";
 import axios from "axios";
-const testArraySample = [
-  {
-    id: 1,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명1",
-    area: "울산",
-  },
-  {
-    id: 2,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명2",
-    area: "세종시",
-  },
-  {
-    id: 3,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명3",
-    area: "경기도",
-  },
-  {
-    id: 4,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명4",
-    area: "강원도",
-  },
-  {
-    id: 5,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명5",
-    area: "충청북도",
-  },
-  {
-    id: 6,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명6",
-    area: "충청남도",
-  },
-  {
-    id: 7,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명7",
-    area: "경상북도",
-  },
-  {
-    id: 8,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명8",
-    area: "서울",
-  },
-  {
-    id: 9,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명9",
-    area: "인천",
-  },
-  {
-    id: 10,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명10",
-    area: "대전",
-  },
-  {
-    id: 11,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명11",
-    area: "대구",
-  },
-  {
-    id: 12,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명12",
-    area: "광주",
-  },
-  {
-    id: 13,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명13",
-    area: "부산",
-  },
-  {
-    id: 14,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명14",
-    area: "울산",
-  },
-  {
-    id: 15,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명15",
-    area: "세종시",
-  },
-  {
-    id: 16,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명16",
-    area: "경기도",
-  },
-  {
-    id: 17,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명17",
-    area: "강원도",
-  },
-  {
-    id: 18,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명18",
-    area: "충청북도",
-  },
-  {
-    id: 19,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명19",
-    area: "충청남도",
-  },
-  {
-    id: 20,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명20",
-    area: "경상북도",
-  },
-  {
-    id: 21,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명21",
-    area: "서울",
-  },
-  {
-    id: 22,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명22",
-    area: "인천",
-  },
-  {
-    id: 23,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명23",
-    area: "대전",
-  },
-  {
-    id: 24,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명24",
-    area: "대구",
-  },
-  {
-    id: 25,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명25",
-    area: "광주",
-  },
-  {
-    id: 26,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명26",
-    area: "부산",
-  },
-  {
-    id: 27,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명27",
-    area: "울산",
-  },
-  {
-    id: 28,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명28",
-    area: "세종시",
-  },
-  {
-    id: 29,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명29",
-    area: "경기도",
-  },
-  {
-    id: 30,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명30",
-    area: "강원도",
-  },
-  {
-    id: 31,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명31",
-    area: "충청북도",
-  },
-  {
-    id: 32,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명32",
-    area: "충청남도",
-  },
-  {
-    id: 33,
-    startDay: "2022-01-02",
-    endDay: "2022-01-03",
-    nickname: "별명33",
-    area: "경상북도",
-  },
-];
 
 export function Mypage() {
 
@@ -262,7 +29,6 @@ export function Mypage() {
     email: "biblee@biblee.co",
   });
   const [isEdit, setIsEdit] = useState(false);
-  const [testArray, setTestArray] = useState([...testArraySample]);   //좀따 지우기
   const [favoriteArray, setFavoriteArray] = useState([]);
   const [favorNickname, setFavorNickname] = useState();
   const [favorFid, setFavorFid] = useState();
@@ -353,27 +119,30 @@ export function Mypage() {
   console.log(favoriteArray);
   
   useEffect(()=>{
+    if(!favorFid){
+      return
+    }
     axios.post('/test/loadFavoriteList', favorFid)
     .then(response =>{
-      console.log(response.data);
-      const favorlist = response.data;
-      const flist = favorlist.map((list)=>({
-        cid: list.cid,
-        ctitle: list.ctitle,
-        caddr: list.caddr,
-        ceventstartdate: list.ceventstartdate,
-        ceventenddate: list.ceventenddate,
-        cfirstimage: list.cfirstimage,
-        csecondimage: list.csecondimage,
-        clatitude: list.clatitude,
-        clongitude: list.clongitude,
-        ctel: list.ctel,
-      }))
-      setFavoriteList(flist);
-    })
-    .catch(error =>{
-      console.error("favorlist오류", error);
-    });
+    console.log(response.data);
+    const favorlist = response.data;
+    const flist = favorlist.map((list)=>({
+      cid: list.cid,
+      ctitle: list.ctitle,
+      caddr: list.caddr,
+      ceventstartdate: list.ceventstartdate,
+      ceventenddate: list.ceventenddate,
+      cfirstimage: list.cfirstimage,
+      csecondimage: list.csecondimage,
+      clatitude: list.clatitude,
+      clongitude: list.clongitude,
+      ctel: list.ctel,
+    }))
+    setFavoriteList(flist);
+  })
+  .catch(error =>{
+    console.error("favorlist오류", error);
+  });
   },[favorFid])
 
   return (
