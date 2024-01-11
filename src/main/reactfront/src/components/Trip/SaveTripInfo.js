@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ModeController } from "./TripComponents";
 import {
   AlarmText,
@@ -15,7 +15,6 @@ import {
 import { motion } from "framer-motion";
 import { auth } from "../../firebase";
 import axios from "axios";
-import { list } from "firebase/storage";
 
 
 const MotionSaveContainer = motion(SaveContainer);
@@ -72,13 +71,11 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlide
             </SaveTextItems>
             <SaveTextItems>{selectedAreaName.mainAreaName}</SaveTextItems>
             <SaveTextItems>{selectedAreaName.subAreaName}</SaveTextItems>
-           
-              <>
-                <SaveItemContainer>
+
+            <SaveItemContainer>
                 {saveTourList.map((tour, index)=>(
                   tour.contenttypeid === "12" ?
                     (<SaveTextItems 
-                    style={{cursor: "pointer"}}
                     key={index}>{tour.ctitle}</SaveTextItems>  
                     ): null                  
                   ))
@@ -88,14 +85,12 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlide
                 {saveTourList.map((tour, index)=>(
                   tour.contenttypeid === "12" ?
                     null: (<SaveTextItems 
-                      style={{cursor: "pointer"}}
                       key={index}>{tour.ctitle}</SaveTextItems>  
                       )
                   ))
                 }
-                </SaveItemContainer> 
-              </>
-               
+            </SaveItemContainer>
+
             <input type="text" id="ftitle" placeholder="별명을 지어주세요"></input>
             <button>중복확인</button>
             <button onClick={saveServer}>

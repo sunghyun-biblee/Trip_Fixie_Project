@@ -67,3 +67,8 @@ export const SaveItemContainer = styled.div`
   height: 300px;
   border: 1px solid black;
 `;
+export const SaveItemContainer = styled.div`
+  width: 260px;
+  height: 300px;
+  border: 1px solid black;
+`;

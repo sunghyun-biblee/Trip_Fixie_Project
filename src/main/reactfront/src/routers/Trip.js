@@ -96,6 +96,7 @@ function Trip() {
     setSaveTourList((prevList) => [...prevList, tourList]);
     console.log(saveTourList);
   };
+  //0112
   const handleDeleteList = (contentid) => {
     console.log(saveTourList); // saveTourList의 현재 상태를 콘솔에 출력
     
@@ -411,7 +412,6 @@ function Trip() {
             dateinfo={dateinfo}
             selectedAreaName={selectedAreaName}
             saveTourList={saveTourList}
-            deleteSaveTourList={handleDeleteList}   //다 되면 지우기
             handleSlidemode={handleSlidemode}
             isSlideMode={isSlideMode}
           ></SaveTripInfo>

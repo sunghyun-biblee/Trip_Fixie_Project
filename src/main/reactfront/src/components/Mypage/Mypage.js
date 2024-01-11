@@ -15,15 +15,12 @@ import {
   UserInfoItem,
   UserInfoList,
   Detail,
-  DetailContainer
+  DetailContainer,
 } from "./mypage_components";
-import styled from "styled-components";
 import { auth } from "../../firebase";
 import axios from "axios";
 
 export function Mypage() {
-
-
   const [userInfo, setUserInfo] = useState({
     name: "biblee",
     email: "biblee@biblee.co",
@@ -35,9 +32,9 @@ export function Mypage() {
   const [isDetail, setIsDetail] = useState(false);
   const [favoriteList, setFavoriteList] = useState([]);
   const detailBackground = useRef();
-  const handleAddFavorite = (favorite) =>{
-    setFavoriteArray(prevList =>[...prevList, favorite]); 
-  }
+  const handleAddFavorite = (favorite) => {
+    setFavoriteArray((prevList) => [...prevList, favorite]);
+  };
 
   const [page, setPage] = useState(1); // 페이지
   const postLimit = 5; // 페이지당 보여줄 포스트 갯수
@@ -62,88 +59,75 @@ export function Mypage() {
     }
     setIsEdit((mode) => !mode);
   };
-  // const load = ()=>{
-  //   const uid = auth.currentUser.uid //프로필불러오기
-  //   axios.post('/test/loadProfile',{
-  //     uid: uid,
-  //   })
-  //   .then(response =>{
-  //     console.log(response);
-  //     console.log(response.data);
-  //   })
-  //   .catch(error =>{
-  //     console.error("load오류", error);
-  //   });
-  // }
 
-  useEffect(() =>{
-    const uid = auth.currentUser.uid //프로필불러오기
-    axios.post('/test/loadProfile',{
-      uid: uid,
-    })
-    .then(response =>{
-      setUserInfo({
-        name: response.data.uname,
-        email: response.data.uemail,
+  useEffect(() => {
+    const uid = auth.currentUser.uid; //프로필불러오기
+    axios
+      .post("/test/loadProfile", {
+        uid: uid,
       })
-      console.log(response);
-    })
-    .catch(error =>{
-      console.error("profile오류", error);
-    });
-    console.log("sex")
-    axios.post('/test/loadFavorite',{
-      uid: uid,
-    })
-    .then(response =>{
-      
-      setFavoriteArray([]);
-      console.log(response);
-      const list = response.data;
-      list.map((favor, index) =>(
-        handleAddFavorite({
-          id: index,
-          startDay: favor.fstart,
-          endDay: favor.fend,
-          nickname: favor.ftitle,
-          area: favor.farea,
-          fid: favor.fid,
-        })
-      ))
-    })
-    .catch(error =>{
-      console.error("favorite오류", error);
-    });
-  },[auth])
+      .then((response) => {
+        setUserInfo({
+          name: response.data.uname,
+          email: response.data.uemail,
+        });
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error("profile오류", error);
+      });
+    console.log("sex");
+    axios
+      .post("/test/loadFavorite", {
+        uid: uid,
+      })
+      .then((response) => {
+        setFavoriteArray([]);
+        console.log(response);
+        const list = response.data;
+        list.map((favor, index) =>
+          handleAddFavorite({
+            id: index,
+            startDay: favor.fstart,
+            endDay: favor.fend,
+            nickname: favor.ftitle,
+            area: favor.farea,
+            fid: favor.fid,
+          })
+        );
+      })
+      .catch((error) => {
+        console.error("favorite오류", error);
+      });
+  }, [auth]);
   console.log("페이볼어레이");
   console.log(favoriteArray);
-  
-  useEffect(()=>{
-    if(!favorFid){
-      return
-    }
-    axios.post('/test/loadFavoriteList', favorFid)
-    .then(response =>{
-    console.log(response.data);
-    const favorlist = response.data;
-    const flist = favorlist.map((list)=>({
-      cid: list.cid,
-      ctitle: list.ctitle,
-      caddr: list.caddr,
-      ceventstartdate: list.ceventstartdate,
-      ceventenddate: list.ceventenddate,
-      cfirstimage: list.cfirstimage,
-      csecondimage: list.csecondimage,
-      clatitude: list.clatitude,
-      clongitude: list.clongitude,
-      ctel: list.ctel,
-    }))
-    setFavoriteList(flist);
-  })
-  .catch(error =>{
-    console.error("favorlist오류", error);
-  });
-  },[favorFid])
+
+  useEffect(() => {
+    axios
+      .post("/test/loadFavoriteList", favorFid)
+      .then((response) => {
+        console.log(response.data);
+        const favorlist = response.data;
+        const flist = favorlist.map((list) => ({
+          cid: list.cid,
+          ctitle: list.ctitle,
+          caddr: list.caddr,
+          ceventstartdate: list.ceventstartdate,
+          ceventenddate: list.ceventenddate,
+          cfirstimage: list.cfirstimage,
+          csecondimage: list.csecondimage,
+          clatitude: list.clatitude,
+          clongitude: list.clongitude,
+          ctel: list.ctel,
+          contenttypeid: list.contenttypeid,
+        }));
+        setFavoriteList(flist);
+      })
+      .catch((error) => {
+        console.error("favorlist오류", error);
+      });
+  }, [favorFid]);
 
   return (
     <MypageWrapper>
@@ -178,17 +162,18 @@ export function Mypage() {
               </UserInfoList>
               <UserEditBtn onClick={EditMode}>
                 {isEdit ? "확인" : "정보 수정"}
-              </UserEditBtn>          
+              </UserEditBtn>
             </UserInfo>
           </MypageBox>
         </MypageSection>
         {/* 나의 여행 계획 */}
         <MypageSection>
           <MypageBox>
-            <TripPlanList data={planData(favoriteArray)}
-            setFavorNickname = {setFavorNickname}
-            setIsDetail = {setIsDetail}
-            setFavorFid = {setFavorFid}
+            <TripPlanList
+              data={planData(favoriteArray)}
+              setFavorNickname={setFavorNickname}
+              setIsDetail={setIsDetail}
+              setFavorFid={setFavorFid}
             ></TripPlanList>
             {/* 최대 5개까지의 plan이 한 페이지에 출력 */}
             <Pagenagtion
@@ -206,18 +191,18 @@ export function Mypage() {
         </MypageSection>
         {isDetail ? (
           <DetailContainer
-          ref={detailBackground}
+            ref={detailBackground}
             onClick={(e) => {
               if (e.target === detailBackground.current) {
                 setIsDetail(false);
               }
-            }}>
-          <Detail 
-            nickname={favorNickname}
-            favoriteList={favoriteList}
+            }}
           >
-          </Detail>
-        </DetailContainer>
+            <Detail
+              nickname={favorNickname}
+              favoriteList={favoriteList}
+            ></Detail>
+          </DetailContainer>
         ) : null}
       </MypageContainer>
     </MypageWrapper>
