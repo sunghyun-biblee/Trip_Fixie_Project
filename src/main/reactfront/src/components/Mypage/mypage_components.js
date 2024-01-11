@@ -290,6 +290,8 @@ align-items: center;
 
 export const Detail = ({nickname, favoriteList})=>{
   
+  console.log("ㅇㅇㅇㅇㅇ");
+  console.log(favoriteList);
   const DetailWrap = styled.div`
   
   background-color: white;

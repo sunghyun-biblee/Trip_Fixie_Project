@@ -70,7 +70,7 @@ function TourSpot({
 
   const addList = (index) => {
     setIsSlideMode(true);
-    if (tourMode) {
+    if (tourMode === "tour") {
       if (tourList[index]) {
         setSaveTourList(tourList[index]);
       }
