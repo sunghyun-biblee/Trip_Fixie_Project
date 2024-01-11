@@ -1,5 +1,6 @@
 package com.main.trip.fixied.model.biz;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.main.trip.fixied.model.dto.AreaCodeDto;
@@ -17,4 +18,7 @@ public interface Biz {
 	public int addFavorite(Favorite favorite);
 	public Integer getFid(String ftitle);
 	public int addFavoriteList(FavoriteList favoriteList);
+	public CHUser loadProfile(String userid);
+	public ArrayList<Favorite> loadFavorites(String userid);
+	public ArrayList<ContentList> loadFavoriteList(String favorFid);
 }

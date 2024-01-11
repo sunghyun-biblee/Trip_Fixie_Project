@@ -11,16 +11,19 @@ export const MypageWrapper = styled.div`
 `;
 
 export const MypageContainer = styled.div`
+  height: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding-top: 10%;
+  align-items: center;
 `;
-export const MypageSection = styled.div``;
+export const MypageSection = styled.div`
+  height: 80%;
+`;
 export const MypageBox = styled.div`
   position: relative;
   padding: 0 3rem;
   width: 100%;
+  height: 80%;
 `;
 export const UserImgBox = styled.div`
   padding-top: 4rem;
@@ -34,7 +37,8 @@ export const UserIMG = styled.img`
 `;
 export const UserInfo = styled.div`
   width: 270px;
-  height: 500px;
+  
+
   display: flex;
   flex-direction: column;
 
@@ -48,7 +52,6 @@ export const UserInfoList = styled.ul`
   list-style: none;
   padding: 2rem 1rem;
   width: 100%;
-  height: 50%;
 `;
 export const UserInfoItem = styled.li`
   width: 100%;
@@ -63,15 +66,14 @@ export const UserEditBtn = styled.button`
   width: 80px;
   cursor: pointer;
   height: 40px;
-  position: absolute;
-  bottom: 1rem;
-  right: 5rem;
+  position: relative;
+  bottom: -20%;
+  right: -25%;
   padding: 1rem;
   border-radius: 10px;
   background-color: black;
   color: white;
   font-size: 1.3rem;
-  margin-bottom: 1rem;
 `;
 export const EditInput = styled.input`
   padding: 1rem;
@@ -106,7 +108,7 @@ const PlanHeaderli = styled.li`
 
 const TripPlanListWrapper = styled.div`
   width: 1000px;
-  height: 600px;
+  height: 100%;
   background-color: aliceblue;
 `;
 
@@ -137,46 +139,30 @@ export const PlanHeader = () => {
     </div>
   );
 };
-export const TripPlanList = ({
-  data,
-  setFavorNickname,
-  setIsDetail,
-  setFavorFid,
-}) => {
+export const TripPlanList = ({ data, setFavorNickname, setIsDetail, setFavorFid }) => {
   return (
     <TripPlanListWrapper>
+      <PlanHeader></PlanHeader>
       {data.map((items) => (
-        <TripPlanItem
-          key={items.id}
-          {...items}
-          setFavorNickname={setFavorNickname}
-          setIsDetail={setIsDetail}
-          setFavorFid={setFavorFid}
+        <TripPlanItem key={items.id} {...items}
+        setFavorNickname = {setFavorNickname}
+        setIsDetail = {setIsDetail}
+        setFavorFid = {setFavorFid}
         ></TripPlanItem>
       ))}
     </TripPlanListWrapper>
   );
 };
 
-export const TripPlanItem = ({
-  startDay,
-  endDay,
-  nickname,
-  area,
-  fid,
-  setFavorNickname,
-  setIsDetail,
-  setFavorFid,
-}) => {
+export const TripPlanItem = ({ startDay, endDay, nickname, area, fid, setFavorNickname, setIsDetail, setFavorFid }) => {
   return (
     <div>
-      <PlanUl
-        onClick={() => {
-          setFavorNickname(nickname);
-          setFavorFid(fid);
-          setIsDetail(true);
-        }}
-      >
+      <PlanUl 
+        onClick={()=>{
+          setFavorNickname(nickname)
+          setFavorFid(fid)
+          setIsDetail(true)
+        }}>
         <PlanLi>
           {startDay}~{endDay}
         </PlanLi>
@@ -187,6 +173,8 @@ export const TripPlanItem = ({
   );
 };
 const PageSection = styled.div`
+  position: absolute;
+  bottom: 2rem;
   width: 1000px;
   display: flex;
   justify-content: center;
@@ -289,53 +277,57 @@ export const Pagenagtion = ({ postLimit, totalPlan, page, setPage }) => {
 };
 
 export const DetailContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+width:100vw;
+height:100vh;
+z-index:1;
+position: fixed;  
+top:0;
+left:0;
+display: flex;
+justify-content: center;
+align-items: center;
 `;
 
-export const Detail = ({ nickname, favoriteList }) => {
+export const Detail = ({nickname, favoriteList})=>{
+  
   const DetailWrap = styled.div`
-    background-color: white;
-    margin: 0 auto;
-    margin-left: 2%;
-    margin-bottom: 5%;
-    width: 1350px;
-    height: 80%;
-    padding: 10px;
-    border: 5px solid black;
-    border-radius: 20px;
-    position: absolute;
-    z-index: 2;
-    background-color: white;
+  
+  background-color: white;
+  margin: 0 auto;
+  margin-left: 2%; 
+  margin-bottom: 5%;
+  width:1350px;
+  height:80%;
+  padding: 10px;
+  border: 5px solid black;
+  border-radius: 20px;
+  position: absolute;
+  z-index: 2;
+  background-color: white;
+  
   `;
   const DetailHeader = styled.header``;
   const DetailHeaderUl = styled.ul``;
   const DetailHeaderLi = styled.li`
-    float: left;
-    font-size: 50px;
-    list-style: none;
+  float: left;
+  font-size: 50px;
+  list-style: none;
   `;
 
   const ListContainer = styled.div`
-    position: absolute;
-    top: 15%;
-    width: 98%;
-    height: 80%;
-    border: 2px solid black;
-    overflow-y: scroll;
+  position: absolute;
+  top: 15%;
+  width:98%;
+  height:80%;
+  border:2px solid black;
+  overflow-y: scroll;
+  
   `;
   const ListOne = styled.div`
-    display: inline-block;
-    width: 100%;
-    height: 40%;
-    border: 1px solid black;
+  display: inline-block;
+  width: 100%;
+  height: 40%;
+  border:1px solid black;
   `;
 
   let today = new Date().toLocaleDateString();
@@ -346,22 +338,21 @@ export const Detail = ({ nickname, favoriteList }) => {
         <DetailHeaderUl>
           <DetailHeaderLi>{today}</DetailHeaderLi>
           <DetailHeaderLi>{nickname}</DetailHeaderLi>
-        </DetailHeaderUl>
+        </DetailHeaderUl>  
       </DetailHeader>
       <ListContainer>
-        {favoriteList.map((list) => (
+        {favoriteList.map((list)=>(
           <ListOne>
-            <img
-              src={list.cfirstimage}
-              style={{ height: "100%", width: "30%" }}
-            ></img>
+            <img src={list.cfirstimage} style={{height: "100%", width: "30%"}}></img>
             {list.ctitle}
           </ListOne>
         ))}
       </ListContainer>
+  
     </DetailWrap>
-  );
-};
+  )
+}
+
 
 // motion block
 export const MotionMypageWrapper = motion(MypageContainer);

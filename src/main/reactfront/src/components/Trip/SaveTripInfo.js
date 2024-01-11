@@ -37,6 +37,9 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, deleteS
         saveTourList : {saveTourList},
         uid : user.uid,
         ftitle: ftitle,
+        fstart: dateinfo.startDay,
+        fend: dateinfo.endDay,
+        farea: selectedAreaName.mainAreaName,
       })
       .then(response =>{
         console.log(response);
