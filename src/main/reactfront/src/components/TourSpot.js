@@ -4,6 +4,7 @@ import {
   FestivalSpot,
   FestivalSpotList,
   SelectTourMode,
+  TourLoading,
   TourSpotList,
 } from "./tour_spot_components";
 import { Loading } from "./atoms/Loading";
@@ -29,11 +30,17 @@ function TourSpot({
   const [tourMode, setTourMode] = useState("tour");
   const [baseurl, setBaseurl] = useState();
   const [params, setParams] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [fetchComplete, setFetchComplete] = useState(false);
+  const [isMainLoading, setIsMainLoading] = useState(false);
+  const [maxPage, setMaxPage] = useState();
   //축제조회
 
   const viewFestival = () => {
+    if (festivalList.length >= 1) {
+      setTourList((prev) => [...prev]);
+    } else {
+      setListpage(1);
+      setTourList([]);
+    }
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
     setParams({
       serviceKey:
@@ -51,6 +58,13 @@ function TourSpot({
   };
 
   const viewTour = () => {
+    if (tourList.length >= 1) {
+      setTourList((prev) => [...prev]);
+    } else {
+      setListpage(1);
+      setTourList([]);
+    }
+
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaBasedList1");
     setParams({
       serviceKey:
@@ -70,7 +84,7 @@ function TourSpot({
 
   const addList = (index) => {
     setIsSlideMode(true);
-    if (tourMode) {
+    if (tourMode === "tour") {
       if (tourList[index]) {
         setSaveTourList(tourList[index]);
       }
@@ -90,8 +104,11 @@ function TourSpot({
   }, [listpage]);
 
   useEffect(() => {
-    setIsLoading(true);
-    setFetchComplete(false);
+    if (maxPage <= listpage) {
+      return;
+    }
+    setIsMainLoading(true);
+
     if (baseurl && Object.keys(params).length > 0) {
       const queryString = new URLSearchParams(params).toString();
       const url = `${baseurl}?${queryString}`;
@@ -110,6 +127,8 @@ function TourSpot({
             console.log(data);
             try {
               const festivalData = data.response.body.items.item;
+              const totalcount = data.response.body.totalCount;
+              setMaxPage(Math.ceil(totalcount / 5));
               const festivals = festivalData.map((fd) => ({
                 contentid: fd.contentid,
                 ctitle: fd.title,
@@ -124,20 +143,20 @@ function TourSpot({
                 ctel: fd.tel,
               }));
               SetFestivalList((prev) => [...prev, ...festivals]);
-              setIsLoading(false);
+              setIsMainLoading(false);
             } catch (error) {
               console.log("축제없음");
-              setIsLoading(false);
-              setFetchComplete(true);
+              setIsMainLoading(false);
             }
-            setFetchComplete(true);
+
             // setTourMode("festivals");
           } else {
             // 관광지일때
             try {
-              console.log("adfasfdaf");
               console.log(data);
               const tourData = data.response.body.items.item;
+              const totalcount = data.response.body.totalCount;
+              setMaxPage(Math.ceil(totalcount / 5));
               const tours = tourData.map((td) => ({
                 contentid: td.contentid,
                 ctitle: td.title,
@@ -148,73 +167,82 @@ function TourSpot({
                 clatitude: td.mapy,
                 clongitude: td.mapx,
               }));
-              console.log(isLoading);
+              console.log(isMainLoading);
               setTourList((prev) => [...prev, ...tours]);
-              setIsLoading(false);
+              setIsMainLoading(false);
 
               console.log("성공성공서공");
             } catch (error) {
               console.log("관광지 없슴 깡촌임");
               console.log(tourList);
-              setIsLoading(false);
-              setFetchComplete(true);
+              setIsMainLoading(false);
             }
-            setFetchComplete(true);
+
             // setTourMode("tour");
           }
         })
         .catch((error) => {
           console.error("Fetch Error:", error);
-          setIsLoading(false);
-          setFetchComplete(true);
+          setIsMainLoading(false);
         });
     }
   }, [baseurl, params]);
-  console.log(tourList);
+
   return (
     <>
-      <div>
+      <div style={{ overflow: "hidden" }}>
         {/* <AreaWeather></AreaWeather> */}
         <SelectTourMode
           viewTour={viewTour}
           viewFestival={viewFestival}
           tourMode={tourMode}
         ></SelectTourMode>
-        <button onClick={() => setListpage((prev) => prev + 1)}>123</button>
+
         {/* tourMode 상태에 따라 다른 목록을 출력 */}
         {tourMode === "tour" ? (
-          isLoading ? (
-            fetchComplete ? (
-              <TourSpotList
-                tourList={tourList}
-                addList={addList}
-              ></TourSpotList>
-            ) : (
-              <TourLoadingWrapper className="ABC">
-                <Loading />
-              </TourLoadingWrapper>
-            )
-          ) : (
-            <TourSpotList tourList={tourList} addList={addList}></TourSpotList>
-          )
+          <>
+            {isMainLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "600px",
+                  height: "800px",
+                }}
+              >
+                <Loading></Loading>
+              </div>
+            ) : null}
+            <TourSpotList
+              isMainLoading={isMainLoading}
+              tourList={tourList}
+              addList={addList}
+              setListpage={setListpage}
+            ></TourSpotList>
+          </>
         ) : tourMode === "festivals" ? (
-          isLoading ? (
-            fetchComplete ? (
-              <FestivalSpotList
-                festivalList={festivalList}
-                addList={addList}
-              ></FestivalSpotList>
-            ) : (
-              <TourLoadingWrapper className="ABC">
-                <Loading />
-              </TourLoadingWrapper>
-            )
-          ) : (
+          <>
+            {isMainLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  width: "600px",
+                  height: "800px",
+                }}
+              >
+                <Loading></Loading>
+              </div>
+            ) : null}
             <FestivalSpotList
               festivalList={festivalList}
               addList={addList}
+              isMainLoading={isMainLoading}
+              setListpage={setListpage}
             ></FestivalSpotList>
-          )
+          </>
         ) : null}
       </div>
     </>
