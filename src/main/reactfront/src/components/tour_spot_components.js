@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { TourLoadingWrapper } from "./TourSpot";
+import { useEffect, useRef, useState } from "react";
+import { Loading } from "./atoms/Loading";
 
 const ModeWrapper = styled.div`
   display: flex;
@@ -85,6 +87,9 @@ const TourSpotContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  &.off {
+    opacity: 0;
+  }
 `;
 const TourSpotBox = styled.div`
   padding: 1rem;
@@ -96,7 +101,7 @@ const TourSpotLi = styled.div`
   align-items: center;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 `;
 const TourSpotItemWrapper = styled.div`
@@ -129,18 +134,88 @@ const TButton = styled.button`
   border: 1px solid rgba(0, 0, 0, 0.3);
   cursor: pointer;
 `;
-export const TourSpotList = ({ tourList, addList }) => {
+export const TourSpotList = ({
+  tourList,
+  addList,
+
+  isMainLoading,
+
+  selectedAreaName,
+}) => {
+  const scrollBoxRef = useRef();
+  const [list, setList] = useState(1);
+  const [max, setMax] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currtourList, setCurrTourList] = useState([...tourList]);
+  const handleScroll = () => {
+    const scrollBox = scrollBoxRef.current;
+    if (
+      scrollBox.offsetHeight + scrollBox.scrollTop + 1 >=
+      scrollBox.scrollHeight
+    ) {
+      setList((prev) => prev + 1);
+    }
+  };
+  useEffect(() => {
+    const scrollBox = scrollBoxRef.current;
+    if (scrollBox) {
+      scrollBox.addEventListener("scroll", handleScroll);
+      return () => {
+        scrollBox.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (max < list) {
+        return;
+      }
+      setIsLoading(true);
+
+      // 여기에 데이터를 가져오는 비동기 로직 추가
+      try {
+        const response = await fetch(
+          `http://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&numOfRows=5&pageNo=${list}&MobileOS=ETC&MobileApp=APPTest&areaCode=${selectedAreaName.mainAreaCode}&sigunguCode=${selectedAreaName.subAreaCode}&contentTypeId=12&_type=json`
+        );
+        const data = await response.json();
+        console.log("이렇게도 되나요?");
+        console.log(data);
+        // 데이터 처리 로직 추가
+        const tourData = data.response.body.items.item;
+        const totalcount = data.response.body.totalCount;
+        setMax(Math.ceil(totalcount / 5));
+        const tours = tourData.map((td) => ({
+          contentid: td.contentid,
+          ctitle: td.title,
+          caddr1: td.addr1,
+          caddr2: td.addr2,
+          cfirstimage: td.firstimage,
+          csecondimage: td.firstimage2,
+          clatitude: td.mapy,
+          clongitude: td.mapx,
+        }));
+        setCurrTourList((prev) => [...prev, ...tours]);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [list]);
+  console.log(currtourList);
   return (
-    <TourSpotContainer>
-      <TourWrapper>
-        {tourList.length === 0 ? (
+    <TourSpotContainer className={isMainLoading ? "off" : null}>
+      <TourWrapper ref={scrollBoxRef}>
+        {currtourList.length === 0 ? (
           <TourLoadingWrapper className="ABC">
             <div style={{ fontSize: "3rem" }}>
               등록된 광광지가 없습니다 ㅠㅠ
             </div>
           </TourLoadingWrapper>
         ) : (
-          tourList.map((tour, index) => (
+          currtourList.map((tour, index) => (
             <TourSpotBox key={index}>
               <TourSpotLi>
                 {tour.cfirstimage ? (
@@ -165,20 +240,111 @@ export const TourSpotList = ({ tourList, addList }) => {
             </TourSpotBox>
           ))
         )}
+        {isLoading ? (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loading></Loading>
+          </div>
+        ) : null}
       </TourWrapper>
     </TourSpotContainer>
   );
 };
-export const FestivalSpotList = ({ festivalList, addList }) => {
+export const FestivalSpotList = ({
+  festivalList,
+  addList,
+  isMainLoading,
+
+  selectedAreaName,
+  dateinfo,
+}) => {
+  const scrollBoxRef = useRef();
+  const [list, setList] = useState(1);
+  const [max, setMax] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [currtourList, setCurrTourList] = useState([...festivalList]);
+
+  const handleScroll = () => {
+    const scrollBox = scrollBoxRef.current;
+    if (
+      scrollBox.offsetHeight + scrollBox.scrollTop + 1 >=
+      scrollBox.scrollHeight
+    ) {
+      setList((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    const scrollBox = scrollBoxRef.current;
+    if (scrollBox) {
+      scrollBox.addEventListener("scroll", handleScroll);
+      return () => {
+        scrollBox.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (max < list) {
+        return;
+      }
+      setIsLoading(true);
+      console.log(list);
+      // 여기에 데이터를 가져오는 비동기 로직 추가
+      try {
+        const response = await fetch(
+          `http://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&numOfRows=5&pageNo=${list}&MobileOS=ETC&MobileApp=APPTest&_type=json&eventStartDate=${dateinfo.startDay}&areaCode=${selectedAreaName.mainAreaCode}`
+        );
+        const data = await response.json();
+        console.log("행사결과");
+        console.log(data);
+        // 데이터 처리 로직 추가
+        const festivalData = data.response.body.items.item;
+        const totalcount = data.response.body.totalCount;
+
+        setMax(Math.ceil(totalcount / 5));
+        const festivals = festivalData.map((fd) => ({
+          contentid: fd.contentid,
+          ctitle: fd.title,
+          caddr1: fd.addr1,
+          caddr2: fd.addr2,
+          cfirstimage: fd.firstimage,
+          csecondimage: fd.firstimage2,
+          clatitude: fd.mapy,
+          clongitude: fd.mapx,
+          ceventstartdate: fd.eventstartdate,
+          ceventenddate: fd.eventenddate,
+          ctel: fd.tel,
+        }));
+        setCurrTourList((prev) => [...prev, ...festivals]);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Fetch Error:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [list]);
+  console.log("max:" + max);
+  console.log("list:" + list);
+  console.log(currtourList);
   return (
-    <TourSpotContainer>
-      <TourWrapper>
-        {festivalList.length === 0 ? (
+    <TourSpotContainer className={isMainLoading ? "off" : null}>
+      <TourWrapper ref={scrollBoxRef}>
+        {currtourList.length === 0 ? (
           <TourLoadingWrapper className="ABC">
             <div style={{ fontSize: "3rem" }}>등록된 행사가 없습니다 ㅠㅠ</div>
           </TourLoadingWrapper>
         ) : (
-          festivalList.map((festival, index) => (
+          currtourList.map((festival, index) => (
             <TourSpotBox key={index}>
               <TourSpotLi>
                 {festival.cfirstimage ? (
@@ -203,19 +369,19 @@ export const FestivalSpotList = ({ festivalList, addList }) => {
             </TourSpotBox>
           ))
         )}
+        {isLoading ? (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loading></Loading>
+          </div>
+        ) : null}
       </TourWrapper>
     </TourSpotContainer>
   );
 };
-// && festivalList.length < 1
-// isLoading ? (
-//   <TourLoadingWrapper className="ABC">
-//     <Loading />
-//   </TourLoadingWrapper>
-// ) : (
-//   <FestivalSpotList
-//     festivalList={festivalList}
-//     addList={addList}
-//   ></FestivalSpotList>
-// )
-// ) : null}
