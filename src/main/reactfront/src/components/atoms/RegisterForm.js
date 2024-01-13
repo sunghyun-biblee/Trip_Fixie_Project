@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import axios from "axios";
+import "./css/RegisterForm.css";
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -10,13 +11,6 @@ function RegisterForm() {
   const [nickname, setNickname] = useState("");
   const [profile, setProfile] = useState("");
   const [uid, setUid] = useState("");
-
-  useEffect(() => {
-    if (uid) {
-      // uid 값이 존재하는 경우에만 serverSignUp 함수 실행
-      serverSignUp();
-    }
-  }, [uid]); // uid 값이 변경될 때마다 useEffect 내의 코드 실행
 
   const onChange = (event) => {
     const {
@@ -37,7 +31,7 @@ function RegisterForm() {
   const signUp = async (event) => {
     event.preventDefault();
 
-    const result = await createUserWithEmailAndPassword(auth, email, password)
+    await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
@@ -47,11 +41,12 @@ function RegisterForm() {
         alert(user + "님 회원가입 되셨습니다.");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        console.log(error.code);
+        console.log(error.message);
         // ..
       });
   };
+  console.log("");
 
   const serverSignUp = () => {
     axios
@@ -69,26 +64,73 @@ function RegisterForm() {
       });
   };
 
+  useEffect(() => {
+    if (uid && email && name && nickname) {
+      // uid 값이 존재하는 경우에만 serverSignUp 함수 실행
+      serverSignUp();
+    }
+  }, [uid, email, name, nickname]); // uid 값이 변경될 때마다 useEffect 내의 코드 실행
   return (
-    <>
-      <h1>회원가입</h1>
-      <a>
-        email<input type="email" name="email" onChange={onChange}></input>
-      </a>
-      <a>
-        password<input type="text" name="password" onChange={onChange}></input>
-      </a>
-      <a>
-        name<input type="text" name="name" onChange={onChange}></input>
-      </a>
-      <a>
-        nickName<input type="text" name="nickname" onChange={onChange}></input>
-      </a>
-      <a>
-        profileImg<input type="file" name="profile" onChange={onChange}></input>
-      </a>
-      <input type="button" value="signUp" onClick={signUp}></input>
-    </>
+    <div
+      style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <div className="regist_Container">
+        <div className="regist_BackgroundImg">
+          <img src="/img/registe_Background.jpg" alt="" />
+        </div>
+        <div className="register_box_wrapper">
+          <div className="register_box">
+            <h1>Create Account</h1>
+            <div className="register_form">
+              <label>EMAIL</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="Write Your Email"
+                onChange={onChange}
+                autoComplete="off"
+              />
+              <label>PASSWORD</label>
+              <input
+                type="password"
+                name="password"
+                placeholder="Write Password"
+                onChange={onChange}
+                autoComplete="off"
+              />
+              <label>NAME</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Write Your Name"
+                onChange={onChange}
+                autoComplete="off"
+              />
+              <label>NICKNAME</label>
+              <input
+                type="text"
+                name="nickname"
+                placeholder="Write Your NickName"
+                onChange={onChange}
+                autoComplete="off"
+              />
+
+              <input
+                type="button"
+                className="signup"
+                value="Sign Up"
+                onClick={signUp}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
