@@ -23,32 +23,25 @@ function TourSpot({
   setSaveTourList,
   dateinfo,
   setIsSlideMode,
-  handleDeleteList,
   saveTourList,
+  handleDeleteList,
 }) {
-  const [listpage, setListpage] = useState(1);
   const [tourList, setTourList] = useState([]);
   const [festivalList, SetFestivalList] = useState([]);
   const [tourMode, setTourMode] = useState("tour");
   const [baseurl, setBaseurl] = useState();
   const [params, setParams] = useState();
-  const [isMainLoading, setIsMainLoading] = useState(false);
-  const [maxPage, setMaxPage] = useState();
+  const [isMainLoading, setIsMainLoading] = useState();
+
   //축제조회
 
   const viewFestival = () => {
-    if (festivalList.length >= 1) {
-      setTourList((prev) => [...prev]);
-    } else {
-      setListpage(1);
-      setTourList([]);
-    }
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
     setParams({
       serviceKey:
         "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
-      numOfRows: "5",
-      pageNo: listpage,
+      numOfRows: "50",
+      pageNo: "1",
       MobileOS: "ETC",
       MobileApp: "APPTest",
       _type: "json",
@@ -60,19 +53,12 @@ function TourSpot({
   };
 
   const viewTour = () => {
-    if (tourList.length >= 1) {
-      setTourList((prev) => [...prev]);
-    } else {
-      setListpage(1);
-      setTourList([]);
-    }
-
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaBasedList1");
     setParams({
       serviceKey:
         "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
-      numOfRows: "5",
-      pageNo: listpage,
+      numOfRows: "50",
+      pageNo: "1",
       MobileOS: "ETC",
       MobileApp: "APPTest",
       areaCode: selectedAreaName.mainAreaCode,
@@ -84,35 +70,33 @@ function TourSpot({
     SetFestivalList([]);
   };
 
-  const addList = (index) => {
-    setIsSlideMode(true);
-    if (tourMode === "tour") {
-      if (tourList[index]) {
-        setSaveTourList(tourList[index]);
-      }
-    } else {
-      if (festivalList[index]) {
-        setSaveTourList(festivalList[index]);
-      }
-    }
-  };
+  // const addList = (index) => {
+  //   console.log(index);
 
+  //   setIsSlideMode(true);
+  //   if (tourMode === "tour") {
+  //     if (tourList[index]) {
+  //       setSaveTourList(tourList[index]);
+  //     }
+  //   } else {
+  //     if (festivalList[index]) {
+  //       setSaveTourList(festivalList[index]);
+  //     }
+  //   }
+  // };
   useEffect(() => {
     if (tourMode === "tour") {
       viewTour();
     } else if (tourMode === "festivals") {
       viewFestival();
     }
-  }, [listpage]);
-
+  }, []);
   useEffect(() => {
-    if (maxPage < listpage) {
-      return;
-    }
     setIsMainLoading(true);
 
     if (baseurl && Object.keys(params).length > 0) {
       const queryString = new URLSearchParams(params).toString();
+      console.log(queryString);
       const url = `${baseurl}?${queryString}`;
 
       fetch(url, {
@@ -129,8 +113,7 @@ function TourSpot({
             console.log(data);
             try {
               const festivalData = data.response.body.items.item;
-              const totalcount = data.response.body.totalCount;
-              setMaxPage(Math.ceil(totalcount / 5));
+
               const festivals = festivalData.map((fd) => ({
                 contentid: fd.contentid,
                 ctitle: fd.title,
@@ -145,21 +128,23 @@ function TourSpot({
                 ctel: fd.tel,
                 contenttypeid: fd.contenttypeid,
               }));
-              SetFestivalList((prev) => [...prev, ...festivals]);
+              for (let i = 0; i < festivals.length; i += 5) {
+                const slicedArray = festivals.slice(i, i + 5);
+                SetFestivalList((prev) => [...prev, slicedArray]);
+              }
               setIsMainLoading(false);
             } catch (error) {
               console.log("축제없음");
               setIsMainLoading(false);
             }
-
+            setIsMainLoading(false);
             // setTourMode("festivals");
           } else {
             // 관광지일때
             try {
               console.log(data);
               const tourData = data.response.body.items.item;
-              const totalcount = data.response.body.totalCount;
-              setMaxPage(Math.ceil(totalcount / 5));
+
               const tours = tourData.map((td) => ({
                 contentid: td.contentid,
                 ctitle: td.title,
@@ -171,8 +156,12 @@ function TourSpot({
                 clongitude: td.mapx,
                 contenttypeid: td.contenttypeid,
               }));
-              console.log(isMainLoading);
-              setTourList((prev) => [...prev, ...tours]);
+
+              for (let i = 0; i < tours.length; i += 5) {
+                const slicedArray = tours.slice(i, i + 5);
+                setTourList((prev) => [...prev, slicedArray]);
+              }
+              // setTourList((prev) => [...prev, ...tours]);
               setIsMainLoading(false);
 
               console.log("성공성공서공");
@@ -181,7 +170,7 @@ function TourSpot({
               console.log(tourList);
               setIsMainLoading(false);
             }
-
+            setIsMainLoading(false);
             // setTourMode("tour");
           }
         })
@@ -204,30 +193,28 @@ function TourSpot({
 
         {/* tourMode 상태에 따라 다른 목록을 출력 */}
         {tourMode === "tour" ? (
-          <>
-            {isMainLoading ? (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  width: "600px",
-                  height: "800px",
-                }}
-              >
-                <Loading></Loading>
-              </div>
-            ) : null}
+          isMainLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "600px",
+                height: "800px",
+              }}
+            >
+              <Loading></Loading>
+            </div>
+          ) : (
             <TourSpotList
               isMainLoading={isMainLoading}
               tourList={tourList}
-              addList={addList}
-              setListpage={setListpage}
-              selectedAreaName={selectedAreaName}
+              setSaveTourList={setSaveTourList}
+              setIsSlideMode={setIsSlideMode}
               handleDeleteList={handleDeleteList}
               saveTourList={saveTourList}
             ></TourSpotList>
-          </>
+          )
         ) : tourMode === "festivals" ? (
           <>
             {isMainLoading ? (
@@ -242,17 +229,16 @@ function TourSpot({
               >
                 <Loading></Loading>
               </div>
-            ) : null}
-            <FestivalSpotList
-              festivalList={festivalList}
-              addList={addList}
-              isMainLoading={isMainLoading}
-              setListpage={setListpage}
-              selectedAreaName={selectedAreaName}
-              dateinfo={dateinfo}
-              handleDeleteList={handleDeleteList}
-              saveTourList={saveTourList}
-            ></FestivalSpotList>
+            ) : (
+              <FestivalSpotList
+                festivalList={festivalList}
+                isMainLoading={isMainLoading}
+                setSaveTourList={setSaveTourList}
+                setIsSlideMode={setIsSlideMode}
+                handleDeleteList={handleDeleteList}
+                saveTourList={saveTourList}
+              ></FestivalSpotList>
+            )}
           </>
         ) : null}
       </div>

@@ -96,7 +96,6 @@ function Trip() {
     setSaveTourList((prevList) => [...prevList, tourList]);
     console.log(saveTourList);
   };
-  //0112
   const handleDeleteList = (contentid) => {
     console.log(saveTourList); // saveTourList의 현재 상태를 콘솔에 출력
     
@@ -107,7 +106,7 @@ function Trip() {
 
     // 필터링된 배열을 원래의 saveTourList 상태로 업데이트합니다.
     setSaveTourList(filteredList);
-};
+  };
 
   useEffect(() => {
     const geolocation = async () => {
@@ -412,6 +411,7 @@ function Trip() {
             dateinfo={dateinfo}
             selectedAreaName={selectedAreaName}
             saveTourList={saveTourList}
+            handleDeleteList={handleDeleteList}
             handleSlidemode={handleSlidemode}
             isSlideMode={isSlideMode}
           ></SaveTripInfo>

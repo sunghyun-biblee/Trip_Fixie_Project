@@ -60,10 +60,13 @@ export const Saveitems = styled.div`
   justify-content: space-around;
 `;
 export const SaveTextItems = styled.div`
-  font-size: 2rem;
+  font-size: 3rem;
+  display: flex;
 `;
+
 export const SaveItemContainer = styled.div`
   width: 260px;
   height: 300px;
   border: 1px solid black;
 `;
+

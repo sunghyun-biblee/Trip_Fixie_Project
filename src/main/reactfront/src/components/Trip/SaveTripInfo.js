@@ -16,40 +16,47 @@ import { motion } from "framer-motion";
 import { auth } from "../../firebase";
 import axios from "axios";
 
-
 const MotionSaveContainer = motion(SaveContainer);
 
 const variants = {
   small: { width: "30px" },
   large: { width: "300px" },
 };
-export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlideMode, handleSlidemode }) {
+export function SaveTripInfo({
+  dateinfo,
+  selectedAreaName,
+  saveTourList,
+  handleDeleteList,
+  isSlideMode,
+  handleSlidemode,
+}) {
   const [isAlarm, setIsAlarm] = useState(true);
-   
-  const saveServer = ()=>{
+
+  const saveServer = () => {
     const ftitle = document.getElementById("ftitle").value;
-    
-    auth.onAuthStateChanged((user) =>{
-        console.log("adfdsafdafadf");
-        console.log(saveTourList);
-        console.log(user.uid);
-        console.log(ftitle);
-      axios.post('/test/addFavorite',{
-        saveTourList : {saveTourList},
-        uid : user.uid,
-        ftitle: ftitle,
-        fstart: dateinfo.startDay,
-        fend: dateinfo.endDay,
-        farea: selectedAreaName.mainAreaName,
-      })
-      .then(response =>{
-        console.log(response);
-      })
-      .catch(error =>{
-        console.error("favorite오류", error);
-      });
-    })
-  }
+
+    auth.onAuthStateChanged((user) => {
+      console.log("adfdsafdafadf");
+      console.log(saveTourList);
+      console.log(user.uid);
+      console.log(ftitle);
+      axios
+        .post("/test/addFavorite", {
+          saveTourList: { saveTourList },
+          uid: user.uid,
+          ftitle: ftitle,
+          fstart: dateinfo.startDay,
+          fend: dateinfo.endDay,
+          farea: selectedAreaName.mainAreaName,
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.error("favorite오류", error);
+        });
+    });
+  };
 
   return (
     <>
@@ -71,12 +78,18 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlide
             </SaveTextItems>
             <SaveTextItems>{selectedAreaName.mainAreaName}</SaveTextItems>
             <SaveTextItems>{selectedAreaName.subAreaName}</SaveTextItems>
-
             <SaveItemContainer>
                 {saveTourList.map((tour, index)=>(
                   tour.contenttypeid === "12" ?
-                    (<SaveTextItems 
-                    key={index}>{tour.ctitle}</SaveTextItems>  
+                    (<>
+                    <SaveTextItems 
+                    key={index}
+                    >{tour.ctitle} 
+                    <button
+                      onClick={() => {handleDeleteList(tour.contentid);}}>
+                    지우기</button>
+                    </SaveTextItems>                    
+                    </>  
                     ): null                  
                   ))
                 }
@@ -84,18 +97,26 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlide
                 <SaveItemContainer>
                 {saveTourList.map((tour, index)=>(
                   tour.contenttypeid === "12" ?
-                    null: (<SaveTextItems 
-                      key={index}>{tour.ctitle}</SaveTextItems>  
+                    null: (<>
+                      <SaveTextItems 
+                      key={index}
+                      >{tour.ctitle}
+                      <button
+                      onClick={() => {handleDeleteList(tour.contentid);}}>
+                      지우기</button>
+                      </SaveTextItems>
+                      </>
                       )
                   ))
                 }
             </SaveItemContainer>
-
-            <input type="text" id="ftitle" placeholder="별명을 지어주세요"></input>
+            <input
+              type="text"
+              id="ftitle"
+              placeholder="별명을 지어주세요"
+            ></input>
             <button>중복확인</button>
-            <button onClick={saveServer}>
-              저장
-            </button>
+            <button onClick={saveServer}>저장</button>
           </Saveitems>
         </SaveBox>
 
