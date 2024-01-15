@@ -96,11 +96,18 @@ function Trip() {
     setSaveTourList((prevList) => [...prevList, tourList]);
     console.log(saveTourList);
   };
-  const handleDeleteList = (indexToRemove) => {
-    setSaveTourList((prevList) =>
-      prevList.filter((_, index) => index !== indexToRemove)
+  const handleDeleteList = (contentid) => {
+    console.log(saveTourList); // saveTourList의 현재 상태를 콘솔에 출력
+
+    const newSaveTourList = [...saveTourList];
+
+    // contentid 값이 일치하는 항목을 필터링하여 새로운 배열을 생성합니다.
+    const filteredList = newSaveTourList.filter(
+      (item) => item.contentid !== contentid
     );
-    console.log(saveTourList);
+
+    // 필터링된 배열을 원래의 saveTourList 상태로 업데이트합니다.
+    setSaveTourList(filteredList);
   };
 
   useEffect(() => {
@@ -199,7 +206,7 @@ function Trip() {
       setMaxDate(new Date(start.getTime() + 4 * 24 * 60 * 60 * 1000));
       setMinDate(start);
       setDateinfo({
-        startDay: startDateISO.replace(/-/g, "."),
+        startDay: startDateISO,
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
         ...dateinfo,
       });
@@ -208,9 +215,9 @@ function Trip() {
       setEndDate(end);
       setMaxDate();
       setDateinfo({
-        startDay: startDateISO.replace(/-/g, "."),
+        startDay: startDateISO,
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
-        endDay: endDateISO.replace(/-/g, "."),
+        endDay: endDateISO,
         endDayofWeek: `(${KoreanDayOfWeek[endDateObeject]})`,
       });
     }
@@ -333,12 +340,15 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
+                  style={{ width: " 630px" }}
                 >
                   <TourSpot
                     selectedAreaName={selectedAreaName}
                     setSaveTourList={handleAddList}
                     dateinfo={dateinfo}
                     setIsSlideMode={setIsSlideMode}
+                    handleDeleteList={handleDeleteList}
+                    saveTourList={saveTourList}
                   ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
@@ -404,7 +414,7 @@ function Trip() {
             dateinfo={dateinfo}
             selectedAreaName={selectedAreaName}
             saveTourList={saveTourList}
-            deleteSaveTourList={handleDeleteList}
+            handleDeleteList={handleDeleteList}
             handleSlidemode={handleSlidemode}
             isSlideMode={isSlideMode}
           ></SaveTripInfo>

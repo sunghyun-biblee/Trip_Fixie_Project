@@ -1,13 +1,29 @@
 .LoginForm_container {
-  height: 500px;
+  height: 80vh;
+
   display: flex;
-  flex-direction: column;
   align-items: center;
-  width: 500px;
-  padding: 40px;
-  margin: 0 auto;
-  border: 5px solid black
-  
+  width: 1200px;
+
+  padding: 2rem;
+  box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px,
+    rgba(17, 17, 26, 0.1) 0px 0px 8px;
+  border-radius: 10px;
+}
+.Login_Background {
+  width: 45%;
+  height: 60%;
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+.LoginBox {
+  display: flex;
+  align-items: center;
+  background-color: #00c8ac;
+  width: 55%;
+  height: 100%;
 }
 
 .LoginText {
@@ -15,21 +31,29 @@
 }
 
 .LoginForm {
-  padding-top: 50px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
+}
+.LoginWrapper {
   width: 100%;
 }
-
 .Login_Input {
   padding: 10px 20px;
   border-radius: 50px;
   border: none;
-  width: 100%;
+  width: 50%;
   font-size: 16px;
   border: 1px solid gray;
-
+  margin-bottom: 1.5rem;
+  &:focus {
+    outline: none;
+  }
+  &[type="email"] {
+    margin-top: 2rem;
+  }
   &[type="submit"] {
     cursor: pointer;
     &:hover {
@@ -38,5 +62,35 @@
   }
 }
 .Content_Input {
-  font-size: 16px;
+  width: 50%;
+  border-radius: 10px;
+  border: none;
+  background-color: #003220;
+  height: 35px;
+  font-size: 1.5rem;
+  padding: 1rem;
+  font-weight: 500;
+  color: #f0f4f5;
+}
+.Registe_Box {
+  width: 50%;
+  display: flex;
+  align-items: center;
+  p {
+    font-size: 2rem;
+    color: #f0f4f5;
+    padding-right: 1rem;
+  }
+  padding-top: 4rem;
+}
+.Register {
+  height: 35px;
+  border-radius: 10px;
+  border: none;
+  padding: 1rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+  font-weight: 600;
+  background-color: #0094f6;
+  color: #f0f4f5;
 }
