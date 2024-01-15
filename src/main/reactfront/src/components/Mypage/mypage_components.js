@@ -55,7 +55,7 @@ export const UserInfoItem = styled.li`
   height: 50px;
   padding: 1rem;
   p {
-    font-size: 2rem;
+    font-size: 2.5rem;
   }
 `;
 
