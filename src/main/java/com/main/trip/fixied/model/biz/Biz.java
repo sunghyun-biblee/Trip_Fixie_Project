@@ -21,4 +21,5 @@ public interface Biz {
 	public CHUser loadProfile(String userid);
 	public ArrayList<Favorite> loadFavorites(String userid);
 	public ArrayList<ContentList> loadFavoriteList(String favorFid);
+	public AreaCodeDto getLongLat(String MainAreaCode);
 }
