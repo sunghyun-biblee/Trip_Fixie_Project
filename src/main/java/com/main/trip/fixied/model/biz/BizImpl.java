@@ -19,10 +19,7 @@ public class BizImpl implements Biz{
 	@Autowired
 	private Mapper mapper;
 	
-	@Autowired
-	public BizImpl(Mapper mapper) {
-		this.mapper = mapper;
-	}
+
 	
 	@Override
 	public AreaCodeDto codeOut(int areacode) {
@@ -73,6 +70,11 @@ public class BizImpl implements Biz{
 	public ArrayList<ContentList> loadFavoriteList(String favorFid) {
 		return mapper.loadFavoriteList(favorFid);
 	}
-	
+
+	@Override
+	public AreaCodeDto getLongLat(String MainAreaCode) {
+		
+		return mapper.getLongLat(MainAreaCode);
+	}
 
 }

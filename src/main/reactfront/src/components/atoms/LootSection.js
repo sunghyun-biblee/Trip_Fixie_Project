@@ -50,11 +50,12 @@ export const ModalContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  backdrop-filter: blur(5px);
+  background-color: white;
   border: 1px solid black;
 `;
 export const ModalBox = styled.div`
   background-color: white;
+  border-radius: 10px;
 `;
 const LootSectionRightBox = styled.div``;
 

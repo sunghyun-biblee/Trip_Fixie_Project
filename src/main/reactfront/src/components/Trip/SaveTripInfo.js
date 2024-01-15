@@ -9,48 +9,61 @@ import {
   SaveBox,
   SaveContainer,
   SaveTextItems,
-  Saveitems,
-  SaveItemContainer,
+  SaveTourUl,
+  SaveTourLi,
+  FontSizesm,
+  SaveWrapper,
+  SaveTourListBox,
+  TourListItems,
+  SaveInput,
+  SaveBtn,
 } from "./trip_save_components";
 import { motion } from "framer-motion";
 import { auth } from "../../firebase";
 import axios from "axios";
 
-
 const MotionSaveContainer = motion(SaveContainer);
-
+const MotionListBox = motion(SaveTourListBox);
 const variants = {
-  small: { width: "30px" },
-  large: { width: "300px" },
+  small: { width: "0px" },
+  large: { width: "500px" },
 };
-export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlideMode, handleSlidemode }) {
+export function SaveTripInfo({
+  dateinfo,
+  selectedAreaName,
+  saveTourList,
+  handleDeleteList,
+  isSlideMode,
+  handleSlidemode,
+}) {
   const [isAlarm, setIsAlarm] = useState(true);
-   
-  const saveServer = ()=>{
-    const ftitle = document.getElementById("ftitle").value;
-    
-    auth.onAuthStateChanged((user) =>{
-        console.log("adfdsafdafadf");
-        console.log(saveTourList);
-        console.log(user.uid);
-        console.log(ftitle);
-      axios.post('/test/addFavorite',{
-        saveTourList : {saveTourList},
-        uid : user.uid,
-        ftitle: ftitle,
-        fstart: dateinfo.startDay,
-        fend: dateinfo.endDay,
-        farea: selectedAreaName.mainAreaName,
-      })
-      .then(response =>{
-        console.log(response);
-      })
-      .catch(error =>{
-        console.error("favorite오류", error);
-      });
-    })
-  }
 
+  const saveServer = () => {
+    const ftitle = document.getElementById("ftitle").value;
+
+    auth.onAuthStateChanged((user) => {
+      console.log("adfdsafdafadf");
+      console.log(saveTourList);
+      console.log(user.uid);
+      console.log(ftitle);
+      axios
+        .post("/test/addFavorite", {
+          saveTourList: { saveTourList },
+          uid: user.uid,
+          ftitle: ftitle,
+          fstart: dateinfo.startDay,
+          fend: dateinfo.endDay,
+          farea: selectedAreaName.mainAreaName,
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch((error) => {
+          console.error("favorite오류", error);
+        });
+    });
+  };
+  console.log(saveTourList);
   return (
     <>
       <MotionSaveContainer
@@ -60,43 +73,222 @@ export function SaveTripInfo({ dateinfo, selectedAreaName, saveTourList, isSlide
         variants={variants}
       >
         <SaveBox>
-          <Saveitems>
-            <SaveTextItems>
-              {dateinfo.startDay}
-              {dateinfo.startDayofWeek}
-            </SaveTextItems>
-            <SaveTextItems>
-              {dateinfo.endDay}
-              {dateinfo.endDayofWeek}
-            </SaveTextItems>
-            <SaveTextItems>{selectedAreaName.mainAreaName}</SaveTextItems>
-            <SaveTextItems>{selectedAreaName.subAreaName}</SaveTextItems>
-
-            <SaveItemContainer>
-                {saveTourList.map((tour, index)=>(
-                  tour.contenttypeid === "12" ?
-                    (<SaveTextItems 
-                    key={index}>{tour.ctitle}</SaveTextItems>  
-                    ): null                  
-                  ))
-                }
-                </SaveItemContainer>        
-                <SaveItemContainer>
-                {saveTourList.map((tour, index)=>(
-                  tour.contenttypeid === "12" ?
-                    null: (<SaveTextItems 
-                      key={index}>{tour.ctitle}</SaveTextItems>  
-                      )
-                  ))
-                }
-            </SaveItemContainer>
-
-            <input type="text" id="ftitle" placeholder="별명을 지어주세요"></input>
-            <button>중복확인</button>
-            <button onClick={saveServer}>
-              저장
-            </button>
-          </Saveitems>
+          {dateinfo.endDay && (
+            <SaveWrapper>
+              <div>
+                {dateinfo.endDay && (
+                  <>
+                    <SaveTextItems>
+                      <FontSizesm style={{ color: "#0071B0" }}>
+                        시작일
+                      </FontSizesm>
+                      <span>
+                        {dateinfo.startDay}
+                        {dateinfo.startDayofWeek}
+                      </span>
+                    </SaveTextItems>
+                    <SaveTextItems>
+                      <FontSizesm style={{ color: "#F57576" }}>
+                        종료일
+                      </FontSizesm>
+                      <span>
+                        {dateinfo.endDay}
+                        {dateinfo.endDayofWeek}
+                      </span>
+                    </SaveTextItems>
+                  </>
+                )}
+                {selectedAreaName.mainAreaName && (
+                  <SaveTextItems style={{ marginTop: "2rem" }}>
+                    <FontSizesm>목적지</FontSizesm>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <span>{selectedAreaName.mainAreaName}</span>
+                      <span style={{ paddingLeft: "3rem" }}>
+                        {selectedAreaName.subAreaName}
+                      </span>
+                    </div>
+                  </SaveTextItems>
+                )}
+              </div>
+              {saveTourList.length > 0 ? (
+                <>
+                  <FontSizesm
+                    style={{
+                      paddingLeft: "1rem",
+                      marginTop: "3rem",
+                    }}
+                  >
+                    관광지
+                  </FontSizesm>
+                  <MotionListBox
+                    className="con"
+                    style={{ overflowY: "scroll" }}
+                  >
+                    {saveTourList.map(
+                      (tour, index) =>
+                        tour.contenttypeid === "12" && (
+                          <TourListItems
+                            key={index}
+                            style={{ fontSize: "2rem" }}
+                          >
+                            <div
+                              style={{
+                                boxShadow:
+                                  "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                padding: "1rem",
+                                borderRadius: "10px",
+                              }}
+                            >
+                              <div>
+                                <img
+                                  src={tour.cfirstimage}
+                                  alt=""
+                                  style={{
+                                    width: "80px",
+                                    height: "80px",
+                                    borderRadius: "10px",
+                                  }}
+                                />
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  width: "100%",
+                                }}
+                              >
+                                <div style={{ padding: "1.5rem" }}>
+                                  <FontSizesm>{tour.ctitle}</FontSizesm>
+                                  <p style={{ fontSize: "1.5rem" }}>
+                                    {tour.caddr1}
+                                  </p>
+                                </div>
+                                <img
+                                  src="/img/modalAlarm_Close.png"
+                                  alt=""
+                                  onClick={() => {
+                                    handleDeleteList(tour.contentid);
+                                  }}
+                                  style={{
+                                    paddingLeft: "0.5rem",
+                                    width: "30px",
+                                    height: "30px",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </TourListItems>
+                        )
+                    )}
+                  </MotionListBox>
+                  <FontSizesm
+                    style={{
+                      paddingLeft: "1rem",
+                      marginTop: "3rem",
+                    }}
+                  >
+                    행사
+                  </FontSizesm>
+                  <MotionListBox
+                    className="con"
+                    style={{ overflowY: "scroll" }}
+                  >
+                    {saveTourList.map(
+                      (tour, index) =>
+                        tour.contenttypeid !== "12" && (
+                          <TourListItems
+                            key={index}
+                            style={{ fontSize: "2rem" }}
+                          >
+                            <div
+                              style={{
+                                boxShadow:
+                                  "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                                width: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                padding: "1rem",
+                                borderRadius: "10px",
+                              }}
+                            >
+                              <div>
+                                <img
+                                  src={tour.cfirstimage}
+                                  alt=""
+                                  style={{
+                                    width: "80px",
+                                    height: "80px",
+                                    borderRadius: "10px",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  width: "100%",
+                                }}
+                              >
+                                <div style={{ padding: "1.5rem" }}>
+                                  <FontSizesm>{tour.ctitle}</FontSizesm>
+                                  <p style={{ fontSize: "1.5rem" }}>
+                                    {tour.caddr1}
+                                  </p>
+                                </div>
+                                <img
+                                  src="/img/modalAlarm_Close.png"
+                                  alt=""
+                                  onClick={() => {
+                                    handleDeleteList(tour.contentid);
+                                  }}
+                                  style={{
+                                    paddingLeft: "0.5rem",
+                                    width: "30px",
+                                    height: "30px",
+                                    cursor: "pointer",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </TourListItems>
+                        )
+                    )}
+                  </MotionListBox>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "1rem",
+                      marginTop: "0.5rem",
+                    }}
+                  >
+                    <SaveInput
+                      type="text"
+                      id="ftitle"
+                      placeholder="별명을 지어주세요"
+                      autoComplete="off"
+                    ></SaveInput>
+                    <SaveBtn type="button" onClick={saveServer}>
+                      저장
+                    </SaveBtn>
+                  </div>
+                </>
+              ) : null}
+            </SaveWrapper>
+          )}
         </SaveBox>
 
         <ModeController>

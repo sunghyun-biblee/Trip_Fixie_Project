@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { TourLoadingWrapper } from "./TourSpot";
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "./atoms/Loading";
+import axios from "axios";
 
 const ModeWrapper = styled.div`
   display: flex;
@@ -136,28 +137,25 @@ const TButton = styled.button`
 `;
 export const TourSpotList = ({
   tourList,
-  addList,
-  handleDeleteList,
   isMainLoading,
+  setSaveTourList,
+  setIsSlideMode,
   saveTourList,
-  selectedAreaName,
+  handleDeleteList,
 }) => {
   const scrollBoxRef = useRef();
-  const [list, setList] = useState(1);
-  const [max, setMax] = useState();
+  const [list, setList] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [currtourList, setCurrTourList] = useState([...tourList]);
+  const [currtourList, setCurrTourList] = useState();
+  const max = tourList.length;
 
-  //0112
   const [isArray, setIsArray] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setIsArray([]);
-    const newIsArrays = saveTourList.map((lists)=>(
-      lists.contentid
-    ));
+    const newIsArrays = saveTourList.map((lists) => lists.contentid);
     setIsArray(newIsArrays);
-  },[saveTourList])
+  }, [saveTourList]);
 
   const handleScroll = () => {
     const scrollBox = scrollBoxRef.current;
@@ -170,6 +168,7 @@ export const TourSpotList = ({
   };
   useEffect(() => {
     const scrollBox = scrollBoxRef.current;
+    // setCurrTourList(tourList[list]);
     if (scrollBox) {
       scrollBox.addEventListener("scroll", handleScroll);
       return () => {
@@ -178,82 +177,99 @@ export const TourSpotList = ({
     }
   }, []);
   useEffect(() => {
-    const fetchData = async () => {
-      if (max < list) {
-        return;
+    if (max <= list) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      if (!currtourList) {
+        setCurrTourList(tourList[list]);
+      } else {
+        setCurrTourList((prev) => [...prev, ...tourList[list]]);
       }
-      setIsLoading(true);
-
-      // 여기에 데이터를 가져오는 비동기 로직 추가
-      try {
-        const response = await fetch(
-          `http://apis.data.go.kr/B551011/KorService1/areaBasedList1?serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&numOfRows=5&pageNo=${list}&MobileOS=ETC&MobileApp=APPTest&areaCode=${selectedAreaName.mainAreaCode}&sigunguCode=${selectedAreaName.subAreaCode}&contentTypeId=12&_type=json`
-        );
-        const data = await response.json();
-        console.log("이렇게도 되나요?");
-        console.log(data);
-        // 데이터 처리 로직 추가
-        const tourData = data.response.body.items.item;
-        const totalcount = data.response.body.totalCount;
-        setMax(Math.ceil(totalcount / 5));
-        const tours = tourData.map((td) => ({
-          contentid: td.contentid,
-          ctitle: td.title,
-          caddr1: td.addr1,
-          caddr2: td.addr2,
-          cfirstimage: td.firstimage,
-          csecondimage: td.firstimage2,
-          clatitude: td.mapy,
-          clongitude: td.mapx,
-        }));
-        setCurrTourList((prev) => [...prev, ...tours]);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Fetch Error:", error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [list]);
+
+  const addList = (index) => {
+    console.log(index);
+
+    setIsSlideMode(true);
+    if (currtourList[index]) {
+      setSaveTourList(currtourList[index]);
+    }
+  };
+
+  console.log("max :" + max);
+  console.log("currlist: " + currtourList ? "true" : "false");
   console.log(currtourList);
   return (
     <TourSpotContainer className={isMainLoading ? "off" : null}>
       <TourWrapper ref={scrollBoxRef}>
-        {currtourList.length === 0 ? (
-          <TourLoadingWrapper className="ABC">
-            <div style={{ fontSize: "3rem" }}>
-              등록된 광광지가 없습니다 ㅠㅠ
-            </div>
-          </TourLoadingWrapper>
+        {currtourList ? (
+          currtourList.length > 1 ? (
+            currtourList.map((tour, index) => (
+              <TourSpotBox key={index}>
+                <TourSpotLi>
+                  {tour.cfirstimage ? (
+                    <TourSpotIMG src={tour.cfirstimage} alt="" />
+                  ) : (
+                    <TourSpotIMG src="/img/TourSpot_No_IMG.svg" alt="" />
+                  )}
+                  <TourSpotItemWrapper>
+                    <TourSpotItem>
+                      <TourTitle>{tour.ctitle}</TourTitle>
+                      <TourAddr>
+                        {tour.caddr1}
+                        {tour.caddr2 ? ` ${tour.caddr2}` : null}
+                      </TourAddr>
+                    </TourSpotItem>
+                    <TourSpotItem>
+                      {isArray.includes(tour.contentid) ? (
+                        <TButton
+                          style={{ backgroundColor: "red" }}
+                          onClick={() => {
+                            handleDeleteList(tour.contentid);
+                          }}
+                        >
+                          삭제
+                        </TButton>
+                      ) : (
+                        <TButton
+                          onClick={() => {
+                            addList(index);
+                          }}
+                        >
+                          추가
+                        </TButton>
+                      )}
+                      <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
+                    </TourSpotItem>
+                  </TourSpotItemWrapper>
+                </TourSpotLi>
+              </TourSpotBox>
+            ))
+          ) : (
+            <TourLoadingWrapper className="ABC">
+              <div style={{ fontSize: "3rem" }}>
+                등록된 광광지가 없습니다 ㅠㅠ
+              </div>
+            </TourLoadingWrapper>
+          )
         ) : (
-          currtourList.map((tour, index) => (
-            <TourSpotBox key={index}>
-              <TourSpotLi>
-                {tour.cfirstimage ? (
-                  <TourSpotIMG src={tour.cfirstimage} alt="" />
-                ) : (
-                  <TourSpotIMG src="/img/TourSpot_No_IMG.svg" alt="" />
-                )}
-                <TourSpotItemWrapper>
-                  <TourSpotItem>
-                    <TourTitle>{tour.ctitle}</TourTitle>
-                    <TourAddr>
-                      {tour.caddr1}
-                      {tour.caddr2 ? ` ${tour.caddr2}` : null}
-                    </TourAddr>
-                  </TourSpotItem>
-                  <TourSpotItem>
-                    {isArray.includes(tour.contentid) ? 
-                      <TButton style={{backgroundColor: "red"}} onClick={() => {handleDeleteList(tour.contentid);}}>삭제</TButton>
-                      : <TButton onClick={() => {addList(index);}}>추가</TButton>
-                    }
-                    <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
-                  </TourSpotItem>
-                </TourSpotItemWrapper>
-              </TourSpotLi>
-            </TourSpotBox>
-          ))
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loading></Loading>
+          </div>
         )}
         {isLoading ? (
           <div
@@ -273,29 +289,26 @@ export const TourSpotList = ({
 };
 export const FestivalSpotList = ({
   festivalList,
-  addList,
   isMainLoading,
-  handleDeleteList,
-  selectedAreaName,
-  dateinfo,
+  setSaveTourList,
+  setIsSlideMode,
   saveTourList,
+  handleDeleteList,
 }) => {
   const scrollBoxRef = useRef();
-  const [list, setList] = useState(1);
-  const [max, setMax] = useState();
+  const [list, setList] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [currtourList, setCurrTourList] = useState([...festivalList]);
+  const [currtourList, setCurrTourList] = useState();
+  const max = festivalList.length;
+  console.log(festivalList);
 
-  //0112
   const [isArray, setIsArray] = useState([]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setIsArray([]);
-    const newIsArrays = saveTourList.map((list)=>(
-      list.contentid
-    ));
+    const newIsArrays = saveTourList.map((list) => list.contentid);
     setIsArray(newIsArrays);
-  },[saveTourList])
+  }, [saveTourList]);
 
   const handleScroll = () => {
     const scrollBox = scrollBoxRef.current;
@@ -309,6 +322,7 @@ export const FestivalSpotList = ({
 
   useEffect(() => {
     const scrollBox = scrollBoxRef.current;
+    // setCurrTourList(festivalList[list]);
     if (scrollBox) {
       scrollBox.addEventListener("scroll", handleScroll);
       return () => {
@@ -318,86 +332,95 @@ export const FestivalSpotList = ({
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (max < list) {
-        return;
+    if (max <= list) {
+      return;
+    }
+    setIsLoading(true);
+    try {
+      if (!currtourList) {
+        setCurrTourList(festivalList[list]);
+      } else {
+        setCurrTourList((prev) => [...prev, ...festivalList[list]]);
       }
-      setIsLoading(true);
-      console.log(list);
-      // 여기에 데이터를 가져오는 비동기 로직 추가
-      try {
-        const response = await fetch(
-          `http://apis.data.go.kr/B551011/KorService1/searchFestival1?serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&numOfRows=5&pageNo=${list}&MobileOS=ETC&MobileApp=APPTest&_type=json&eventStartDate=${dateinfo.startDay}&areaCode=${selectedAreaName.mainAreaCode}`
-        );
-        const data = await response.json();
-        console.log("행사결과");
-        console.log(data);
-        // 데이터 처리 로직 추가
-        const festivalData = data.response.body.items.item;
-        const totalcount = data.response.body.totalCount;
-
-        setMax(Math.ceil(totalcount / 5));
-        const festivals = festivalData.map((fd) => ({
-          contentid: fd.contentid,
-          ctitle: fd.title,
-          caddr1: fd.addr1,
-          caddr2: fd.addr2,
-          cfirstimage: fd.firstimage,
-          csecondimage: fd.firstimage2,
-          clatitude: fd.mapy,
-          clongitude: fd.mapx,
-          ceventstartdate: fd.eventstartdate,
-          ceventenddate: fd.eventenddate,
-          ctel: fd.tel,
-        }));
-        setCurrTourList((prev) => [...prev, ...festivals]);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("Fetch Error:", error);
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [list]);
-  console.log("max:" + max);
-  console.log("list:" + list);
+
+  const addList = (index) => {
+    console.log(index);
+    setIsSlideMode(true);
+    if (currtourList[index]) {
+      setSaveTourList(currtourList[index]);
+    }
+  };
   console.log(currtourList);
   return (
     <TourSpotContainer className={isMainLoading ? "off" : null}>
       <TourWrapper ref={scrollBoxRef}>
-        {currtourList.length === 0 ? (
-          <TourLoadingWrapper className="ABC">
-            <div style={{ fontSize: "3rem" }}>등록된 행사가 없습니다 ㅠㅠ</div>
-          </TourLoadingWrapper>
+        {currtourList ? (
+          currtourList.length > 1 ? (
+            currtourList.map((festival, index) => (
+              <TourSpotBox key={index}>
+                <TourSpotLi>
+                  {festival.cfirstimage ? (
+                    <TourSpotIMG src={festival.cfirstimage} alt="" />
+                  ) : (
+                    <TourSpotIMG src="/img/TourSpot_No_IMG.svg" alt="" />
+                  )}
+                  <TourSpotItemWrapper>
+                    <TourSpotItem>
+                      <TourTitle>{festival.ctitle}</TourTitle>
+                      <TourAddr>
+                        {festival.caddr1}
+                        {festival.caddr2 ? ` ${festival.caddr2}` : null}
+                      </TourAddr>
+                    </TourSpotItem>
+                    <TourSpotItem>
+                      {isArray.includes(festival.contentid) ? (
+                        <TButton
+                          style={{ backgroundColor: "red" }}
+                          onClick={() => {
+                            handleDeleteList(festival.contentid);
+                          }}
+                        >
+                          삭제
+                        </TButton>
+                      ) : (
+                        <TButton
+                          onClick={() => {
+                            addList(index);
+                          }}
+                        >
+                          추가
+                        </TButton>
+                      )}
+                      <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
+                    </TourSpotItem>
+                  </TourSpotItemWrapper>
+                </TourSpotLi>
+              </TourSpotBox>
+            ))
+          ) : (
+            <TourLoadingWrapper className="ABC">
+              <div style={{ fontSize: "3rem" }}>
+                등록된 행사가 없습니다 ㅠㅠ
+              </div>
+            </TourLoadingWrapper>
+          )
         ) : (
-          currtourList.map((festival, index) => (
-            <TourSpotBox key={index}>
-              <TourSpotLi>
-                {festival.cfirstimage ? (
-                  <TourSpotIMG src={festival.cfirstimage} alt="" />
-                ) : (
-                  <TourSpotIMG src="/img/TourSpot_No_IMG.svg" alt="" />
-                )}
-                <TourSpotItemWrapper>
-                  <TourSpotItem>
-                    <TourTitle>{festival.ctitle}</TourTitle>
-                    <TourAddr>
-                      {festival.caddr1}
-                      {festival.caddr2 ? ` ${festival.caddr2}` : null}
-                    </TourAddr>
-                  </TourSpotItem>
-                  <TourSpotItem>
-                    {isArray.includes(festival.contentid) ? 
-                      <TButton style={{backgroundColor: "red"}} onClick={() => {handleDeleteList(festival.contentid);}}>삭제</TButton>
-                      : <TButton onClick={() => {addList(index);}}>추가</TButton>
-                    }
-                    <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
-                  </TourSpotItem>
-                </TourSpotItemWrapper>
-              </TourSpotLi>
-            </TourSpotBox>
-          ))
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Loading></Loading>
+          </div>
         )}
         {isLoading ? (
           <div
@@ -414,4 +437,40 @@ export const FestivalSpotList = ({
       </TourWrapper>
     </TourSpotContainer>
   );
+};
+//날씨 예보 특성상 기상청의 데이터를 기반으로 가져오기때문에 접속일 기준 최대 5일까지만 지원합니다
+export const Weather = ({ dateinfo, arealonglat }) => {
+  const apikey = "c75a16b0fcfc4f98a1a34b29ed15d23c";
+  // const date = dateinfo;
+  const longlat = arealonglat;
+  const [weatherData, setWeatherData] = useState();
+  useEffect(() => {
+    console.log("들어옴");
+    console.log(arealonglat);
+    try {
+      axios
+        .get(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${arealonglat.arealatitude}&lon=${arealonglat.arealongitude}&appid=${apikey}&units=metric&lang=kr`
+        )
+        .then((response) => {
+          const responseDate = response.data.list;
+          const saveDate = responseDate.map((item) => ({
+            clouds: item.clouds.all, // 강수확률
+            time: item.dt_txt, // 시간
+            temp: item.main.temp, // 온도
+            wetherState: item.weather[0].main, // 맑음,비 등등의 데이터
+          }));
+          console.log("진입");
+          console.log(response.data);
+          setWeatherData(saveDate);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [longlat]);
+  console.log(weatherData);
+  console.log(dateinfo.startDay);
+  // console.log(new Date(dateinfo.startDay).toISOString().split("T")[0]);
+  // console.log(new Date(weatherData[0].time).toISOString().split("T")[0]);
+  return <div>heelo</div>;
 };
