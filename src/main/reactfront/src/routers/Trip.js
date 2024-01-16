@@ -219,6 +219,7 @@ function Trip() {
       setStartDate(start);
       setEndDate(end);
       setMaxDate();
+      setMinDate(new Date(Date.now()));
       setDateinfo({
         startDay: startDateISO,
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
