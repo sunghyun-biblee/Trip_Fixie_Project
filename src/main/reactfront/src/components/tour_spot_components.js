@@ -569,11 +569,41 @@ export const Weather = ({ dateinfo, arealonglat }) => {
     <>
       {isLoading ? (
         <div>로딩중</div>
-      ) : (
+      ) : dateArray &&
+        new Date(dateinfo.startDay) < today &&
+        new Date(dateinfo.endDay) < today ? (
         <div style={{ width: "100%", overflow: "hidden" }}>
           <div style={{ display: "flex" }}>
-            {dateArray &&
-              dateArray.map((array) => (
+            {dateArray.map((array) => (
+              <div style={{ width: "630px" }}>
+                <h1>{array}</h1>
+                {dateOfWeather[array] &&
+                  dateOfWeather[array].map((item) => {
+                    if (
+                      item.time.includes("00:00:00") ||
+                      item.time.includes("06:00:00") ||
+                      item.time.includes("12:00:00") ||
+                      item.time.includes("18:00:00")
+                    ) {
+                      return (
+                        <div>
+                          <div>{item.time.split(" ")[1]}</div>
+                          <div>{item.temp}</div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div style={{ width: "100%", overflow: "hidden" }}>
+            <div>지원하지 않는 날씨가 포함되어있습니다</div>
+            <div style={{ display: "flex" }}>
+              {subDateArray.map((array) => (
                 <div style={{ width: "630px" }}>
                   <h1>{array}</h1>
                   {dateOfWeather[array] &&
@@ -595,8 +625,9 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                     })}
                 </div>
               ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );
