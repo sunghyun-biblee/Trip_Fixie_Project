@@ -378,7 +378,12 @@ function Trip() {
           ></SaveTripInfo>
         </MotionMainContainer>
 
-        <TripMap selectedAreaName={selectedAreaName}></TripMap>
+        <TripMap
+          selectedAreaName={selectedAreaName}
+          mygeolocation={mygeolocation}
+          setMygeolocation={setMygeolocation}
+          saveTourList={saveTourList}
+        ></TripMap>
       </MotionTripWrapper>
     </AnimatePresence>
   );
