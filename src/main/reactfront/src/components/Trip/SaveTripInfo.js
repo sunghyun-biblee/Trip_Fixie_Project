@@ -41,7 +41,8 @@ export function SaveTripInfo({
   const saveServer = () => {
     const ftitle = document.getElementById("ftitle").value;
 
-    auth.onAuthStateChanged((user) => {
+    if(auth.currentUser) {
+      auth.onAuthStateChanged((user) => {
       console.log("adfdsafdafadf");
       console.log(saveTourList);
       console.log(user.uid);
@@ -62,6 +63,10 @@ export function SaveTripInfo({
           console.error("favorite오류", error);
         });
     });
+  }else{
+    alert("로그인이 필요합니다.")
+  }
+
   };
   console.log(saveTourList);
   return (

@@ -26,6 +26,8 @@ function TourSpot({
   setIsSlideMode,
   saveTourList,
   handleDeleteList,
+  setMode,
+  dateArray,
 }) {
   const [tourList, setTourList] = useState([]);
   const [festivalList, SetFestivalList] = useState([]);
@@ -72,10 +74,16 @@ function TourSpot({
   };
 
   useEffect(() => {
-    if (tourMode === "tour") {
-      viewTour();
-    } else if (tourMode === "festivals") {
-      viewFestival();
+
+    if(selectedAreaName.subAreaCode){
+      if (tourMode === "tour") {
+        viewTour();
+      } else if (tourMode === "festivals") {
+        viewFestival();
+      }
+    }else{
+      alert("먼저 날짜와 장소를 선택해 주세요!!!")
+      setMode("date");
     }
   }, []);
   useEffect(() => {
@@ -170,6 +178,7 @@ function TourSpot({
 
   // 날씨 정보를 조회하기위해 선택한 지역의 위도,경도를 가져옴
   useEffect(() => {
+    if(selectedAreaName.subAreaCode){
     const getWeather = () => {
       const areaCode = selectedAreaName.mainAreaCode;
       try {
@@ -181,11 +190,12 @@ function TourSpot({
       }
     };
     getWeather();
+    }
   }, []);
   console.log(arealonglat);
   return (
     <>
-      <Weather dateinfo={dateinfo} arealonglat={arealonglat} />
+      <Weather dateinfo={dateinfo} arealonglat={arealonglat} dateArray={dateArray} />
       <div style={{ overflow: "hidden" }}>
         {/* <AreaWeather></AreaWeather> */}
         <SelectTourMode

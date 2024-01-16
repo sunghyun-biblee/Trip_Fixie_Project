@@ -127,6 +127,7 @@ export function Mypage() {
         console.error("favorlist오류", error);
       });
   }, [favorFid]);
+
   console.log(favoriteList);
   return (
     <MypageWrapper>

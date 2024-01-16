@@ -68,6 +68,9 @@ function Trip() {
   const [endDate, setEndDate] = useState(null);
   const [minDate, setMinDate] = useState(new Date(Date.now()));
   const [maxDate, setMaxDate] = useState();
+
+  // const [dateArray, setDateArray] = useState([]);
+
   const [mode, setMode] = useState("date");
   const [lastClickedId, setLastClickedId] = useState(null);
   const [weather, setWeather] = useState({
@@ -139,6 +142,7 @@ function Trip() {
     };
     geolocation();
   }, []);
+
   const onChangeMode = (event) => {
     const clickTargetId = event.target.id;
     if (clickTargetId !== "date") {
@@ -193,6 +197,7 @@ function Trip() {
     return endDate && date.getTime() === endDate.getTime() ? "end-date" : "";
   };
 
+
   const onChange = (dates) => {
     const offset =
       new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
@@ -219,6 +224,7 @@ function Trip() {
       setStartDate(start);
       setEndDate(end);
       setMaxDate();
+      setMinDate(new Date(offset));
       setDateinfo({
         startDay: startDateISO,
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
@@ -229,6 +235,7 @@ function Trip() {
     setEndDate(end);
   };
   console.log(mode);
+
   return (
     <AnimatePresence mode="wait">
       <MotionTripWrapper
@@ -248,26 +255,72 @@ function Trip() {
         <StepContainer>
           <Stepbox>
             <StepUl>
-              <StepLi
-                onClick={onChangeMode}
-                id="date"
-                style={{
-                  color: "#03A9F4",
-                  transform: "scale(1.2)",
-                  fontWeight: 900,
-                }}
-              >
-                step 1 <br />
-                날짜 확인
-              </StepLi>
-              <StepLi onClick={onChangeMode} id="space">
-                step 2 <br />
-                장소 선택
-              </StepLi>
-              <StepLi onClick={onChangeMode} id="mt">
-                step 3 <br />
-                숙소 설정
-              </StepLi>
+            {mode === "date" ? (
+                  <StepLi
+                    onClick={onChangeMode}
+                    id="date"
+                    style={{
+                      color: "#03A9F4",
+                      transform: "scale(1.2)",
+                      fontWeight: 900,
+                    }}
+                  >
+                    step 1 <br />
+                    날짜 확인
+                  </StepLi>
+                ) : (
+                  <StepLi
+                    onClick={onChangeMode}
+                    id="date"
+                  >
+                    step 1 <br />
+                    날짜 확인
+                  </StepLi>
+                )}
+              {mode === "space" ? (
+                  <StepLi
+                    onClick={onChangeMode}
+                    id="space"
+                    style={{
+                      color: "#03A9F4",
+                      transform: "scale(1.2)",
+                      fontWeight: 900,
+                    }}
+                  >
+                    step 2 <br />
+                    장소 선택
+                  </StepLi>
+                ) : (
+                  <StepLi
+                    onClick={onChangeMode}
+                    id="space"
+                  >
+                    step 2 <br />
+                    장소 선택
+                  </StepLi>
+                )}
+              {mode === "mt" ? (
+                  <StepLi
+                    onClick={onChangeMode}
+                    id="mt"
+                    style={{
+                      color: "#03A9F4",
+                      transform: "scale(1.2)",
+                      fontWeight: 900,
+                    }}
+                  >
+                    step 3 <br />
+                    숙소 설정
+                  </StepLi>
+                ) : (
+                  <StepLi
+                    onClick={onChangeMode}
+                    id="mt"
+                  >
+                    step 3 <br />
+                    숙소 설정
+                  </StepLi>
+                )}
               <StepLi onClick={onChangeMode} id="kr">
                 step 4 <br />
                 {weather ? weather.sys.country : null}
@@ -354,6 +407,7 @@ function Trip() {
                     setIsSlideMode={setIsSlideMode}
                     handleDeleteList={handleDeleteList}
                     saveTourList={saveTourList}
+                    setMode={setMode}
                   ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
@@ -363,7 +417,55 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                ></Motionitem>
+                >
+                  <GuidTitle>언제?</GuidTitle>
+                  <DateWrapper>
+                    <CustomDatePicker
+                      dateFormat="yyyy/MM/dd"
+                      onChange={onChange}
+                      startDate={startDate}
+                      endDate={endDate}
+                      minDate={minDate}
+                      selectsRange
+                      maxDate={maxDate}
+                      locale={ko}
+                      placeholderText="날짜를 선택해주세요"
+                      dayClassName={(date) =>
+                        `react-datepicker-day ${highlightStartDate(
+                          date
+                        )} ${highlightEndDate(date)}`
+                      }
+                      value={
+                        dateinfo.startDay
+                          ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
+                          : null
+                      }
+                      withPortal
+                      className="calendar_input"
+                    />
+                  </DateWrapper>
+                  <DateBox style={{ display: "flex", alignItems: "center" }}>
+                    <img
+                      src="/img/bell.png"
+                      style={{ width: "30px", height: "30px" }}
+                      alt=""
+                    />
+                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
+                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
+                      로부터 <br />
+                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
+                      지원합니다
+                    </p>
+                  </DateBox>
+                  <DateBox>
+                    <GuidTitle>어디로?</GuidTitle>
+
+                    <TripPlace
+                      weather={weather}
+                      dateinfo={dateinfo}
+                    ></TripPlace>
+                  </DateBox>
+                </Motionitem>
               ) : null}
             </AnimatePresence>
           </MotionBox>
@@ -377,7 +479,12 @@ function Trip() {
           ></SaveTripInfo>
         </MotionMainContainer>
 
-        <TripMap selectedAreaName={selectedAreaName}></TripMap>
+        <TripMap
+          selectedAreaName={selectedAreaName}
+          mygeolocation={mygeolocation}
+          setMygeolocation={setMygeolocation}
+          saveTourList={saveTourList}
+        ></TripMap>
       </MotionTripWrapper>
     </AnimatePresence>
   );

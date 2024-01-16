@@ -71,13 +71,7 @@ function LootSection() {
   const navigate = useNavigate();
 
   const onClicks = () => {
-    //navigate("/trip");
-
-    if (user === null) {
-      setModalOpen(true);
-    } else {
       navigate("/trip");
-    }
   };
 
   return (
