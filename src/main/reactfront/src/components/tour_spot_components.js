@@ -4,6 +4,7 @@ import { TourLoadingWrapper } from "./TourSpot";
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "./atoms/Loading";
 import axios from "axios";
+import { setDate, startOfDay } from "date-fns";
 
 const ModeWrapper = styled.div`
   display: flex;
@@ -177,10 +178,16 @@ export const TourSpotList = ({
     }
   }, []);
   useEffect(() => {
+    if (tourList.length === 0) {
+      setCurrTourList([]);
+      setIsLoading(false);
+      return;
+    }
     if (max <= list) {
       return;
     }
     setIsLoading(true);
+
     try {
       if (!currtourList) {
         setCurrTourList(tourList[list]);
@@ -202,10 +209,10 @@ export const TourSpotList = ({
       setSaveTourList(currtourList[index]);
     }
   };
-
-  console.log("max :" + max);
-  console.log("currlist: " + currtourList ? "true" : "false");
-  console.log(currtourList);
+  console.log(tourList);
+  // console.log("max :" + max);
+  // console.log("currlist: " + currtourList ? "true" : "false");
+  // console.log(currtourList);
   return (
     <TourSpotContainer className={isMainLoading ? "off" : null}>
       <TourWrapper ref={scrollBoxRef}>
@@ -253,7 +260,10 @@ export const TourSpotList = ({
               </TourSpotBox>
             ))
           ) : (
-            <TourLoadingWrapper className="ABC">
+            <TourLoadingWrapper
+              className="ABC"
+              style={{ width: "500px", height: "500px" }}
+            >
               <div style={{ fontSize: "3rem" }}>
                 등록된 광광지가 없습니다 ㅠㅠ
               </div>
@@ -332,6 +342,11 @@ export const FestivalSpotList = ({
   }, []);
 
   useEffect(() => {
+    if (festivalList.length === 0) {
+      setCurrTourList([]);
+      setIsLoading(false);
+      return;
+    }
     if (max <= list) {
       return;
     }
@@ -443,10 +458,21 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   const apikey = "c75a16b0fcfc4f98a1a34b29ed15d23c";
   // const date = dateinfo;
   const longlat = arealonglat;
-  const [weatherData, setWeatherData] = useState();
+
+  const [weatherData, setWeatherData] = useState([]);
+  const [dateOfWeather, setDateOfWeather] = useState();
+  const [dateArray, setDateArray] = useState();
+  const [subDateArray, setSubDateArray] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // const offset = ;
+  // const offset = new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
+  // const today = new Date(offset).toISOString().split("T")[0];
+  const today = new Date();
+  today.setDate(today.getDate() + 5);
+  // toisostring으로 변환하면 utc기준으로 한국 현재시간과 9시간이 차이난다. 이를 메꾸기위해 offset를 뺴주면서 잃어버린 9시간을 찾아오는 것
+
   useEffect(() => {
-    console.log("들어옴");
-    console.log(arealonglat);
     try {
       axios
         .get(
@@ -460,7 +486,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
             temp: item.main.temp, // 온도
             wetherState: item.weather[0].main, // 맑음,비 등등의 데이터
           }));
-          console.log("진입");
+
           console.log(response.data);
           setWeatherData(saveDate);
         });
@@ -468,9 +494,79 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       console.log(error);
     }
   }, [longlat]);
-  console.log(weatherData);
-  console.log(dateinfo.startDay);
-  // console.log(new Date(dateinfo.startDay).toISOString().split("T")[0]);
-  // console.log(new Date(weatherData[0].time).toISOString().split("T")[0]);
-  return <div>heelo</div>;
+
+  useEffect(() => {
+    const groupWeather = weatherData.reduce((prev, data) => {
+      const date = data.time.split(" ")[0];
+
+      // ex) '2024-01-19'와 같은 문자열
+
+      //weatherData안에 time이라는 속성값을 빈 공백을 기준으로 잘라낸다음 0번째 배열을 date로 지정
+      // 만약 해당 날짜에 대한 배열이 없으면 빈 배열로 초기화시킴
+      if (!prev[date]) {
+        prev[date] = [];
+      }
+      // 해당 배열안에 data를 추가
+      prev[date].push(data);
+
+      /* 
+      js에서 배열의 인덱스는 일반적으로 숫자이다. 하지만 객체의 속성(프로퍼티)이름으로는 문자열을 사용 할 수 있다
+
+      따라서 prev[date]는 날짜에 해당하는 문자열을 속성이름으로 가지는 객체가 되는 것이다
+      예를 들어 2024-01-01 이라는 날짜에 대한 데이터를 추가할때 prev["2024-01-01"]는
+      2024-01-01 해당 날짜에 대한 배열을 가지게 된다
+
+      prev는 기본값으로 빈 객체로 지정해두었고, date는 객체의 속성이다
+      (배열의 인덱스라고 생각하면 될것같다)
+
+      예시로 아래와같은 형식처럼 저장이 됨
+
+      const prev={
+        "2024-01-01":["a","b","c"]
+        "2024-01-02":["d","e","f"]
+      } 
+      모든 데이터를 순회하면서 split을 통해 날짜를 구하고, 해당 날짜에 대한 인덱스가 있으면
+      해당 인덱스의 배열에 데이터를 추가하게 되는 것이다
+       */
+
+      return prev;
+    }, []);
+    setDateOfWeather(groupWeather);
+  }, [weatherData]);
+  useEffect(() => {
+    const startDay = new Date(dateinfo.startDay);
+    const endDay = new Date(dateinfo.endDay);
+    const array = [];
+    for (
+      let currentDate = startDay;
+      currentDate <= endDay;
+      currentDate.setDate(currentDate.getDate() + 1)
+    ) {
+      array.push(new Date(currentDate).toISOString().split("T")[0]);
+    }
+
+    setDateArray([...array]);
+    setIsLoading(false);
+  }, []);
+  useEffect(() => {
+    const subStartDay = new Date();
+    const subendDay = today;
+    const subArray = [];
+    for (
+      let currentDate = subStartDay;
+      currentDate <= subendDay;
+      currentDate.setDate(currentDate.getDate() + 1)
+    ) {
+      subArray.push(new Date(currentDate).toISOString().split("T")[0]);
+    }
+    setSubDateArray([...subArray]);
+  }, []);
+  // console.log(dateArray);
+  // console.log(dateOfWeather);
+  // console.log(isLoading);
+  // console.log(subDateArray);
+  // console.log(new Date(dateArray[0]).getDate() > new Date().getDate() + 5);
+  // console.log(offset);
+  // console.log(new Date(dateinfo.startDay).getTime()>)
+  return <h1>123</h1>;
 };

@@ -128,6 +128,7 @@ export function Mypage() {
       });
   }, [favorFid]);
 
+  console.log(favoriteList);
   return (
     <MypageWrapper>
       <MypageHeader>MY PlAN</MypageHeader>

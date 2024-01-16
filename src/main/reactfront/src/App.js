@@ -64,10 +64,6 @@ const router = createBrowserRouter([
     element: <NotFound />,
   },
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
     path: "/trip",
     element: <Trip />,
   },
@@ -105,16 +101,17 @@ function App() {
   useEffect(() => {
     init();
   }, []);
+    
   return (
     <>
-      {isLoading ? (
-        <LoadingScreen>
-          <h1>Loading</h1>
-          <Loading></Loading>
-        </LoadingScreen>
-      ) : (
-        <RouterProvider router={router} />
-      )}
+        {isLoading ? 
+          <LoadingScreen>
+            <h1>Loading</h1>
+            <Loading></Loading>
+          </LoadingScreen>
+         : 
+          <RouterProvider router={router} />
+        }
     </>
   );
 }
