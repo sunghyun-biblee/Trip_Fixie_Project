@@ -95,7 +95,7 @@ function LoginForm({ closeModal }) {
               ></input>
               <input
                 className="Content_Input "
-                type="submit"
+                type="button"
                 value="gitHub"
               ></input>
               <div className="Registe_Box">

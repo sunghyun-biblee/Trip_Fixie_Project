@@ -194,11 +194,16 @@ function Trip() {
   };
 
   const onChange = (dates) => {
+    const offset =
+      new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
+    const today = new Date(offset).toISOString().split("T")[0];
     let [start, end] = dates;
     const startDateObeject = new Date(start).getDay();
-    const startDateISO = new Date(start).toISOString().split("T")[0];
+    const testStart = new Date(start) - new Date().getTimezoneOffset() * 60000;
+    const startDateISO = new Date(testStart).toISOString().split("T")[0];
     const endDateObeject = new Date(end).getDay();
-    const endDateISO = new Date(end).toISOString().split("T")[0];
+    const testend = new Date(end) - new Date().getTimezoneOffset() * 60000;
+    const endDateISO = new Date(testend).toISOString().split("T")[0];
 
     console.log(startDateISO.replace(/-/g, ".")); // "-"문자 모두 "."으로 변환
     if (start && end === null) {
@@ -358,55 +363,7 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                >
-                  <GuidTitle>언제?</GuidTitle>
-                  <DateWrapper>
-                    <CustomDatePicker
-                      dateFormat="yyyy/MM/dd"
-                      onChange={onChange}
-                      startDate={startDate}
-                      endDate={endDate}
-                      minDate={minDate}
-                      selectsRange
-                      maxDate={maxDate}
-                      locale={ko}
-                      placeholderText="날짜를 선택해주세요"
-                      dayClassName={(date) =>
-                        `react-datepicker-day ${highlightStartDate(
-                          date
-                        )} ${highlightEndDate(date)}`
-                      }
-                      value={
-                        dateinfo.startDay
-                          ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
-                          : null
-                      }
-                      withPortal
-                      className="calendar_input"
-                    />
-                  </DateWrapper>
-                  <DateBox style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/img/bell.png"
-                      style={{ width: "30px", height: "30px" }}
-                      alt=""
-                    />
-                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
-                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
-                      로부터 <br />
-                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
-                      지원합니다
-                    </p>
-                  </DateBox>
-                  <DateBox>
-                    <GuidTitle>어디로?</GuidTitle>
-
-                    <TripPlace
-                      weather={weather}
-                      dateinfo={dateinfo}
-                    ></TripPlace>
-                  </DateBox>
-                </Motionitem>
+                ></Motionitem>
               ) : null}
             </AnimatePresence>
           </MotionBox>
@@ -420,7 +377,7 @@ function Trip() {
           ></SaveTripInfo>
         </MotionMainContainer>
 
-        <TripMap></TripMap>
+        <TripMap selectedAreaName={selectedAreaName}></TripMap>
       </MotionTripWrapper>
     </AnimatePresence>
   );

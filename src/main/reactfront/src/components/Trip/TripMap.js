@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./css/TripMap.css";
 
-function TripMap() {
+function TripMap({ selectedAreaName }) {
   useEffect(() => {
     const mapcontainer = document.getElementById("map");
     const map = new window.naver.maps.Map(mapcontainer, {
