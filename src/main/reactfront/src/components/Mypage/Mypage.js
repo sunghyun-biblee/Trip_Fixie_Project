@@ -120,7 +120,6 @@ export function Mypage() {
           clatitude: list.clatitude,
           clongitude: list.clongitude,
           ctel: list.ctel,
-          contenttypeid: list.contenttypeid,
         }));
         setFavoriteList(flist);
       })

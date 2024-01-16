@@ -34,7 +34,7 @@ public class apiController {
 	@GetMapping("/send")
 	public ResponseEntity<String> sayHello(){
 		
-		return ResponseEntity.ok("sexy boy cho sung hyeon");
+		return ResponseEntity.ok("스트리퍼 조성현");
 	}
 	
 	@RequestMapping("/codeout")
