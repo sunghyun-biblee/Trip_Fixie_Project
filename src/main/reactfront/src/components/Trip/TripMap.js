@@ -23,17 +23,6 @@ function TripMap({ selectedAreaName, mygeolocation, setMygeolocation, saveTourLi
           }),
       ]
     })
-    // const marker = [
-    //   new window.naver.maps.Marker({
-    //     position: new window.naver.maps.LatLng("", ""),
-    //     map: map,
-    //   }),
-    //   new window.naver.maps.Marker({
-    //     position: new window.naver.maps.LatLng(37.56604319, 126.98230708),
-    //     map: map,
-    //   }),
-    // ];
-    // const map = new window.naver.maps.Map(mapcontainer);
 
   }, [mygeolocation, saveTourList]);
 

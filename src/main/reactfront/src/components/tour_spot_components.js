@@ -136,6 +136,22 @@ const TButton = styled.button`
   border: 1px solid rgba(0, 0, 0, 0.3);
   cursor: pointer;
 `;
+
+const WTitle = styled.div`
+  position: relative;
+`;
+
+const WH1 = styled.div`  
+font-size: 20px;
+  margin: 0 auto;
+`;
+
+const WButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 0;
+
+`
 export const TourSpotList = ({
   tourList,
   isMainLoading,
@@ -464,6 +480,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   const [dateArray, setDateArray] = useState();
   const [subDateArray, setSubDateArray] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [currWeather, setCurrWeather] = useState();
 
   // const offset = ;
   // const offset = new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
@@ -564,6 +581,15 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   // console.log(isLoading);
   // console.log(subDateArray);
   console.log(dateArray);
+  console.log(dateOfWeather);
+  
+  const slideUp = (index)=>{
+    if(index === dateArray.length-1){
+      setCurrWeather(dateArray[0]);
+    }else{
+      setCurrWeather(dateArray[index+1]);
+    }
+  }
 
   return (
     <>
@@ -572,11 +598,11 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       ) : dateArray &&
         new Date(dateinfo.startDay) < today &&
         new Date(dateinfo.endDay) < today ? (
-        <div style={{ width: "100%", overflow: "hidden" }}>
-          <div style={{ display: "flex" }}>
-            {dateArray.map((array) => (
-              <div style={{ width: "630px" }}>
-                <h1>{array}</h1>
+        <div style={{ width: "630px"}}>
+          <div style={{ display: "flex" , width: "3000px"}}>
+            {dateArray.map((array, index) => (
+              <WTitle style={{ width: "630px", border: "1px solid black", textAlign: "center"}}>
+                <WH1>{array}</WH1>
                 {dateOfWeather[array] &&
                   dateOfWeather[array].map((item) => {
                     if (
@@ -594,7 +620,10 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                     }
                     return null;
                   })}
-              </div>
+                  <WButton onClick={()=>{
+                    slideUp(index);
+                  }}>오른쪽</WButton>
+              </WTitle>
             ))}
           </div>
         </div>
