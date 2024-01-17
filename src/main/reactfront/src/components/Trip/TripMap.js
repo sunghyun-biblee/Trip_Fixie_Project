@@ -2,39 +2,33 @@ import { useEffect, useState } from "react";
 import "./css/TripMap.css";
 import axios from "axios";
 
-function TripMap({ selectedAreaName, mygeolocation, setMygeolocation, saveTourList }) {
-  
+function TripMap({
+  selectedAreaName,
+  mygeolocation,
+  setMygeolocation,
+  saveTourList,
+}) {
   useEffect(() => {
-
     const mapcontainer = document.getElementById("map");
     const map = new window.naver.maps.Map(mapcontainer, {
       center: new window.naver.maps.LatLng(
         mygeolocation.lat,
         mygeolocation.long
       ),
-      zoom: 10,
+      zoom: 14,
     });
-    
-    saveTourList.map((list)=>{
-      const marker = [
-          new window.naver.maps.Marker({
-            position: new window.naver.maps.LatLng(list.clatitude, list.clongitude),
-            map: map,
-          }),
-      ]
-    })
-    // const marker = [
-    //   new window.naver.maps.Marker({
-    //     position: new window.naver.maps.LatLng("", ""),
-    //     map: map,
-    //   }),
-    //   new window.naver.maps.Marker({
-    //     position: new window.naver.maps.LatLng(37.56604319, 126.98230708),
-    //     map: map,
-    //   }),
-    // ];
-    // const map = new window.naver.maps.Map(mapcontainer);
 
+    saveTourList.map((list) => {
+      const marker = [
+        new window.naver.maps.Marker({
+          position: new window.naver.maps.LatLng(
+            list.clatitude,
+            list.clongitude
+          ),
+          map: map,
+        }),
+      ];
+    });
   }, [mygeolocation, saveTourList]);
 
   useEffect(() => {
