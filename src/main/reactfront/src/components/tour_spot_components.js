@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Loading } from "./atoms/Loading";
 import axios from "axios";
 import { setDate, startOfDay } from "date-fns";
+import { ref } from "firebase/storage";
 
 const ModeWrapper = styled.div`
   display: flex;
@@ -137,6 +138,28 @@ const TButton = styled.button`
   border: 1px solid rgba(0, 0, 0, 0.3);
   cursor: pointer;
 `;
+
+const WTitle = styled.div`
+  position: relative;
+  scroll-snap-align: start;
+`;
+
+const WH1 = styled.div`  
+font-size: 20px;
+  margin: 0 auto;
+`;
+
+const WRightButton = styled.button`
+  position: absolute;
+  top: 50%;
+  right: 0;
+`
+const WLeftButton = styled.button`
+  position: absolute;
+  top: 50%;
+  left: 0;
+`
+
 export const TourSpotList = ({
   tourList,
   isMainLoading,
@@ -461,11 +484,13 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   // const date = dateinfo;
   const longlat = arealonglat;
 
+  const slide = useRef();
   const [weatherData, setWeatherData] = useState([]);
   const [dateOfWeather, setDateOfWeather] = useState();
   const [dateArray, setDateArray] = useState();
   const [subDateArray, setSubDateArray] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const [currWeather, setCurrWeather] = useState(100);
 
   // const offset = ;
   // const offset = new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
@@ -480,12 +505,15 @@ export const Weather = ({ dateinfo, arealonglat }) => {
           `https://api.openweathermap.org/data/2.5/forecast?lat=${longlat.arealatitude}&lon=${longlat.arealongitude}&appid=${apikey}&units=metric&lang=kr`
         )
         .then((response) => {
+          console.log("날씨데이터");
+          console.log(response);
           const responseDate = response.data.list;
           const saveDate = responseDate.map((item) => ({
             clouds: item.clouds.all, // 강수확률
             time: item.dt_txt, // 시간
             temp: item.main.temp, // 온도
             wetherState: item.weather[0].main, // 맑음,비 등등의 데이터
+            icon: item.weather[0].icon,
           }));
 
           console.log(response.data);
@@ -567,6 +595,31 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   // console.log(subDateArray);
   console.log(dateArray);
 
+  
+    
+  const slideUp = (index)=>{    
+    const slideBox = slide.current;
+    if((dateArray.length)-1 === index){
+      slideBox.style.transform = `translateX(0)`;
+      setCurrWeather(100);
+    }else{
+    slideBox.style.transform = `translateX(-${currWeather}%)`;
+    setCurrWeather((prev)=> prev+100);
+    }    
+  }
+
+  const slideDown = (index) => {
+    const slideBox = slide.current;
+    if (index === 0) {
+      const lastSectionIndex = dateArray.length - 1;
+      slideBox.style.transform = `translateX(-${lastSectionIndex * 100}%)`;
+      setCurrWeather(lastSectionIndex * 100);
+    } else {
+      slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`;
+      setCurrWeather((prev) => prev - 100);
+    }
+  };
+  console.log(dateOfWeather);
   return (
     <>
       {isLoading ? (
@@ -574,11 +627,11 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       ) : dateArray &&
         new Date(dateinfo.startDay) < today &&
         new Date(dateinfo.endDay) < today ? (
-        <div style={{ width: "100%", overflow: "hidden" }}>
-          <div style={{ display: "flex" }}>
-            {dateArray.map((array) => (
-              <div style={{ flex: "0 0 610px", padding: "1rem" }}>
-                <h1>{array}</h1>
+        <div style={{ width: "100%", overflow: "hidden"}}>
+          <div style={{ display: "flex"}} ref={slide}>
+            {dateArray.map((array, index) => (
+              <WTitle id={index} style={{ flex: "0 0 100%", border: "1px solid black", textAlign: "center"}}>
+                <WH1>{array}</WH1>
                 {dateOfWeather[array] &&
                   dateOfWeather[array].map((item) => {
                     if (
@@ -589,34 +642,32 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                     ) {
                       return (
                         <div>
-                          <div>{item.time.split(" ")[1].split(":")[0]}</div>
+                          <div>{item.time.split(" ")[1]}</div>
                           <div>{item.temp}</div>
                         </div>
                       );
                     }
                     return null;
                   })}
-              </div>
+                  <WRightButton onClick={()=>{
+                    slideUp(index);
+                  }}>오른쪽</WRightButton>
+                  <WLeftButton onClick={()=>{
+                    slideDown(index);
+                  }}>왼쪽
+                  </WLeftButton>
+              </WTitle>
             ))}
           </div>
         </div>
       ) : (
         <>
-          <div
-            style={{
-              width: "100%",
-              overflow: "hidden",
-            }}
-          >
+          <div style={{ width: "100%", overflow: "hidden" }}>
             <div>지원하지 않는 날씨가 포함되어있습니다</div>
-            <div
-              style={{
-                display: "flex",
-              }}
-            >
-              {subDateArray.map((array) => (
-                <div style={{ width: "630px" }}>
-                  <h1>{array}</h1>
+            <div style={{ display: "flex"}} ref={slide}>
+              {subDateArray.map((array, index) => (
+                <WTitle id={index} style={{ flex: "0 0 100%", border: "1px solid black", textAlign: "center"}}>
+                  <WH1>{array}</WH1>
                   {dateOfWeather[array] &&
                     dateOfWeather[array].map((item) => {
                       if (
@@ -627,14 +678,21 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                       ) {
                         return (
                           <div>
-                            <div>{item.time.split(" ")[1].split(":")[0]}시</div>
+                            <div>{item.time.split(" ")[1]}</div>
                             <div>{item.temp}</div>
                           </div>
                         );
                       }
                       return null;
                     })}
-                </div>
+                    <WRightButton onClick={()=>{
+                    slideUp(index);
+                  }}>오른쪽</WRightButton>
+                  <WLeftButton onClick={()=>{
+                    slideDown(index);
+                  }}>왼쪽
+                  </WLeftButton>
+                </WTitle>
               ))}
             </div>
           </div>
