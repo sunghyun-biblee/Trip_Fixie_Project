@@ -69,7 +69,6 @@ function Trip() {
   const [minDate, setMinDate] = useState(new Date(Date.now()));
   const [maxDate, setMaxDate] = useState();
   const [mode, setMode] = useState("date");
-  const [lastClickedId, setLastClickedId] = useState(null);
   const [weather, setWeather] = useState({
     clouds: "",
     coord: { long: "", lat: "" },
@@ -141,44 +140,17 @@ function Trip() {
   }, []);
   const onChangeMode = (event) => {
     const clickTargetId = event.target.id;
-    if (clickTargetId !== "date") {
-      document.getElementById("date").style.color = "gray";
-      document.getElementById("date").style.transform = "scale(1)";
-    }
-    event.target.style.color = "#03A9F4"; //#50DCEF > 연파랑 , #03A9F4> 찐파랑
-    event.target.style.fontWeight = 900;
-    event.target.style.scale = 1;
-    setLastClickedId(clickTargetId);
-    // console.log(lastClickedId);
-
-    if (lastClickedId && lastClickedId !== clickTargetId) {
-      /*  lastClickedId가 true 이고 , lastClickedId와 clickedId 클릭한 태그의 아이디가 다르다면 이전에 클릭한태그의 아이디값을 참조하여 해당태그의 컬러색을 gray색으로 변경
-       이와같은 형식이 가능한 이유는 React의 useState 훅에서 setState함수는
-       비동기로 동작하며, 즉시 상태를 업데이트하지 않는다. 대신 리액트는 일련의 업데이트를 큐에 넣고, 현재 함수가 완전히 종료된 후에 큐를 처리하여 상태를 업데이트한다
-
-       //비동기이기때문에 setState 함수를 지나쳐 다음코드를 실행하기 떄문에 다음함수가 끝난후에 함수가 적용됨
-
-       하지만 아래와 같이 함수형으로 setState를 사용하면 이전 상태값을 기반으로 새로운 상태를 설정할 수 있으며, 이 경우 최신의 상태를 보장한다
-      const [count, setCount] = useState(0);
-
-      const handleClick = () => {
-      setCount(prevCount => prevCount + 1);
-      여기서의 prevCount는 업데이트 이전의 값
-
-        */
-      const lastClicked = document.getElementById(lastClickedId);
-      if (lastClicked) {
-        lastClicked.style.color = "gray";
-        lastClicked.style.fontWeight = 600;
-        lastClicked.style.scale = 0.8;
-      }
-    }
-
-    if (event.target.id === "date") {
+    // sunghyun
+    if (clickTargetId === "date") {
       setMode("date");
-    } else if (event.target.id === "space") {
-      setMode("space");
-    } else if (event.target.id === "mt") {
+    } else if (clickTargetId === "space") {
+      if (!selectedAreaName.subAreaCode) {
+        alert("날짜와 지역을 선택해주세요");
+        return;
+      } else {
+        setMode("space");
+      }
+    } else if (clickTargetId === "mt") {
       setMode("mt");
     }
   };
@@ -196,7 +168,7 @@ function Trip() {
   const onChange = (dates) => {
     const offset =
       new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
-    const today = new Date(offset).toISOString().split("T")[0];
+    // const today = new Date(offset).toISOString().split("T")[0];
     let [start, end] = dates;
     const startDateObeject = new Date(start).getDay();
     const testStart = new Date(start) - new Date().getTimezoneOffset() * 60000;
@@ -229,7 +201,6 @@ function Trip() {
     }
     setEndDate(end);
   };
-  console.log(mode);
   return (
     <AnimatePresence mode="wait">
       <MotionTripWrapper
@@ -252,24 +223,32 @@ function Trip() {
               <StepLi
                 onClick={onChangeMode}
                 id="date"
-                style={{
-                  color: "#03A9F4",
-                  transform: "scale(1.2)",
-                  fontWeight: 900,
-                }}
+                className={mode === "date" ? "color" : null}
               >
                 step 1 <br />
                 날짜 확인
               </StepLi>
-              <StepLi onClick={onChangeMode} id="space">
+              <StepLi
+                onClick={onChangeMode}
+                id="space"
+                className={mode === "space" ? "color" : null}
+              >
                 step 2 <br />
                 장소 선택
               </StepLi>
-              <StepLi onClick={onChangeMode} id="mt">
+              <StepLi
+                onClick={onChangeMode}
+                id="mt"
+                className={mode === "mt" ? "color" : null}
+              >
                 step 3 <br />
                 숙소 설정
               </StepLi>
-              <StepLi onClick={onChangeMode} id="kr">
+              <StepLi
+                onClick={onChangeMode}
+                id="kr"
+                className={mode === "kr" ? "color" : null}
+              >
                 step 4 <br />
                 {weather ? weather.sys.country : null}
               </StepLi>
@@ -346,7 +325,7 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                  style={{ width: " 630px" }}
+                  style={{ width: " 600px" }}
                 >
                   <TourSpot
                     selectedAreaName={selectedAreaName}
@@ -375,6 +354,7 @@ function Trip() {
             handleDeleteList={handleDeleteList}
             handleSlidemode={handleSlidemode}
             isSlideMode={isSlideMode}
+            setMygeolocation={setMygeolocation}
           ></SaveTripInfo>
         </MotionMainContainer>
 

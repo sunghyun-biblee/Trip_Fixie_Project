@@ -60,7 +60,7 @@ export const FontSizemd = styled.p`
 
 export const SaveBox = styled.div`
   height: 100vh;
-  padding: 5rem 3rem 0 3rem;
+  padding: 5rem 2rem 0 2rem;
   margin-left: 1.1rem;
   display: flex;
   flex-direction: column;
@@ -68,7 +68,7 @@ export const SaveBox = styled.div`
 `;
 export const SaveWrapper = styled.div`
   display: flex;
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   padding: 2rem;
   width: 100%;
@@ -96,7 +96,7 @@ export const SaveTourListBox = styled.div`
   height: 350px;
 
   &::-webkit-scrollbar {
-    width: 1rem;
+    width: 5px;
   }
   &::-webkit-scrollbar-thumb {
     height: 30%;

@@ -8,7 +8,7 @@ import { setDate, startOfDay } from "date-fns";
 
 const ModeWrapper = styled.div`
   display: flex;
-  padding: 2rem;
+  padding: 1rem;
   justify-content: center;
 `;
 const TourModeName = styled.div`
@@ -70,7 +70,7 @@ const TourSpotIMG = styled.img`
 const TourWrapper = styled.div`
   overflow-y: scroll;
   &::-webkit-scrollbar {
-    width: 10px; /* 스크롤바의 너비 */
+    width: 7px; /* 스크롤바의 너비 */
   }
   &::-webkit-scrollbar-thumb {
     height: 30%; /* 스크롤바의 길이 */
@@ -84,7 +84,6 @@ const TourWrapper = styled.div`
   }
 `;
 const TourSpotContainer = styled.div`
-  padding: 1rem;
   height: 800px;
   display: flex;
   flex-direction: column;
@@ -99,20 +98,22 @@ const TourSpotBox = styled.div`
 const TourSpotLi = styled.div`
   display: flex;
   height: 160px;
-  justify-content: space-between;
   align-items: center;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  margin-bottom: 15px;
+  margin-bottom: 12px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 `;
 const TourSpotItemWrapper = styled.div`
-  display: grid;
-  grid-template-columns: 330px 100px;
+  /* display: grid;
+  grid-template-columns: 310px 90px; */
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 `;
 const TourSpotItem = styled.div`
-  padding: 0 1rem 0 0.5rem;
   display: flex;
+  justify-content: center;
   flex-direction: column;
 
   p {
@@ -231,10 +232,11 @@ export const TourSpotList = ({
                       <TourTitle>{tour.ctitle}</TourTitle>
                       <TourAddr>
                         {tour.caddr1}
+                        <br />
                         {tour.caddr2 ? ` ${tour.caddr2}` : null}
                       </TourAddr>
                     </TourSpotItem>
-                    <TourSpotItem>
+                    <TourSpotItem style={{ marginRight: "1.25rem" }}>
                       {isArray.includes(tour.contentid) ? (
                         <TButton
                           style={{ backgroundColor: "red" }}
@@ -393,7 +395,7 @@ export const FestivalSpotList = ({
                         {festival.caddr2 ? ` ${festival.caddr2}` : null}
                       </TourAddr>
                     </TourSpotItem>
-                    <TourSpotItem>
+                    <TourSpotItem style={{ marginRight: "1.25rem" }}>
                       {isArray.includes(festival.contentid) ? (
                         <TButton
                           style={{ backgroundColor: "red" }}
@@ -575,7 +577,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
         <div style={{ width: "100%", overflow: "hidden" }}>
           <div style={{ display: "flex" }}>
             {dateArray.map((array) => (
-              <div style={{ width: "630px" }}>
+              <div style={{ flex: "0 0 610px", padding: "1rem" }}>
                 <h1>{array}</h1>
                 {dateOfWeather[array] &&
                   dateOfWeather[array].map((item) => {
@@ -587,7 +589,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                     ) {
                       return (
                         <div>
-                          <div>{item.time.split(" ")[1]}</div>
+                          <div>{item.time.split(" ")[1].split(":")[0]}</div>
                           <div>{item.temp}</div>
                         </div>
                       );
@@ -600,9 +602,18 @@ export const Weather = ({ dateinfo, arealonglat }) => {
         </div>
       ) : (
         <>
-          <div style={{ width: "100%", overflow: "hidden" }}>
+          <div
+            style={{
+              width: "100%",
+              overflow: "hidden",
+            }}
+          >
             <div>지원하지 않는 날씨가 포함되어있습니다</div>
-            <div style={{ display: "flex" }}>
+            <div
+              style={{
+                display: "flex",
+              }}
+            >
               {subDateArray.map((array) => (
                 <div style={{ width: "630px" }}>
                   <h1>{array}</h1>
@@ -616,7 +627,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                       ) {
                         return (
                           <div>
-                            <div>{item.time.split(" ")[1]}</div>
+                            <div>{item.time.split(" ")[1].split(":")[0]}시</div>
                             <div>{item.temp}</div>
                           </div>
                         );

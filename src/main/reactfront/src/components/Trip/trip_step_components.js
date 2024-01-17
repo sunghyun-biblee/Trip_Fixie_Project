@@ -32,4 +32,9 @@ export const StepLi = styled.li`
   text-transform: uppercase;
   font-size: 1.6rem;
   font-weight: 600;
+  &.color {
+    scale: 1;
+    color: #03a9f4;
+    font-weight: 900;
+  }
 `;
