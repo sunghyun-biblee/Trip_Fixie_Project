@@ -29,7 +29,6 @@ import TourSpot from "../components/TourSpot";
 
 const MotionMainContainer = styled.div`
   position: relative;
-
   display: flex;
   height: 100vh;
 `;

@@ -44,7 +44,7 @@ function TripPlace({
   const [subArea, setSubArea] = useState([]); // 서브 지역 코드
   const [baseurl, setBaseurl] = useState(""); // api 호출 url
   const [params, setParams] = useState({}); // api 호출 쿼리문
-  const [citycode, setCitycode] = useState({ citycode: 1, subCitycode: 2 });
+  // const [citycode, setCitycode] = useState({ citycode: 1, subCitycode: 2 });
   const Area = [
     {
       value: 1,
@@ -164,17 +164,17 @@ function TripPlace({
           console.error("Fetch Error:", error);
         });
     }
-  }, [baseurl, params, tripAreaName.subAreaName]);
+  }, [baseurl, params]);
 
   const SelectAreaCode = (event) => {
     console.log("SelectAreaCode");
     console.log(event.target.textContent);
     //메인 지역 선택
     setMainAreaCode(event.target.value);
-    setCitycode({
-      citycode: event.target.value,
-      ...citycode,
-    });
+    // setCitycode({
+    //   citycode: event.target.value,
+    //   ...citycode,
+    // });
     setTripAreaName({
       mainAreaName: event.target.textContent,
       subAreaName: "",
@@ -193,10 +193,10 @@ function TripPlace({
     });
   };
   const SelectSubAreaCode = (event) => {
-    setCitycode({
-      subCitycode: event.target.value,
-      ...citycode,
-    });
+    // setCitycode({
+    //   subCitycode: event.target.value,
+    //   ...citycode,
+    // });
     console.log(event.target.value);
     setSubAreaCode(event.target.value);
     setTripAreaName({
@@ -218,8 +218,11 @@ function TripPlace({
         subAreaCode: "",
       });
     } else if (event.target.className === "sub") {
-      setSubAreaCode();
-      setSubArea([]);
+      // setSubAreaCode();
+      // setSubArea([]);
+      console.log(mainAreaCode);
+      console.log(getSelectedAreaName.mainAreaName);
+
       setTripAreaName({
         mainAreaName: tripAreaName.mainAreaName,
         subAreaName: "",
@@ -229,7 +232,9 @@ function TripPlace({
         subAreaName: "",
         subAreaCode: "",
       }));
-      setMainAreaCode(getSelectedAreaName.mainAreaCode);
+      setMainAreaCode(
+        mainAreaCode ? mainAreaCode : selectedAreaName.mainAreaCode
+      );
       setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
       setParams({
         serviceKey:
@@ -238,7 +243,7 @@ function TripPlace({
         pageNo: "1",
         MobileOS: "ETC",
         MobileApp: "APPTest",
-        areaCode: getSelectedAreaName.mainAreaCode,
+        areaCode: mainAreaCode ? mainAreaCode : selectedAreaName.mainAreaCode,
         _type: "json",
       });
     }
@@ -337,7 +342,7 @@ function TripPlace({
           </Motion_AreaName>
         </AnimatePresence>
         <SelectAreaUl>
-          {!mainAreaCode && !getSelectedAreaName.mainAreaName ? (
+          {!mainAreaCode ? (
             <Areabox>
               {Area.map((city) => (
                 <MotionLi
