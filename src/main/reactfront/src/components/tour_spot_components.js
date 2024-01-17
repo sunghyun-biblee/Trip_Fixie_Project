@@ -619,19 +619,18 @@ export const Weather = ({ dateinfo, arealonglat }) => {
     const slideBox = slide.current;
     slideBox.style.transition = "transform 0.5s";
     if (
-      new Date(dateinfo.startDay) < today && //choiceweather인지 subweather인지 구별
+      new Date(dateinfo.startDay) < today &&          //choiceweather인지 subweather인지 구별
       new Date(dateinfo.endDay) < today
     ) {
-      if (choiceWeather.length - 2 === index) {
-        //무한슬라이드쇼 구현을 위해 배열앞뒤에 마지막과 처음의 요소를 추가해놓은 상태이므로 마지막요소를 찾을때는 length에서 -1만 하는게 아니라 -2를 해주어야한다.
-        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`; //현재 받아온 인덱스번호에서 +1 *100을 하여 다음요소의 위치를 설정
+      if (choiceWeather.length - 2 === index) {       //무한슬라이드쇼 구현을 위해 배열앞뒤에 마지막과 처음의 요소를 추가해놓은 상태이므로 마지막요소를 찾을때는 length에서 -1만 하는게 아니라 -2를 해주어야한다.
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;  //현재 받아온 인덱스번호에서 +1 *100을 하여 다음요소의 위치를 설정 
 
         setTimeout(() => {
           slideBox.style.transition = "";
           slideBox.style.transform = `translateX(-100%)`; //마지막에 도달했을때 똑같이 +1 *100을 해서 보여준뒤 부드러운 전환을 위하여 슬라이드 모션 삭제 후 배열의 끝에 있던 값과 동일한 값을 가진 배열의 인덱스 1번으로 이동한다.
         }, 500);
       } else {
-        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;  
       }
     } else {
       if (subWeather.length - 2 === index) {
@@ -653,19 +652,17 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       new Date(dateinfo.startDay) < today &&
       new Date(dateinfo.endDay) < today
     ) {
-      if (index === 1) {
-        // 가장 처음 섹션에서 버튼을 누르면 마지막 섹션으로 이동
+      if (index === 1) {  // 가장 처음 섹션에서 버튼을 누르면 마지막 섹션으로 이동
         slideBox.style.transform = `translateX(0)`; //배열의 가장 첫번째 내용 == 요소의 마지막 내용 이기 때문에 일단 가장 처음으로 이동시킨 뒤.
 
         setTimeout(() => {
           slideBox.style.transition = "";
-          slideBox.style.transform = `translateX(-${
-            //실제 위치를 (choiceWeather.length - 2) * 100를 통하여 얻어낸 후 적용
+          slideBox.style.transform = `translateX(-${  //실제 위치를 (choiceWeather.length - 2) * 100를 통하여 얻어낸 후 적용
             (choiceWeather.length - 2) * 100
           }%)`;
         }, 500);
       } else {
-        slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`; //up로직과 반대로 -1 *100하여 왼쪽으로 한칸씩 이동
+        slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`;  //up로직과 반대로 -1 *100하여 왼쪽으로 한칸씩 이동
       }
     } else {
       if (index === 1) {
@@ -692,7 +689,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
         new Date(dateinfo.endDay) < today ? (
         <div style={{ width: "100%", overflow: "hidden" }}>
           <div
-            style={{ display: "flex", transform: "translateX(-100%)" }} //처음부터 translateX(-100%)적용하여 원하는 처음 요소가 보일 수 있도록 설정.
+            style={{ display: "flex", transform: "translateX(-100%)" }}     //처음부터 translateX(-100%)적용하여 원하는 처음 요소가 보일 수 있도록 설정.
             ref={slide}
           >
             {choiceWeather &&
@@ -717,13 +714,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                         <>
                           <div>
                             <div>{list.time.split(" ")[1]}</div>
-                            <div>
-                              {list.temp}{" "}
-                              <img
-                                src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`}
-                                alt=""
-                              />
-                            </div>
+                            <div>{list.temp} <img src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`} alt="" /></div>                          
                           </div>
                           <WRightButton
                             onClick={() => {
@@ -779,13 +770,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                           <>
                             <div>
                               <div>{list.time.split(" ")[1]}</div>
-                              <div>
-                                {list.temp}{" "}
-                                <img
-                                  src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`}
-                                  alt=""
-                                />
-                              </div>
+                              <div>{list.temp} <img src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`} alt="" /></div>                          
                             </div>
                             <WRightButton
                               onClick={() => {
