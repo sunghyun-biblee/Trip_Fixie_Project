@@ -74,16 +74,15 @@ function TourSpot({
   };
 
   useEffect(() => {
-
-    if(selectedAreaName.subAreaCode){
+    if (selectedAreaName.subAreaCode) {
       if (tourMode === "tour") {
         viewTour();
       } else if (tourMode === "festivals") {
         viewFestival();
       }
-    }else{
-      alert("먼저 날짜와 장소를 선택해 주세요!!!")
+    } else {
       setMode("date");
+      alert("먼저 날짜와 장소를 선택해 주세요!!!");
     }
   }, []);
   useEffect(() => {
@@ -178,24 +177,28 @@ function TourSpot({
 
   // 날씨 정보를 조회하기위해 선택한 지역의 위도,경도를 가져옴
   useEffect(() => {
-    if(selectedAreaName.subAreaCode){
-    const getWeather = () => {
-      const areaCode = selectedAreaName.mainAreaCode;
-      try {
-        axios.post("/test/getLongLat", areaCode).then((response) => {
-          setArealonglat({ ...response.data });
-        });
-      } catch (error) {
-        console.error(error + "!!");
-      }
-    };
-    getWeather();
+    if (selectedAreaName.subAreaCode) {
+      const getWeather = () => {
+        const areaCode = selectedAreaName.mainAreaCode;
+        try {
+          axios.post("/test/getLongLat", areaCode).then((response) => {
+            setArealonglat({ ...response.data });
+          });
+        } catch (error) {
+          console.error(error + "!!");
+        }
+      };
+      getWeather();
     }
   }, []);
   console.log(arealonglat);
   return (
     <>
-      <Weather dateinfo={dateinfo} arealonglat={arealonglat} dateArray={dateArray} />
+      <Weather
+        dateinfo={dateinfo}
+        arealonglat={arealonglat}
+        dateArray={dateArray}
+      />
       <div style={{ overflow: "hidden" }}>
         {/* <AreaWeather></AreaWeather> */}
         <SelectTourMode

@@ -28,20 +28,23 @@ function TripPlace({
   selectedAreaName,
 }) {
   const [tripAreaName, setTripAreaName] = useState({
-    mainAreaName: "",
-    subAreaName: "",
+    mainAreaName: selectedAreaName.mainAreaName,
+    subAreaName: selectedAreaName.subAreaName,
   });
   const [getSelectedAreaName, setGetSelectedAreaName] = useState({
     ...selectedAreaName,
   });
   const [locations, setLocations] = useState([]); //장소 검색 결과
-  const [mainAreaCode, setMainAreaCode] = useState(""); // 메인지역 코드
-  const [subAreaCode, setSubAreaCode] = useState();
+  const [mainAreaCode, setMainAreaCode] = useState(
+    selectedAreaName.mainAreaCode ? selectedAreaName.mainAreaCode : ""
+  ); // 메인지역 코드
+  const [subAreaCode, setSubAreaCode] = useState(
+    selectedAreaName.subAreaCode ? selectedAreaName.subAreaCode : ""
+  );
   const [subArea, setSubArea] = useState([]); // 서브 지역 코드
   const [baseurl, setBaseurl] = useState(""); // api 호출 url
   const [params, setParams] = useState({}); // api 호출 쿼리문
   const [citycode, setCitycode] = useState({ citycode: 1, subCitycode: 2 });
-  const [disableSubArea, setdDisableSubArea] = useState(false);
   const Area = [
     {
       value: 1,
@@ -115,7 +118,7 @@ function TripPlace({
 
   // const queryString = new URLSearchParams(params).toString();
   // const requrl = `${baseurl}?${queryString}`;
-  
+
   useEffect(() => {
     if (baseurl && Object.keys(params).length > 0) {
       const queryString = new URLSearchParams(params).toString();
@@ -131,6 +134,7 @@ function TripPlace({
           return response.json();
         })
         .then((data) => {
+          console.log(data);
           //console.log(Object.keys(params)[8]);
           if (Object.keys(params)[8] === "eventStartDate") {
             const newLocations = [...locations];
@@ -146,6 +150,8 @@ function TripPlace({
           } else if (Object.keys(params)[7] === "contentTypeId") {
           } else if (Object.keys(params)[5] === "_type") {
           } else {
+            console.log("진입");
+            console.log(data.response.body.items.item);
             const areadata = data.response.body.items.item;
             const subAreadata = areadata.map((item) => ({
               value: item.code,
@@ -158,29 +164,11 @@ function TripPlace({
           console.error("Fetch Error:", error);
         });
     }
-  }, [baseurl, params]);
-
-  const searchPlace = () => {
-    setLocations([]);
-    const areaCode = mainAreaCode;
-    console.log(areaCode);
-    setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
-    setParams({
-      serviceKey:
-        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
-      numOfRows: "50",
-      pageNo: "1",
-      MobileOS: "ETC",
-      MobileApp: "APPTest",
-      areaCode: areaCode,
-      arrange: "A",
-      _type: "json",
-      eventStartDate: "20240102",
-    });
-  };
+  }, [baseurl, params, tripAreaName.subAreaName]);
 
   const SelectAreaCode = (event) => {
     console.log("SelectAreaCode");
+    console.log(event.target.textContent);
     //메인 지역 선택
     setMainAreaCode(event.target.value);
     setCitycode({
@@ -188,10 +176,10 @@ function TripPlace({
       ...citycode,
     });
     setTripAreaName({
-      ...tripAreaName,
       mainAreaName: event.target.textContent,
+      subAreaName: "",
     });
-    setGetSelectedAreaName({ mainAreaName: "", submitAreaName: "" });
+    // setGetSelectedAreaName({ mainAreaName: "", submitAreaName: "" });
     setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
     setParams({
       serviceKey:
@@ -205,10 +193,6 @@ function TripPlace({
     });
   };
   const SelectSubAreaCode = (event) => {
-    if (event.target.value === subAreaCode) {
-    }
-    setdDisableSubArea((mode) => !mode);
-
     setCitycode({
       subCitycode: event.target.value,
       ...citycode,
@@ -221,78 +205,42 @@ function TripPlace({
     });
   };
 
-  const SelectTourList = () => {
-    //관광지 조회
-    console.log(citycode);
-    setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaBasedList1");
-    setParams({
-      serviceKey:
-        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
-      numOfRows: "50",
-      pageNo: "1",
-      MobileOS: "ETC",
-      MobileApp: "APPTest",
-      areaCode: citycode.citycode,
-      sigunguCode: citycode.subCitycode,
-      contentTypeId: "12",
-      _type: "json",
-    });
-  };
-
-  const SelectFestivalList = () => {
-    //행사,축제 조회
-    setBaseurl("http://apis.data.go.kr/B551011/KorService1/searchFestival1");
-    setParams({
-      serviceKey:
-        "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
-      numOfRows: "50",
-      pageNo: "1",
-      MobileOS: "ETC",
-      MobileApp: "APPTest",
-      _type: "json",
-      eventStartDate: dateinfo.startDay,
-      areaCode: citycode.citycode,
-    });
-  };
-
-  const update = () => {
-    axios
-      .get("/test/send")
-      .then((response) => {
-        alert(response.data);
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error("에러", error);
-      });
-  };
-
-  //const sampledata = {areacode: 1};
-
-  const codeOut = () => {
-    axios
-      .post("/test/codeout", {
-        areacode: 1,
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error("에러떴어요 시발", error);
-      });
-  };
   const resetArea = async (event) => {
     if (event.target.className === "main") {
-      setdDisableSubArea(false);
-      setSubAreaCode();
       setSubArea([]);
+      setSubAreaCode();
       setMainAreaCode();
       setTripAreaName({ mainAreaName: "", subAreaName: "" });
-      setGetSelectedAreaName({ mainAreaName: "", subAreaName: "" });
+      setGetSelectedAreaName({
+        mainAreaName: "",
+        subAreaName: "",
+        mainAreaCode: "",
+        subAreaCode: "",
+      });
     } else if (event.target.className === "sub") {
-      setdDisableSubArea(false);
-
-      console.log(subAreaCode);
+      setSubAreaCode();
+      setSubArea([]);
+      setTripAreaName({
+        mainAreaName: tripAreaName.mainAreaName,
+        subAreaName: "",
+      });
+      setGetSelectedAreaName((prev) => ({
+        ...prev,
+        subAreaName: "",
+        subAreaCode: "",
+      }));
+      setMainAreaCode(getSelectedAreaName.mainAreaCode);
+      setBaseurl("http://apis.data.go.kr/B551011/KorService1/areaCode1"); //서브지역 코드받기
+      setParams({
+        serviceKey:
+          "cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe+UO09zOLEg6ZTpX9TWrdJPSJcFQYCZ+6fqhkD2ZVA==",
+        numOfRows: "50",
+        pageNo: "1",
+        MobileOS: "ETC",
+        MobileApp: "APPTest",
+        areaCode: getSelectedAreaName.mainAreaCode,
+        _type: "json",
+      });
     }
   };
   const submitAreaName = () => {
@@ -304,16 +252,21 @@ function TripPlace({
         subAreaCode: subAreaCode,
       });
       setMode("space");
-      console.log("submit AreaName !!");
     }
   };
+  // console.log(getSelectedAreaName);
+  // console.log(subArea);
+  // console.log(tripAreaName.mainAreaName);
+  // console.log(tripAreaName.subAreaName);
+  // console.log(mainAreaCode);
+  // console.log(subAreaCode);
   return (
     <PlaceWrapper>
       <Tripbox
         className="one
       "
       >
-        {tripAreaName.subAreaName ? (
+        {/* {tripAreaName.subAreaName ? (
           <button
             onClick={() => {
               setMainAreaCode();
@@ -325,12 +278,12 @@ function TripPlace({
           >
             초기화
           </button>
-        ) : null}
+        ) : null} */}
         <AnimatePresence>
           {/* sunhyun */}
           <Motion_AreaName style={{ marginTop: "5px" }}>
-            {tripAreaName.mainAreaName !== "" ||
-            getSelectedAreaName.mainAreaName ? (
+            {getSelectedAreaName.mainAreaName ||
+            tripAreaName.mainAreaName !== "" ? (
               <>
                 <TripArea
                   className="main"
@@ -342,7 +295,7 @@ function TripPlace({
                   onClick={resetArea}
                 >
                   <p className="main">
-                    {tripAreaName.mainAreaName !== ""
+                    {tripAreaName.mainAreaName
                       ? tripAreaName.mainAreaName
                       : getSelectedAreaName.mainAreaName}
                   </p>
@@ -384,7 +337,7 @@ function TripPlace({
           </Motion_AreaName>
         </AnimatePresence>
         <SelectAreaUl>
-          {!mainAreaCode ? (
+          {!mainAreaCode && !getSelectedAreaName.mainAreaName ? (
             <Areabox>
               {Area.map((city) => (
                 <MotionLi
@@ -400,8 +353,23 @@ function TripPlace({
               ))}
             </Areabox>
           ) : (
-            <Areabox className={!disableSubArea ? "off" : "on"}>
-              {!disableSubArea ? (
+            <Areabox
+              className={
+                tripAreaName.subAreaName || getSelectedAreaName.subAreaName
+                  ? "on"
+                  : "off"
+              }
+            >
+              {tripAreaName.subAreaName || getSelectedAreaName.subAreaName ? (
+                <MotionAreaSelectBtn
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={submitAreaName}
+                >
+                  <p>선택 완료 !</p>
+                </MotionAreaSelectBtn>
+              ) : (
                 subArea.map((subarea) => (
                   <MotionLi
                     key={subarea.value + Math.floor(Math.random() * 1000)}
@@ -414,24 +382,10 @@ function TripPlace({
                     {subarea.subAreaname}
                   </MotionLi>
                 ))
-              ) : (
-                <MotionAreaSelectBtn
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  onClick={submitAreaName}
-                >
-                  <p>선택 완료 !</p>
-                </MotionAreaSelectBtn>
               )}
             </Areabox>
           )}
         </SelectAreaUl>
-        <button onClick={searchPlace} style={{ marginTop: "20px" }}>
-          Search
-        </button>
-        <button onClick={SelectTourList}>관광지 검색</button>
-        <button onClick={update}>update</button>
       </Tripbox>
     </PlaceWrapper>
   );
