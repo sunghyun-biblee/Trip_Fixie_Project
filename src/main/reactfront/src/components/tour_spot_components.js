@@ -144,8 +144,8 @@ const WTitle = styled.div`
   scroll-snap-align: start;
 `;
 
-const WH1 = styled.div`  
-font-size: 20px;
+const WH1 = styled.div`
+  font-size: 20px;
   margin: 0 auto;
 `;
 
@@ -153,12 +153,12 @@ const WRightButton = styled.button`
   position: absolute;
   top: 50%;
   right: 0;
-`
+`;
 const WLeftButton = styled.button`
   position: absolute;
   top: 50%;
   left: 0;
-`
+`;
 
 export const TourSpotList = ({
   tourList,
@@ -486,11 +486,11 @@ export const Weather = ({ dateinfo, arealonglat }) => {
 
   const slide = useRef();
   const [weatherData, setWeatherData] = useState([]);
-  const [dateOfWeather, setDateOfWeather] = useState();
+  const [subWeather, setSubWeather] = useState();
   const [dateArray, setDateArray] = useState();
   const [subDateArray, setSubDateArray] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [currWeather, setCurrWeather] = useState(100);
+  const [choiceWeather, setChoiceWeather] = useState();
 
   // const offset = ;
   // const offset = new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
@@ -559,8 +559,28 @@ export const Weather = ({ dateinfo, arealonglat }) => {
 
       return prev;
     }, []);
-    setDateOfWeather(groupWeather);
-    setIsLoading(false);
+    console.log("섹스");
+
+    if (dateArray) {
+      const sampleArray = [groupWeather[dateArray[dateArray.length - 1]]];
+      for (let i = 0; i < dateArray.length; i++) {
+        sampleArray.push(groupWeather[dateArray[i]]);
+      }
+      sampleArray.push(groupWeather[dateArray[0]]);
+
+      const sampleArray2 = [
+        groupWeather[subDateArray[subDateArray.length - 1]],
+      ];
+      for (let i = 0; i < subDateArray.length; i++) {
+        sampleArray2.push(groupWeather[subDateArray[i]]);
+      }
+      sampleArray2.push(groupWeather[subDateArray[0]]);
+
+      console.log(sampleArray);
+      setChoiceWeather(sampleArray);
+      setSubWeather(sampleArray2);
+      setIsLoading(false);
+    }
   }, [weatherData]);
   useEffect(() => {
     const startDay = new Date(dateinfo.startDay);
@@ -595,31 +615,74 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   // console.log(subDateArray);
   console.log(dateArray);
 
-  
-    
-  const slideUp = (index)=>{    
+  const slideUp = (index) => {
     const slideBox = slide.current;
-    if((dateArray.length)-1 === index){
-      slideBox.style.transform = `translateX(0)`;
-      setCurrWeather(100);
-    }else{
-    slideBox.style.transform = `translateX(-${currWeather}%)`;
-    setCurrWeather((prev)=> prev+100);
-    }    
-  }
+    slideBox.style.transition = "transform 0.5s";
+    if (
+      new Date(dateinfo.startDay) < today && //choiceweather인지 subweather인지 구별
+      new Date(dateinfo.endDay) < today
+    ) {
+      if (choiceWeather.length - 2 === index) {
+        //무한슬라이드쇼 구현을 위해 배열앞뒤에 마지막과 처음의 요소를 추가해놓은 상태이므로 마지막요소를 찾을때는 length에서 -1만 하는게 아니라 -2를 해주어야한다.
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`; //현재 받아온 인덱스번호에서 +1 *100을 하여 다음요소의 위치를 설정
 
-  const slideDown = (index) => {
-    const slideBox = slide.current;
-    if (index === 0) {
-      const lastSectionIndex = dateArray.length - 1;
-      slideBox.style.transform = `translateX(-${lastSectionIndex * 100}%)`;
-      setCurrWeather(lastSectionIndex * 100);
+        setTimeout(() => {
+          slideBox.style.transition = "";
+          slideBox.style.transform = `translateX(-100%)`; //마지막에 도달했을때 똑같이 +1 *100을 해서 보여준뒤 부드러운 전환을 위하여 슬라이드 모션 삭제 후 배열의 끝에 있던 값과 동일한 값을 가진 배열의 인덱스 1번으로 이동한다.
+        }, 500);
+      } else {
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;
+      }
     } else {
-      slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`;
-      setCurrWeather((prev) => prev - 100);
+      if (subWeather.length - 2 === index) {
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;
+
+        setTimeout(() => {
+          slideBox.style.transition = "";
+          slideBox.style.transform = `translateX(-100%)`;
+        }, 500);
+      } else {
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;
+      }
     }
   };
-  console.log(dateOfWeather);
+  const slideDown = (index) => {
+    const slideBox = slide.current;
+    slideBox.style.transition = "transform 0.5s";
+    if (
+      new Date(dateinfo.startDay) < today &&
+      new Date(dateinfo.endDay) < today
+    ) {
+      if (index === 1) {
+        // 가장 처음 섹션에서 버튼을 누르면 마지막 섹션으로 이동
+        slideBox.style.transform = `translateX(0)`; //배열의 가장 첫번째 내용 == 요소의 마지막 내용 이기 때문에 일단 가장 처음으로 이동시킨 뒤.
+
+        setTimeout(() => {
+          slideBox.style.transition = "";
+          slideBox.style.transform = `translateX(-${
+            //실제 위치를 (choiceWeather.length - 2) * 100를 통하여 얻어낸 후 적용
+            (choiceWeather.length - 2) * 100
+          }%)`;
+        }, 500);
+      } else {
+        slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`; //up로직과 반대로 -1 *100하여 왼쪽으로 한칸씩 이동
+      }
+    } else {
+      if (index === 1) {
+        slideBox.style.transform = `translateX(0)`;
+
+        setTimeout(() => {
+          slideBox.style.transition = "";
+          slideBox.style.transform = `translateX(-${
+            (subWeather.length - 2) * 100
+          }%)`;
+        }, 500);
+      } else {
+        slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`;
+      }
+    }
+  };
+
   return (
     <>
       {isLoading ? (
@@ -627,73 +690,125 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       ) : dateArray &&
         new Date(dateinfo.startDay) < today &&
         new Date(dateinfo.endDay) < today ? (
-        <div style={{ width: "100%", overflow: "hidden"}}>
-          <div style={{ display: "flex"}} ref={slide}>
-            {dateArray.map((array, index) => (
-              <WTitle id={index} style={{ flex: "0 0 100%", border: "1px solid black", textAlign: "center"}}>
-                <WH1>{array}</WH1>
-                {dateOfWeather[array] &&
-                  dateOfWeather[array].map((item) => {
+        <div style={{ width: "100%", overflow: "hidden" }}>
+          <div
+            style={{ display: "flex", transform: "translateX(-100%)" }} //처음부터 translateX(-100%)적용하여 원하는 처음 요소가 보일 수 있도록 설정.
+            ref={slide}
+          >
+            {choiceWeather &&
+              choiceWeather.map((item, index) => (
+                <WTitle
+                  style={{
+                    flex: "0 0 100%",
+                    border: "1px solid black",
+                    textAlign: "center",
+                  }}
+                  key={index}
+                >
+                  <WH1>{item[0].time.split(" ")[0]}</WH1>
+                  {item.map((list) => {
                     if (
-                      item.time.includes("00:00:00") ||
-                      item.time.includes("06:00:00") ||
-                      item.time.includes("12:00:00") ||
-                      item.time.includes("18:00:00")
+                      list.time.includes("00:00:00") ||
+                      list.time.includes("06:00:00") ||
+                      list.time.includes("12:00:00") ||
+                      list.time.includes("18:00:00")
                     ) {
                       return (
-                        <div>
-                          <div>{item.time.split(" ")[1]}</div>
-                          <div>{item.temp}</div>
-                        </div>
+                        <>
+                          <div>
+                            <div>{list.time.split(" ")[1]}</div>
+                            <div>
+                              {list.temp}{" "}
+                              <img
+                                src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`}
+                                alt=""
+                              />
+                            </div>
+                          </div>
+                          <WRightButton
+                            onClick={() => {
+                              slideUp(index);
+                              console.log(index);
+                            }}
+                          >
+                            오른쪽
+                          </WRightButton>
+                          <WLeftButton
+                            onClick={() => {
+                              slideDown(index);
+                            }}
+                          >
+                            왼쪽
+                          </WLeftButton>
+                        </>
                       );
                     }
                     return null;
                   })}
-                  <WRightButton onClick={()=>{
-                    slideUp(index);
-                  }}>오른쪽</WRightButton>
-                  <WLeftButton onClick={()=>{
-                    slideDown(index);
-                  }}>왼쪽
-                  </WLeftButton>
-              </WTitle>
-            ))}
+                </WTitle>
+              ))}
           </div>
         </div>
       ) : (
         <>
           <div style={{ width: "100%", overflow: "hidden" }}>
             <div>지원하지 않는 날씨가 포함되어있습니다</div>
-            <div style={{ display: "flex"}} ref={slide}>
-              {subDateArray.map((array, index) => (
-                <WTitle id={index} style={{ flex: "0 0 100%", border: "1px solid black", textAlign: "center"}}>
-                  <WH1>{array}</WH1>
-                  {dateOfWeather[array] &&
-                    dateOfWeather[array].map((item) => {
+            <div
+              style={{ display: "flex", transform: "translateX(-100%)" }}
+              ref={slide}
+            >
+              {subWeather &&
+                subWeather.map((item, index) => (
+                  <WTitle
+                    style={{
+                      flex: "0 0 100%",
+                      border: "1px solid black",
+                      textAlign: "center",
+                    }}
+                    key={index}
+                  >
+                    <WH1>{item[0].time.split(" ")[0]}</WH1>
+                    {item.map((list) => {
                       if (
-                        item.time.includes("00:00:00") ||
-                        item.time.includes("06:00:00") ||
-                        item.time.includes("12:00:00") ||
-                        item.time.includes("18:00:00")
+                        list.time.includes("00:00:00") ||
+                        list.time.includes("06:00:00") ||
+                        list.time.includes("12:00:00") ||
+                        list.time.includes("18:00:00")
                       ) {
                         return (
-                          <div>
-                            <div>{item.time.split(" ")[1]}</div>
-                            <div>{item.temp}</div>
-                          </div>
+                          <>
+                            <div>
+                              <div>{list.time.split(" ")[1]}</div>
+                              <div>
+                                {list.temp}{" "}
+                                <img
+                                  src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`}
+                                  alt=""
+                                />
+                              </div>
+                            </div>
+                            <WRightButton
+                              onClick={() => {
+                                slideUp(index);
+                                console.log(index);
+                              }}
+                            >
+                              오른쪽
+                            </WRightButton>
+                            <WLeftButton
+                              onClick={() => {
+                                slideDown(index);
+                              }}
+                            >
+                              왼쪽
+                            </WLeftButton>
+                          </>
                         );
                       }
                       return null;
                     })}
-                    <WRightButton onClick={()=>{
-                    slideUp(index);
-                  }}>오른쪽</WRightButton>
-                  <WLeftButton onClick={()=>{
-                    slideDown(index);
-                  }}>왼쪽
-                  </WLeftButton>
-                </WTitle>
-              ))}
+                  </WTitle>
+                ))}
             </div>
           </div>
         </>
