@@ -107,6 +107,7 @@ function Trip() {
     // 필터링된 배열을 원래의 saveTourList 상태로 업데이트합니다.
     setSaveTourList(filteredList);
   };
+  const [detailData, setDetailData] = useState();
 
   useEffect(() => {
     const geolocation = async () => {
@@ -314,6 +315,7 @@ function Trip() {
                       setSelectedAreaName={setSelectedAreaName}
                       selectedAreaName={selectedAreaName}
                       setMode={setMode}
+                      setSaveTourList={setSaveTourList}
                     ></TripPlace>
                   </DateBox>
                 </Motionitem>
@@ -333,6 +335,7 @@ function Trip() {
                     setIsSlideMode={setIsSlideMode}
                     handleDeleteList={handleDeleteList}
                     saveTourList={saveTourList}
+                    setDetailData={setDetailData}
                   ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
@@ -362,6 +365,8 @@ function Trip() {
           mygeolocation={mygeolocation}
           setMygeolocation={setMygeolocation}
           saveTourList={saveTourList}
+          detailData={detailData}
+          setDetailData={setDetailData}
         ></TripMap>
       </MotionTripWrapper>
     </AnimatePresence>

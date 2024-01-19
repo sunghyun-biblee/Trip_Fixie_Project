@@ -28,6 +28,7 @@ function TourSpot({
   handleDeleteList,
   setMode,
   dateArray,
+  setDetailData,
 }) {
   const [tourList, setTourList] = useState([]);
   const [festivalList, SetFestivalList] = useState([]);
@@ -229,6 +230,7 @@ function TourSpot({
               setIsSlideMode={setIsSlideMode}
               handleDeleteList={handleDeleteList}
               saveTourList={saveTourList}
+              setDetailData={setDetailData}
             ></TourSpotList>
           )
         ) : tourMode === "festivals" ? (
@@ -253,6 +255,7 @@ function TourSpot({
                 setIsSlideMode={setIsSlideMode}
                 handleDeleteList={handleDeleteList}
                 saveTourList={saveTourList}
+                setDetailData={setDetailData}
               ></FestivalSpotList>
             )}
           </>

@@ -191,6 +191,7 @@ export function Mypage() {
         </MypageSection>
         {isDetail ? (
           <DetailContainer
+            className="eeeeeeee"
             ref={detailBackground}
             onClick={(e) => {
               if (e.target === detailBackground.current) {

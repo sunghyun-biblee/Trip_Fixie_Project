@@ -6,10 +6,12 @@ import { Loading } from "./atoms/Loading";
 import axios from "axios";
 import { setDate, startOfDay } from "date-fns";
 import { ref } from "firebase/storage";
+import { FontSizemd, FontSizesm } from "./Trip/trip_save_components";
+
 
 const ModeWrapper = styled.div`
   display: flex;
-  padding: 1rem;
+  padding: 1.5rem;
   justify-content: center;
 `;
 const TourModeName = styled.div`
@@ -20,21 +22,22 @@ const TourModeName = styled.div`
   align-items: center;
 `;
 const ModeName = styled.button`
-  width: 70%;
+  width: 90%;
   text-align: center;
   font-size: 2rem;
   padding: 1rem;
   font-weight: 900;
   border: none;
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid gray;
   background-color: white;
   outline: none;
+  color: gray;
   cursor: pointer;
   &.onSelect {
-    color: #5ea3ec;
-
-    border-bottom: 4px solid #5ea3ec;
-    transition: color, border-bottom 0.3s;
+    color: #184bc4;
+    /* #184BC4 ,#5ea3ec*/
+    border-bottom: 4px solid #184bc4;
+    transition: color, border-bottom 0.2s;
   }
 `;
 
@@ -140,24 +143,29 @@ const TButton = styled.button`
 `;
 
 const WTitle = styled.div`
-  position: relative;
-  scroll-snap-align: start;
+  flex: 0 0 100%;
+  border: 0.7px solid rgba(0, 0, 0, 0.3);
+  text-align: center;
+  border-radius: 1rem;
+  padding: 1.1rem;
+  background-color: #fefefe;
 `;
 
-const WH1 = styled.div`
-  font-size: 20px;
-  margin: 0 auto;
-`;
-
-const WRightButton = styled.button`
+const WRightButton = styled.img`
   position: absolute;
-  top: 50%;
-  right: 0;
+  width: 30px;
+  height: 30px;
+  top: 40%;
+  cursor: pointer;
+  right: -1%;
 `;
-const WLeftButton = styled.button`
+const WLeftButton = styled.img`
   position: absolute;
-  top: 50%;
-  left: 0;
+  width: 30px;
+  height: 30px;
+  top: 40%;
+  cursor: pointer;
+  left: -1%;
 `;
 
 export const TourSpotList = ({
@@ -167,6 +175,7 @@ export const TourSpotList = ({
   setIsSlideMode,
   saveTourList,
   handleDeleteList,
+  setDetailData,
 }) => {
   const scrollBoxRef = useRef();
   const [list, setList] = useState(0);
@@ -278,7 +287,11 @@ export const TourSpotList = ({
                           추가
                         </TButton>
                       )}
-                      <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
+                      <TButton style={{ marginTop: "5px" }}
+                        onClick={()=>{
+                          setDetailData(tour);
+                        }}
+                      >상세정보 </TButton>
                     </TourSpotItem>
                   </TourSpotItemWrapper>
                 </TourSpotLi>
@@ -329,6 +342,7 @@ export const FestivalSpotList = ({
   setIsSlideMode,
   saveTourList,
   handleDeleteList,
+  setDetailData,
 }) => {
   const scrollBoxRef = useRef();
   const [list, setList] = useState(0);
@@ -437,7 +451,11 @@ export const FestivalSpotList = ({
                           추가
                         </TButton>
                       )}
-                      <TButton style={{ marginTop: "5px" }}>상세정보 </TButton>
+                      <TButton style={{ marginTop: "5px" }}
+                      onClick={()=>{
+                        setDetailData(festival)
+                      }}
+                      >상세정보 </TButton>
                     </TourSpotItem>
                   </TourSpotItemWrapper>
                 </TourSpotLi>
@@ -491,7 +509,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
   const [subDateArray, setSubDateArray] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const [choiceWeather, setChoiceWeather] = useState();
-
+  const [cityName, setCityName] = useState();
   // const offset = ;
   // const offset = new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
   // const today = new Date(offset).toISOString().split("T")[0];
@@ -507,6 +525,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
         .then((response) => {
           console.log("날씨데이터");
           console.log(response);
+          console.log(response.data.city.name);
           const responseDate = response.data.list;
           const saveDate = responseDate.map((item) => ({
             clouds: item.clouds.all, // 강수확률
@@ -514,9 +533,11 @@ export const Weather = ({ dateinfo, arealonglat }) => {
             temp: item.main.temp, // 온도
             wetherState: item.weather[0].main, // 맑음,비 등등의 데이터
             icon: item.weather[0].icon,
+            feelslike: item.main.feels_like,
           }));
 
           console.log(response.data);
+          setCityName(response.data.city.name);
           setWeatherData(saveDate);
         });
     } catch (error) {
@@ -619,18 +640,19 @@ export const Weather = ({ dateinfo, arealonglat }) => {
     const slideBox = slide.current;
     slideBox.style.transition = "transform 0.5s";
     if (
-      new Date(dateinfo.startDay) < today &&          //choiceweather인지 subweather인지 구별
+      new Date(dateinfo.startDay) < today && //choiceweather인지 subweather인지 구별
       new Date(dateinfo.endDay) < today
     ) {
-      if (choiceWeather.length - 2 === index) {       //무한슬라이드쇼 구현을 위해 배열앞뒤에 마지막과 처음의 요소를 추가해놓은 상태이므로 마지막요소를 찾을때는 length에서 -1만 하는게 아니라 -2를 해주어야한다.
-        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;  //현재 받아온 인덱스번호에서 +1 *100을 하여 다음요소의 위치를 설정 
+      if (choiceWeather.length - 2 === index) {
+        //무한슬라이드쇼 구현을 위해 배열앞뒤에 마지막과 처음의 요소를 추가해놓은 상태이므로 마지막요소를 찾을때는 length에서 -1만 하는게 아니라 -2를 해주어야한다.
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`; //현재 받아온 인덱스번호에서 +1 *100을 하여 다음요소의 위치를 설정
 
         setTimeout(() => {
           slideBox.style.transition = "";
           slideBox.style.transform = `translateX(-100%)`; //마지막에 도달했을때 똑같이 +1 *100을 해서 보여준뒤 부드러운 전환을 위하여 슬라이드 모션 삭제 후 배열의 끝에 있던 값과 동일한 값을 가진 배열의 인덱스 1번으로 이동한다.
         }, 500);
       } else {
-        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;  
+        slideBox.style.transform = `translateX(-${(index + 1) * 100}%)`;
       }
     } else {
       if (subWeather.length - 2 === index) {
@@ -652,17 +674,19 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       new Date(dateinfo.startDay) < today &&
       new Date(dateinfo.endDay) < today
     ) {
-      if (index === 1) {  // 가장 처음 섹션에서 버튼을 누르면 마지막 섹션으로 이동
+      if (index === 1) {
+        // 가장 처음 섹션에서 버튼을 누르면 마지막 섹션으로 이동
         slideBox.style.transform = `translateX(0)`; //배열의 가장 첫번째 내용 == 요소의 마지막 내용 이기 때문에 일단 가장 처음으로 이동시킨 뒤.
 
         setTimeout(() => {
           slideBox.style.transition = "";
-          slideBox.style.transform = `translateX(-${  //실제 위치를 (choiceWeather.length - 2) * 100를 통하여 얻어낸 후 적용
+          slideBox.style.transform = `translateX(-${
+            //실제 위치를 (choiceWeather.length - 2) * 100를 통하여 얻어낸 후 적용
             (choiceWeather.length - 2) * 100
           }%)`;
         }, 500);
       } else {
-        slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`;  //up로직과 반대로 -1 *100하여 왼쪽으로 한칸씩 이동
+        slideBox.style.transform = `translateX(-${(index - 1) * 100}%)`; //up로직과 반대로 -1 *100하여 왼쪽으로 한칸씩 이동
       }
     } else {
       if (index === 1) {
@@ -679,7 +703,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       }
     }
   };
-
+  console.log(subWeather);
   return (
     <>
       {isLoading ? (
@@ -689,53 +713,154 @@ export const Weather = ({ dateinfo, arealonglat }) => {
         new Date(dateinfo.endDay) < today ? (
         <div style={{ width: "100%", overflow: "hidden" }}>
           <div
-            style={{ display: "flex", transform: "translateX(-100%)" }}     //처음부터 translateX(-100%)적용하여 원하는 처음 요소가 보일 수 있도록 설정.
+            style={{ display: "flex", transform: "translateX(-100%)" }} //처음부터 translateX(-100%)적용하여 원하는 처음 요소가 보일 수 있도록 설정.
             ref={slide}
           >
             {choiceWeather &&
               choiceWeather.map((item, index) => (
-                <WTitle
-                  style={{
-                    flex: "0 0 100%",
-                    border: "1px solid black",
-                    textAlign: "center",
-                  }}
-                  key={index}
-                >
-                  <WH1>{item[0].time.split(" ")[0]}</WH1>
-                  {item.map((list) => {
-                    if (
-                      list.time.includes("00:00:00") ||
-                      list.time.includes("06:00:00") ||
-                      list.time.includes("12:00:00") ||
-                      list.time.includes("18:00:00")
-                    ) {
-                      return (
-                        <>
-                          <div>
-                            <div>{list.time.split(" ")[1]}</div>
-                            <div>{list.temp} <img src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`} alt="" /></div>                          
-                          </div>
-                          <WRightButton
-                            onClick={() => {
-                              slideUp(index);
-                              console.log(index);
-                            }}
-                          >
-                            오른쪽
-                          </WRightButton>
-                          <WLeftButton
-                            onClick={() => {
-                              slideDown(index);
-                            }}
-                          >
-                            왼쪽
-                          </WLeftButton>
-                        </>
-                      );
-                    }
-                    return null;
-                  })}
+                <WTitle key={index}>
+                  <h1
+                    style={{
+                      fontSize: "2.1rem",
+                      textAlign: "left",
+                      padding: "1rem  0 0.5rem 2rem",
+                    }}
+                  >
+                    {item[0].time.split(" ")[0]}
+                  </h1>
+                  <WeatherBox>
+                    <WeatherUl
+                      style={{
+                        marginLeft: " 2.4rem",
+
+                        // position: "absolute",
+                        // top: "1rem",
+                        // left: 0,
+                      }}
+                    >
+                      <WeatherLi style={{ textAlign: "left" }}>
+                        <FontSizemd
+                          style={{
+                            paddingBottom: "1rem",
+                            fontWeight: 700,
+                            color: "#132B89",
+                            transform: "translateX(-15px)",
+                          }}
+                        >
+                          {cityName && cityName}
+                        </FontSizemd>
+                      </WeatherLi>
+                      <WeatherLi style={{ textAlign: "left" }}>
+                        <FontSizesm style={{ padding: "0.6rem 0" }}>
+                          시간
+                        </FontSizesm>
+                      </WeatherLi>
+                      <WeatherLi style={{ textAlign: "left" }}>
+                        <FontSizesm style={{ padding: "0.6rem 0" }}>
+                          구름
+                        </FontSizesm>
+                      </WeatherLi>
+                      <WeatherLi style={{ textAlign: "left" }}>
+                        <FontSizesm style={{ padding: "0.6rem 0" }}>
+                          온도
+                        </FontSizesm>
+                      </WeatherLi>
+                      <WeatherLi style={{ textAlign: "left" }}>
+                        <FontSizesm style={{ padding: "0.6rem 0" }}>
+                          체감온도
+                        </FontSizesm>
+                      </WeatherLi>
+                      <WeatherLi style={{ textAlign: "left" }}>
+                        <FontSizesm style={{ padding: "0.6rem 0" }}>
+                          날씨
+                        </FontSizesm>
+                      </WeatherLi>
+                    </WeatherUl>
+                    <WeatherWrapper
+                      className="gere"
+                      props={choiceWeather.length}
+                    >
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          flex: "0 0 100%",
+                          justifyContent: "center",
+                        }}
+                      >
+                        {item.map((list) => {
+                          if (
+                            list.time.includes("00:00:00") ||
+                            list.time.includes("06:00:00") ||
+                            list.time.includes("12:00:00") ||
+                            list.time.includes("18:00:00")
+                          ) {
+                            return (
+                              <>
+                                <WeatherItem>
+                                  <img
+                                    style={{ width: "45px", height: "43px" }}
+                                    src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`}
+                                    alt=""
+                                  />
+                                  <FontSizesm style={{ padding: "0.6rem 0" }}>
+                                    {list.time.split(" ")[1].split(":")[0]}시{" "}
+                                  </FontSizesm>
+                                  <WeatherUl>
+                                    <WeatherLi>
+                                      <FontSizesm
+                                        style={{ padding: "0.6rem 0" }}
+                                      >
+                                        {list.clouds}%
+                                      </FontSizesm>
+                                    </WeatherLi>
+                                    <WeatherLi>
+                                      <FontSizesm
+                                        style={{ padding: "0.6rem 0" }}
+                                      >
+                                        {Math.floor(list.temp * 10) / 10}도
+                                      </FontSizesm>
+                                    </WeatherLi>
+                                    <WeatherLi>
+                                      <FontSizesm
+                                        style={{ padding: "0.6rem 0" }}
+                                      >
+                                        {Math.floor(list.feelslike * 10) / 10}도
+                                      </FontSizesm>
+                                    </WeatherLi>
+                                    <WeatherLi>
+                                      <FontSizesm
+                                        style={{ padding: "0.6rem 0" }}
+                                      >
+                                        {list.wetherState}
+                                      </FontSizesm>
+                                    </WeatherLi>
+                                  </WeatherUl>
+                                </WeatherItem>
+                                <WRightButton
+                                  src="/img/Right.svg"
+                                  alt=""
+                                  onClick={() => {
+                                    slideUp(index);
+                                    console.log(index);
+                                  }}
+                                ></WRightButton>
+                                <WLeftButton
+                                  src="/img/Left.svg"
+                                  alt=""
+                                  onClick={() => {
+                                    slideDown(index);
+                                  }}
+                                ></WLeftButton>
+                              </>
+                            );
+                          }
+
+                          return null;
+                        })}
+                      </div>
+                    </WeatherWrapper>
+                  </WeatherBox>
                 </WTitle>
               ))}
           </div>
@@ -743,55 +868,163 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       ) : (
         <>
           <div style={{ width: "100%", overflow: "hidden" }}>
-            <div>지원하지 않는 날씨가 포함되어있습니다</div>
             <div
-              style={{ display: "flex", transform: "translateX(-100%)" }}
+              style={{
+                display: "flex",
+                transform: "translateX(-100%)",
+              }}
               ref={slide}
             >
               {subWeather &&
                 subWeather.map((item, index) => (
-                  <WTitle
-                    style={{
-                      flex: "0 0 100%",
-                      border: "1px solid black",
-                      textAlign: "center",
-                    }}
-                    key={index}
-                  >
-                    <WH1>{item[0].time.split(" ")[0]}</WH1>
-                    {item.map((list) => {
-                      if (
-                        list.time.includes("00:00:00") ||
-                        list.time.includes("06:00:00") ||
-                        list.time.includes("12:00:00") ||
-                        list.time.includes("18:00:00")
-                      ) {
-                        return (
-                          <>
-                            <div>
-                              <div>{list.time.split(" ")[1]}</div>
-                              <div>{list.temp} <img src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`} alt="" /></div>                          
-                            </div>
-                            <WRightButton
-                              onClick={() => {
-                                slideUp(index);
-                                console.log(index);
-                              }}
-                            >
-                              오른쪽
-                            </WRightButton>
-                            <WLeftButton
-                              onClick={() => {
-                                slideDown(index);
-                              }}
-                            >
-                              왼쪽
-                            </WLeftButton>
-                          </>
-                        );
-                      }
-                      return null;
-                    })}
+                  <WTitle key={index}>
+                    <p style={{ fontSize: "1.2rem", paddingBottom: "0.5rem" }}>
+                      지원하지 않는 날씨가 포함되어있습니다 ( 현시점부터
+                      5일까지의 날씨정보입니다 )
+                    </p>
+                    <h1
+                      style={{
+                        fontSize: "2.1rem",
+                        textAlign: "left",
+                        padding: "1rem  0 0.5rem 2rem",
+                      }}
+                    >
+                      {item[0].time.split(" ")[0]}
+                    </h1>
+                    <WeatherBox>
+                      <WeatherUl
+                        style={{
+                          marginLeft: " 2.4rem",
+
+                          // position: "absolute",
+                          // top: "1rem",
+                          // left: 0,
+                        }}
+                      >
+                        <WeatherLi style={{ textAlign: "left" }}>
+                          <FontSizemd
+                            style={{
+                              paddingBottom: "1rem",
+                              fontWeight: 700,
+                              color: "#132B89",
+                              transform: "translateX(-15px)",
+                            }}
+                          >
+                            {cityName && cityName}
+                          </FontSizemd>
+                        </WeatherLi>
+                        <WeatherLi style={{ textAlign: "left" }}>
+                          <FontSizesm style={{ padding: "0.6rem 0" }}>
+                            시간
+                          </FontSizesm>
+                        </WeatherLi>
+                        <WeatherLi style={{ textAlign: "left" }}>
+                          <FontSizesm style={{ padding: "0.6rem 0" }}>
+                            구름
+                          </FontSizesm>
+                        </WeatherLi>
+                        <WeatherLi style={{ textAlign: "left" }}>
+                          <FontSizesm style={{ padding: "0.6rem 0" }}>
+                            온도
+                          </FontSizesm>
+                        </WeatherLi>
+                        <WeatherLi style={{ textAlign: "left" }}>
+                          <FontSizesm style={{ padding: "0.6rem 0" }}>
+                            체감온도
+                          </FontSizesm>
+                        </WeatherLi>
+                        <WeatherLi style={{ textAlign: "left" }}>
+                          <FontSizesm style={{ padding: "0.6rem 0" }}>
+                            날씨
+                          </FontSizesm>
+                        </WeatherLi>
+                      </WeatherUl>
+                      <WeatherWrapper
+                        className="gere"
+                        props={choiceWeather.length}
+                      >
+                        <div
+                          style={{
+                            width: "100%",
+                            display: "flex",
+                            flex: "0 0 100%",
+                            justifyContent: "center",
+                          }}
+                        >
+                          {item.map((list) => {
+                            if (
+                              list.time.includes("00:00:00") ||
+                              list.time.includes("06:00:00") ||
+                              list.time.includes("12:00:00") ||
+                              list.time.includes("18:00:00")
+                            ) {
+                              return (
+                                <>
+                                  <WeatherItem>
+                                    <img
+                                      style={{ width: "45px", height: "43px" }}
+                                      src={`https://openweathermap.org/img/wn/${list.icon}@2x.png`}
+                                      alt=""
+                                    />
+                                    <FontSizesm style={{ padding: "0.6rem 0" }}>
+                                      {list.time.split(" ")[1].split(":")[0]}시{" "}
+                                    </FontSizesm>
+                                    <WeatherUl>
+                                      <WeatherLi>
+                                        <FontSizesm
+                                          style={{ padding: "0.6rem 0" }}
+                                        >
+                                          {list.clouds}%
+                                        </FontSizesm>
+                                      </WeatherLi>
+                                      <WeatherLi>
+                                        <FontSizesm
+                                          style={{ padding: "0.6rem 0" }}
+                                        >
+                                          {Math.floor(list.temp * 10) / 10}도
+                                        </FontSizesm>
+                                      </WeatherLi>
+                                      <WeatherLi>
+                                        <FontSizesm
+                                          style={{ padding: "0.6rem 0" }}
+                                        >
+                                          {Math.floor(list.feelslike * 10) / 10}
+                                          도
+                                        </FontSizesm>
+                                      </WeatherLi>
+                                      <WeatherLi>
+                                        <FontSizesm
+                                          style={{ padding: "0.6rem 0" }}
+                                        >
+                                          {list.wetherState}
+                                        </FontSizesm>
+                                      </WeatherLi>
+                                    </WeatherUl>
+                                  </WeatherItem>
+                                  <WRightButton
+                                    src="/img/Right.svg"
+                                    alt=""
+                                    onClick={() => {
+                                      slideUp(index);
+                                      console.log(index);
+                                    }}
+                                  ></WRightButton>
+                                  <WLeftButton
+                                    src="/img/Left.svg"
+                                    alt=""
+                                    onClick={() => {
+                                      slideDown(index);
+                                    }}
+                                  ></WLeftButton>
+                                </>
+                              );
+                            }
+
+                            return null;
+                          })}
+                        </div>
+                      </WeatherWrapper>
+                    </WeatherBox>
                   </WTitle>
                 ))}
             </div>
@@ -801,3 +1034,33 @@ export const Weather = ({ dateinfo, arealonglat }) => {
     </>
   );
 };
+const WeatherBox = styled.div`
+  display: flex;
+
+  position: relative;
+  padding: 1rem 0 1rem 0;
+`;
+const WeatherItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.5rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.3);
+  border-left: 1px solid rgba(0, 0, 0, 0.3);
+  align-items: center;
+`;
+const WeatherUl = styled.ul`
+  padding: 0 1.2rem;
+  list-style: none;
+`;
+const WeatherLi = styled.li`
+  text-align: center;
+`;
+const WeatherWrapper = styled.div`
+  display: flex;
+  /* padding-left: 5rem; */
+  align-items: center;
+  width: 100%;
+  margin-right: 5rem;
+  /* padding-left: ${(props) => (props >= "4" ? "5rem" : "10rem")}; */
+`;

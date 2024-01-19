@@ -26,6 +26,7 @@ function TripPlace({
   setSelectedAreaName,
   setMode,
   selectedAreaName,
+  setSaveTourList,
 }) {
   const [tripAreaName, setTripAreaName] = useState({
     mainAreaName: selectedAreaName.mainAreaName,
@@ -370,7 +371,10 @@ function TripPlace({
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  onClick={submitAreaName}
+                  onClick={()=>{
+                    submitAreaName();
+                    setSaveTourList([]);
+                  }}
                 >
                   <p>선택 완료 !</p>
                 </MotionAreaSelectBtn>
