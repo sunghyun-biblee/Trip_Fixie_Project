@@ -12,7 +12,7 @@ export const Stepbox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  height: 100vh;
   cursor: pointer;
 `;
 export const StepUl = styled.ul`

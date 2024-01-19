@@ -8,7 +8,6 @@ import { setDate, startOfDay } from "date-fns";
 import { ref } from "firebase/storage";
 import { FontSizemd, FontSizesm } from "./Trip/trip_save_components";
 
-
 const ModeWrapper = styled.div`
   display: flex;
   padding: 1.5rem;
@@ -287,11 +286,14 @@ export const TourSpotList = ({
                           추가
                         </TButton>
                       )}
-                      <TButton style={{ marginTop: "5px" }}
-                        onClick={()=>{
+                      <TButton
+                        style={{ marginTop: "5px" }}
+                        onClick={() => {
                           setDetailData(tour);
                         }}
-                      >상세정보 </TButton>
+                      >
+                        상세정보{" "}
+                      </TButton>
                     </TourSpotItem>
                   </TourSpotItemWrapper>
                 </TourSpotLi>
@@ -348,6 +350,7 @@ export const FestivalSpotList = ({
   const [list, setList] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [currtourList, setCurrTourList] = useState();
+
   const max = festivalList.length;
   console.log(festivalList);
 
@@ -451,11 +454,14 @@ export const FestivalSpotList = ({
                           추가
                         </TButton>
                       )}
-                      <TButton style={{ marginTop: "5px" }}
-                      onClick={()=>{
-                        setDetailData(festival)
-                      }}
-                      >상세정보 </TButton>
+                      <TButton
+                        style={{ marginTop: "5px" }}
+                        onClick={() => {
+                          setDetailData(festival);
+                        }}
+                      >
+                        상세정보{" "}
+                      </TButton>
                     </TourSpotItem>
                   </TourSpotItemWrapper>
                 </TourSpotLi>

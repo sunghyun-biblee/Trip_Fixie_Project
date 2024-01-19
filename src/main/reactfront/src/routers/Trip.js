@@ -50,6 +50,7 @@ const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
   // const offset = new Date().getTimezoneOffset() * 60000;
   // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
+  const [detailData, setDetailData] = useState();
   const KoreanDayOfWeek = ["일", "월", "화", "수", "목", "금", "토"]; // 날짜 요일을 구하기위함
   const [dateinfo, setDateinfo] = useState({
     startDay: "",
@@ -253,7 +254,6 @@ function Trip() {
                 {weather ? weather.sys.country : null}
               </StepLi>
             </StepUl>
-            <Button> </Button>
           </Stepbox>
         </StepContainer>
         <MotionMainContainer>
@@ -326,7 +326,7 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                  style={{ width: " 600px" }}
+                  style={{ width: " 600px", padding: "4rem 1rem 0 1rem" }}
                 >
                   <TourSpot
                     selectedAreaName={selectedAreaName}
