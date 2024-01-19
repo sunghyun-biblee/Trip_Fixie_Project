@@ -235,6 +235,12 @@ export function SaveTripInfo({
                               initial="initial"
                               animate="inItem"
                               style={{ fontSize: "2rem" }}
+                              onClick={() => {
+                                setMygeolocation({
+                                  lat: tour.clatitude,
+                                  long: tour.clongitude,
+                                });
+                              }}
                             >
                               <div
                                 style={{
