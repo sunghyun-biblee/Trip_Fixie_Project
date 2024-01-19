@@ -50,9 +50,8 @@ export const ModalAlarmCloseImg = styled.img`
 `;
 export const SaveContainer = styled.div``;
 export const FontSizesm = styled.p`
-  font-size: 2rem;
+  font-size: 1.7rem;
   font-weight: 700;
-  padding-bottom: 1rem;
 `;
 export const FontSizemd = styled.p`
   font-size: 2.5rem;
@@ -60,7 +59,7 @@ export const FontSizemd = styled.p`
 
 export const SaveBox = styled.div`
   height: 100vh;
-  padding: 5rem 2rem 0 2rem;
+  padding: 4rem 2rem 0 2rem;
   margin-left: 1.1rem;
   display: flex;
   flex-direction: column;
@@ -70,9 +69,10 @@ export const SaveWrapper = styled.div`
   display: flex;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  padding: 2rem;
+  padding: 1.5rem;
   width: 100%;
-
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px,
+    rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
   flex-direction: column;
   justify-content: space-around;
 `;
