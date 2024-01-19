@@ -1,11 +1,8 @@
 import styled from "styled-components";
-import { AnimatePresence, motion } from "framer-motion";
 import { TourLoadingWrapper } from "./TourSpot";
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "./atoms/Loading";
 import axios from "axios";
-import { setDate, startOfDay } from "date-fns";
-import { ref } from "firebase/storage";
 import { FontSizemd, FontSizesm } from "./Trip/trip_save_components";
 
 const ModeWrapper = styled.div`
@@ -143,11 +140,11 @@ const TButton = styled.button`
 
 const WTitle = styled.div`
   flex: 0 0 100%;
-  border: 0.7px solid rgba(0, 0, 0, 0.3);
+  border: 0.7px solid rgba(230, 233, 233, 0.3);
   text-align: center;
   border-radius: 1rem;
   padding: 1.1rem;
-  background-color: #fefefe;
+  background-color: #f7fdff;
 `;
 
 const WRightButton = styled.img`
@@ -763,7 +760,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
                       </WeatherLi>
                       <WeatherLi style={{ textAlign: "left" }}>
                         <FontSizesm style={{ padding: "0.6rem 0" }}>
-                          구름
+                          구름량
                         </FontSizesm>
                       </WeatherLi>
                       <WeatherLi style={{ textAlign: "left" }}>

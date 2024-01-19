@@ -50,11 +50,14 @@ export const ModalAlarmCloseImg = styled.img`
 `;
 export const SaveContainer = styled.div``;
 export const FontSizesm = styled.p`
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-weight: 700;
 `;
 export const FontSizemd = styled.p`
   font-size: 2.5rem;
+`;
+export const FontSizeLg = styled.p`
+  font-size: 4rem;
 `;
 
 export const SaveBox = styled.div`
