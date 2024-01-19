@@ -2,28 +2,59 @@ import { useEffect, useRef, useState } from "react";
 import "./css/TripMap.css";
 import axios from "axios";
 import styled from "styled-components";
+import { FontSizemd, FontSizesm } from "./trip_save_components";
+import { motion } from "framer-motion";
 
 const ShowPlaceInfo = styled.div`
-  border: 1px solide black;
-  background-color: white;
+  background-color: #fefefe;
   position: absolute;
   top: 5%;
   left: 1%;
-  width: 40%;
+  width: 40rem;
   height: 90%;
-  padding-top: 2%;
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+`;
+const CloseBtn = styled.button`
+  height: 30px;
+  width: 100px;
+  background-color: #e5edf4;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  cursor: pointer;
+  margin-top: 1rem;
 `;
 const DetailImg = styled.img`
-  height: 25%;
+  height: 30%;
   width: 100%;
-`
-const DetailTitle = styled.div`
+  object-fit: cover;
+`;
+const PlaceInfoText = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 35px;
-`
-
+  padding: 1rem 1rem;
+`;
+const PlaceIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  margin-right: 0.7rem;
+`;
+const PlaceHomepage = styled.a`
+  font-size: 1.5rem;
+  text-decoration: none;
+  color: black;
+  word-break: break-all; //텍스트가 div 밖으로 나가는 현상을 해결
+  font-weight: 600;
+`;
+const motionInfo = {
+  in: { scale: 0.5 },
+  out: { scale: 1 },
+};
+const MotionInfo = motion(ShowPlaceInfo);
 function TripMap({
   selectedAreaName,
   mygeolocation,
@@ -32,8 +63,6 @@ function TripMap({
   detailData,
   setDetailData,
 }) {
-  const [marker, setMarker] = useState([]);
- 
   const modalBackground = useRef();
 
   const [selectedPlaceInfo, setSelectedPlaceInfo] = useState(null);
@@ -55,7 +84,7 @@ function TripMap({
       marker.addListener("click", () => {
         showInfo(saveTourList[index]);
       });
-      setMarker((prev) => [...prev, marker]);
+      return null;
       // window.naver.maps.Event.addListener(marker[index], "click", () => {
       //   showInfo(index);
       //   // console.log(saveTourList[index]);
@@ -99,11 +128,11 @@ function TripMap({
         axios.get(url).then((response) => {
           const overview = response.data.response.body.items.item[0].overview;
           let homepage = "";
-          if(response.data.response.body.items.item[0].homepage){
+          if (response.data.response.body.items.item[0].homepage) {
             const url = response.data.response.body.items.item[0].homepage;
             const pattern = /<a\s[^>]*?href\s*=\s*['"]([^'"]*?)['"][^>]*?>/g;
             const matches = [...url.matchAll(pattern)];
-            homepage = matches.map(match => match[1]);
+            homepage = matches.map((match) => match[1]);
             console.log(homepage);
           }
           setSelectedPlaceInfo({ ...data, overview, homepage });
@@ -121,10 +150,11 @@ function TripMap({
   console.log(selectedPlaceInfo);
   return (
     <div style={{ position: "relative", width: "100%" }} className="TLQkf">
-      <div id="map" className="Map" 
-      style={{position: "absolute",
-              width: "100%",
-              height: "100%"}}>
+      <div
+        id="map"
+        className="Map"
+        style={{ position: "absolute", width: "100%", height: "100%" }}
+      >
         {/* {UserPosition.latitude === ""
           ? "loading"
           : `${Math.floor(UserPosition.latitude)}+${Math.floor(
@@ -133,63 +163,133 @@ function TripMap({
       </div>
       {selectedPlaceInfo ? (
         <div
-        className="sexxxxx"
-        ref={modalBackground}
-        style={{position: "absolute",
-                width: "100%",
-                height: "100%",
-              zIndex:"1000"}}
-        onClick={(e) => {
-          if (e.target === modalBackground.current) {
-            setDetailData(null);
-            setSelectedPlaceInfo(null);
-          }
-        }}
-        >
-        <ShowPlaceInfo>
-          
-          {selectedPlaceInfo.cfirstimage ?
-          <DetailImg src={selectedPlaceInfo.cfirstimage} alt=""></DetailImg>
-          :<DetailImg src="/img/TourSpot_No_IMG.svg" alt=""></DetailImg>
-          }
-          
-          <DetailTitle>{selectedPlaceInfo.ctitle}</DetailTitle>
-
-          <p style={{fontSize:"15px"}}><img src="/img/location.png" alt=""
-            style={{width: "20px" , height:"20px"}}
-          ></img>{selectedPlaceInfo.caddr1} {selectedPlaceInfo.caddr2} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          {selectedPlaceInfo.contenttypeid === "12" ?
-          <b style={{width:"20px", height:"20px"}}>관광지</b>
-          :<b style={{width:"20px", height:"20px"}}>축제</b>
-          }</p>
-
-          {selectedPlaceInfo.ctel ?
-            <p style={{fontSize:"15px"}}><img src="/img/tel.png" alt=""
-            style={{width: "20px" , height:"20px"}} />{selectedPlaceInfo.ctel}</p>
-            : null
-          }
-          {selectedPlaceInfo.homepage[0] ? 
-            <a href= {selectedPlaceInfo.homepage[0]}>{selectedPlaceInfo.homepage[0]}</a>
-            : null
-          }
-
-          {selectedPlaceInfo.ceventstartdate ? 
-          <div>
-            <p style={{fontSize:"15px"}}>축제기간</p>
-            <p style={{fontSize:"15px"}}>{selectedPlaceInfo.ceventstartdate} ~ {selectedPlaceInfo.ceventenddate}</p>  
-          </div>
-          : null
-          }
-
-          <p style={{fontSize:"15px"}}>{selectedPlaceInfo.overview}</p>
-          <div
-            style={{ width: "30px", height: "30px", backgroundColor: "red" }}
-            onClick={() => {
+          className="sexxxxx"
+          ref={modalBackground}
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            zIndex: "1000",
+          }}
+          onClick={(e) => {
+            if (e.target === modalBackground.current) {
               setDetailData(null);
               setSelectedPlaceInfo(null);
-            }}
-          ></div>
-        </ShowPlaceInfo>
+            }
+          }}
+        >
+          <MotionInfo
+            className="heelo"
+            initial="in"
+            animate="out"
+            variants={motionInfo}
+          >
+            <div style={{ height: "100%" }}>
+              <DetailImg
+                src={
+                  selectedPlaceInfo.cfirstimage
+                    ? selectedPlaceInfo.cfirstimage
+                    : "/img/TourSpot_No_IMG.svg"
+                }
+                alt=""
+              />
+              <PlaceInfoText>
+                <FontSizemd style={{ fontWeight: 500 }}>
+                  {selectedPlaceInfo.ctitle}
+                  {selectedPlaceInfo.contenttypeid === "12" ? (
+                    <span
+                      style={{
+                        fontSize: "1.5rem",
+                        marginLeft: "1rem",
+                        color: "gray",
+                      }}
+                    >
+                      관광지
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        fontSize: "1.5rem",
+                        marginLeft: "1rem",
+                        color: "gray",
+                      }}
+                    >
+                      축제
+                    </span>
+                  )}
+                </FontSizemd>
+              </PlaceInfoText>
+              <PlaceInfoText>
+                <PlaceIcon src="/img/location.png" alt=""></PlaceIcon>
+                <FontSizesm>
+                  {selectedPlaceInfo.caddr1} {selectedPlaceInfo.caddr2}
+                </FontSizesm>
+              </PlaceInfoText>
+              {selectedPlaceInfo.ctel && (
+                <PlaceInfoText>
+                  <PlaceIcon src="/img/tel.png" alt="" />
+                  <FontSizesm>{selectedPlaceInfo.ctel}</FontSizesm>
+                </PlaceInfoText>
+              )}
+              {selectedPlaceInfo.homepage[0] && (
+                <PlaceInfoText>
+                  <PlaceIcon src="/img/Homepage.png" alt=""></PlaceIcon>
+
+                  <PlaceHomepage
+                    href={selectedPlaceInfo.homepage[0]}
+                    target="_blank"
+                  >
+                    {selectedPlaceInfo.homepage[0]}
+                  </PlaceHomepage>
+                </PlaceInfoText>
+              )}
+              <div
+                style={{
+                  width: "100%",
+                  height: "1rem",
+                  backgroundColor: "#eaeaea",
+                  borderRadius: "2px",
+                  margin: "1rem 0",
+                }}
+              ></div>
+              {selectedPlaceInfo.ceventstartdate && (
+                <PlaceInfoText>
+                  <FontSizesm>축제기간</FontSizesm>
+                  <FontSizesm style={{ marginLeft: "2rem" }}>
+                    {selectedPlaceInfo.ceventstartdate} ~{" "}
+                    {selectedPlaceInfo.ceventenddate}
+                  </FontSizesm>
+                </PlaceInfoText>
+              )}
+
+              <PlaceInfoText
+                style={{ flexDirection: "column", marginTop: "2rem" }}
+              >
+                <p style={{ fontSize: "1.8rem", paddingBottom: "1rem" }}>
+                  개요
+                </p>
+                <div style={{ overflow: "scrollY" }}>
+                  <FontSizesm>{selectedPlaceInfo.overview}</FontSizesm>
+                </div>
+              </PlaceInfoText>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <CloseBtn
+                  onClick={() => {
+                    setDetailData(null);
+                    setSelectedPlaceInfo(null);
+                  }}
+                >
+                  닫기
+                </CloseBtn>
+              </div>
+            </div>
+          </MotionInfo>
         </div>
       ) : null}
     </div>
