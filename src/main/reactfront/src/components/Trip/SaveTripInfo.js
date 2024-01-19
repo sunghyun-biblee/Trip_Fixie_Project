@@ -90,26 +90,18 @@ export function SaveTripInfo({
                     <>
                       <SaveTextItems>
                         <FontSizesm style={{ color: "#0071B0" }}>
-                          시작일
+                          일정
                         </FontSizesm>
                         <span>
                           {dateinfo.startDay}
-                          {dateinfo.startDayofWeek}
-                        </span>
-                      </SaveTextItems>
-                      <SaveTextItems>
-                        <FontSizesm style={{ color: "#F57576" }}>
-                          종료일
-                        </FontSizesm>
-                        <span>
-                          {dateinfo.endDay}
+                          {dateinfo.startDayofWeek} ~ {dateinfo.endDay}
                           {dateinfo.endDayofWeek}
                         </span>
                       </SaveTextItems>
                     </>
                   )}
                   {selectedAreaName.mainAreaName && (
-                    <SaveTextItems style={{ marginTop: "2rem" }}>
+                    <SaveTextItems style={{ marginTop: "1rem" }}>
                       <FontSizesm>목적지</FontSizesm>
                       <div
                         style={{
@@ -302,13 +294,102 @@ export function SaveTripInfo({
                           )
                       )}
                     </SaveTourListBox>
+                    {/* 숙소 */}
+                    <FontSizesm
+                      style={{
+                        paddingLeft: "1rem",
+                        marginTop: "3rem",
+                      }}
+                    >
+                      숙소
+                    </FontSizesm>
+                    <SaveTourListBox
+                      className="con"
+                      style={{ overflowY: "scroll" }}
+                    >
+                      {saveTourList.map(
+                        (tour, index) =>
+                          tour.contenttypeid !== "12" && (
+                            <MotionListItems
+                              variants={SaveListVariants}
+                              key={index}
+                              initial="initial"
+                              animate="inItem"
+                              style={{ fontSize: "2rem" }}
+                              onClick={() => {
+                                setMygeolocation({
+                                  lat: tour.clatitude,
+                                  long: tour.clongitude,
+                                });
+                              }}
+                            >
+                              <div
+                                style={{
+                                  boxShadow:
+                                    "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px",
+                                  width: "100%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  padding: "1rem",
+                                  borderRadius: "10px",
+                                }}
+                              >
+                                <div>
+                                  <img
+                                    src={
+                                      tour.cfirstimage
+                                        ? tour.cfirstimage
+                                        : "/img/TourSpot_No_IMG.svg"
+                                    }
+                                    alt=""
+                                    style={{
+                                      width: "80px",
+                                      height: "80px",
+                                      borderRadius: "10px",
+                                      objectFit: "cover",
+                                    }}
+                                  />
+                                </div>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <div style={{ padding: "1.5rem" }}>
+                                    <FontSizesm>{tour.ctitle}</FontSizesm>
+                                    <p style={{ fontSize: "1.5rem" }}>
+                                      {tour.caddr1}
+                                    </p>
+                                  </div>
+                                  <img
+                                    src="/img/modalAlarm_Close.png"
+                                    alt=""
+                                    onClick={() => {
+                                      handleDeleteList(tour.contentid);
+                                    }}
+                                    style={{
+                                      paddingLeft: "0.5rem",
+                                      width: "30px",
+                                      height: "30px",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            </MotionListItems>
+                          )
+                      )}
+                    </SaveTourListBox>
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                         padding: "1rem",
-                        marginTop: "0.5rem",
+                        marginTop: "5rem",
                       }}
                     >
                       <SaveInput

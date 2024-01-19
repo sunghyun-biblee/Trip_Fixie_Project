@@ -109,7 +109,6 @@ function Trip() {
     setSaveTourList(filteredList);
   };
 
-
   useEffect(() => {
     const geolocation = async () => {
       navigator.geolocation.getCurrentPosition((position) => {

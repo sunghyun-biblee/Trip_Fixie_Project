@@ -93,7 +93,7 @@ export const SaveTextItems = styled.div`
 
 export const SaveTourListBox = styled.div`
   width: 100%;
-  height: 350px;
+  height: 265px;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -143,5 +143,3 @@ export const SaveItemContainer = styled.div`
   height: 300px;
   border: 1px solid black;
 `;
-
-
