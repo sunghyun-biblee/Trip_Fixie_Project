@@ -5,7 +5,8 @@ import DatePicker from "react-datepicker";
 import { Li } from "./trip_place_components";
 
 export const Mainitem = styled.div`
-  padding: 8rem 1rem 0 1rem;
+  padding: 6rem 1rem 0 1rem;
+
   /* position: absolute; */
   height: 100vh;
   /* width: 650px; */

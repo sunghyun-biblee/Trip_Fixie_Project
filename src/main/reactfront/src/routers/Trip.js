@@ -29,7 +29,6 @@ import TourSpot from "../components/TourSpot";
 
 const MotionMainContainer = styled.div`
   position: relative;
-
   display: flex;
   height: 100vh;
 `;
@@ -51,6 +50,7 @@ const API_KEY = "c75a16b0fcfc4f98a1a34b29ed15d23c";
 function Trip() {
   // const offset = new Date().getTimezoneOffset() * 60000;
   // 영국시간으로 맞춰져있기 때문에 한국시간으로 정정하기위해 잃어버린 9시간을 찾아옴
+  const [detailData, setDetailData] = useState();
   const KoreanDayOfWeek = ["일", "월", "화", "수", "목", "금", "토"]; // 날짜 요일을 구하기위함
   const [dateinfo, setDateinfo] = useState({
     startDay: "",
@@ -69,7 +69,6 @@ function Trip() {
   const [minDate, setMinDate] = useState(new Date(Date.now()));
   const [maxDate, setMaxDate] = useState();
   const [mode, setMode] = useState("date");
-  const [lastClickedId, setLastClickedId] = useState(null);
   const [weather, setWeather] = useState({
     clouds: "",
     coord: { long: "", lat: "" },
@@ -96,12 +95,20 @@ function Trip() {
     setSaveTourList((prevList) => [...prevList, tourList]);
     console.log(saveTourList);
   };
-  const handleDeleteList = (indexToRemove) => {
-    setSaveTourList((prevList) =>
-      prevList.filter((_, index) => index !== indexToRemove)
+  const handleDeleteList = (contentid) => {
+    console.log(saveTourList); // saveTourList의 현재 상태를 콘솔에 출력
+
+    const newSaveTourList = [...saveTourList];
+
+    // contentid 값이 일치하는 항목을 필터링하여 새로운 배열을 생성합니다.
+    const filteredList = newSaveTourList.filter(
+      (item) => item.contentid !== contentid
     );
-    console.log(saveTourList);
+
+    // 필터링된 배열을 원래의 saveTourList 상태로 업데이트합니다.
+    setSaveTourList(filteredList);
   };
+
 
   useEffect(() => {
     const geolocation = async () => {
@@ -134,44 +141,17 @@ function Trip() {
   }, []);
   const onChangeMode = (event) => {
     const clickTargetId = event.target.id;
-    if (clickTargetId !== "date") {
-      document.getElementById("date").style.color = "gray";
-      document.getElementById("date").style.transform = "scale(1)";
-    }
-    event.target.style.color = "#03A9F4"; //#50DCEF > 연파랑 , #03A9F4> 찐파랑
-    event.target.style.fontWeight = 900;
-    event.target.style.scale = 1;
-    setLastClickedId(clickTargetId);
-    // console.log(lastClickedId);
-
-    if (lastClickedId && lastClickedId !== clickTargetId) {
-      /*  lastClickedId가 true 이고 , lastClickedId와 clickedId 클릭한 태그의 아이디가 다르다면 이전에 클릭한태그의 아이디값을 참조하여 해당태그의 컬러색을 gray색으로 변경
-       이와같은 형식이 가능한 이유는 React의 useState 훅에서 setState함수는
-       비동기로 동작하며, 즉시 상태를 업데이트하지 않는다. 대신 리액트는 일련의 업데이트를 큐에 넣고, 현재 함수가 완전히 종료된 후에 큐를 처리하여 상태를 업데이트한다
-
-       //비동기이기때문에 setState 함수를 지나쳐 다음코드를 실행하기 떄문에 다음함수가 끝난후에 함수가 적용됨
-
-       하지만 아래와 같이 함수형으로 setState를 사용하면 이전 상태값을 기반으로 새로운 상태를 설정할 수 있으며, 이 경우 최신의 상태를 보장한다
-      const [count, setCount] = useState(0);
-
-      const handleClick = () => {
-      setCount(prevCount => prevCount + 1);
-      여기서의 prevCount는 업데이트 이전의 값
-
-        */
-      const lastClicked = document.getElementById(lastClickedId);
-      if (lastClicked) {
-        lastClicked.style.color = "gray";
-        lastClicked.style.fontWeight = 600;
-        lastClicked.style.scale = 0.8;
-      }
-    }
-
-    if (event.target.id === "date") {
+    // sunghyun
+    if (clickTargetId === "date") {
       setMode("date");
-    } else if (event.target.id === "space") {
-      setMode("space");
-    } else if (event.target.id === "mt") {
+    } else if (clickTargetId === "space") {
+      if (!selectedAreaName.subAreaCode) {
+        alert("날짜와 지역을 선택해주세요");
+        return;
+      } else {
+        setMode("space");
+      }
+    } else if (clickTargetId === "mt") {
       setMode("mt");
     }
   };
@@ -187,11 +167,16 @@ function Trip() {
   };
 
   const onChange = (dates) => {
+    const offset =
+      new Date(Date.now()) - new Date().getTimezoneOffset() * 60000;
+    // const today = new Date(offset).toISOString().split("T")[0];
     let [start, end] = dates;
     const startDateObeject = new Date(start).getDay();
-    const startDateISO = new Date(start).toISOString().split("T")[0];
+    const testStart = new Date(start) - new Date().getTimezoneOffset() * 60000;
+    const startDateISO = new Date(testStart).toISOString().split("T")[0];
     const endDateObeject = new Date(end).getDay();
-    const endDateISO = new Date(end).toISOString().split("T")[0];
+    const testend = new Date(end) - new Date().getTimezoneOffset() * 60000;
+    const endDateISO = new Date(testend).toISOString().split("T")[0];
 
     console.log(startDateISO.replace(/-/g, ".")); // "-"문자 모두 "."으로 변환
     if (start && end === null) {
@@ -199,7 +184,7 @@ function Trip() {
       setMaxDate(new Date(start.getTime() + 4 * 24 * 60 * 60 * 1000));
       setMinDate(start);
       setDateinfo({
-        startDay: startDateISO.replace(/-/g, "."),
+        startDay: startDateISO,
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
         ...dateinfo,
       });
@@ -207,16 +192,16 @@ function Trip() {
       setStartDate(start);
       setEndDate(end);
       setMaxDate();
+      setMinDate(new Date(Date.now()));
       setDateinfo({
-        startDay: startDateISO.replace(/-/g, "."),
+        startDay: startDateISO,
         startDayofWeek: `(${KoreanDayOfWeek[startDateObeject]})`,
-        endDay: endDateISO.replace(/-/g, "."),
+        endDay: endDateISO,
         endDayofWeek: `(${KoreanDayOfWeek[endDateObeject]})`,
       });
     }
     setEndDate(end);
   };
-  console.log(mode);
   return (
     <AnimatePresence mode="wait">
       <MotionTripWrapper
@@ -239,29 +224,36 @@ function Trip() {
               <StepLi
                 onClick={onChangeMode}
                 id="date"
-                style={{
-                  color: "#03A9F4",
-                  transform: "scale(1.2)",
-                  fontWeight: 900,
-                }}
+                className={mode === "date" ? "color" : null}
               >
                 step 1 <br />
                 날짜 확인
               </StepLi>
-              <StepLi onClick={onChangeMode} id="space">
+              <StepLi
+                onClick={onChangeMode}
+                id="space"
+                className={mode === "space" ? "color" : null}
+              >
                 step 2 <br />
                 장소 선택
               </StepLi>
-              <StepLi onClick={onChangeMode} id="mt">
+              <StepLi
+                onClick={onChangeMode}
+                id="mt"
+                className={mode === "mt" ? "color" : null}
+              >
                 step 3 <br />
                 숙소 설정
               </StepLi>
-              <StepLi onClick={onChangeMode} id="kr">
+              <StepLi
+                onClick={onChangeMode}
+                id="kr"
+                className={mode === "kr" ? "color" : null}
+              >
                 step 4 <br />
                 {weather ? weather.sys.country : null}
               </StepLi>
             </StepUl>
-            <Button> </Button>
           </Stepbox>
         </StepContainer>
         <MotionMainContainer>
@@ -323,6 +315,7 @@ function Trip() {
                       setSelectedAreaName={setSelectedAreaName}
                       selectedAreaName={selectedAreaName}
                       setMode={setMode}
+                      setSaveTourList={setSaveTourList}
                     ></TripPlace>
                   </DateBox>
                 </Motionitem>
@@ -333,12 +326,16 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
+                  style={{ width: " 600px", padding: "4rem 1rem 0 1rem" }}
                 >
                   <TourSpot
                     selectedAreaName={selectedAreaName}
                     setSaveTourList={handleAddList}
                     dateinfo={dateinfo}
                     setIsSlideMode={setIsSlideMode}
+                    handleDeleteList={handleDeleteList}
+                    saveTourList={saveTourList}
+                    setDetailData={setDetailData}
                   ></TourSpot>
                 </Motionitem>
               ) : mode === "mt" ? (
@@ -348,55 +345,7 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                >
-                  <GuidTitle>언제?</GuidTitle>
-                  <DateWrapper>
-                    <CustomDatePicker
-                      dateFormat="yyyy/MM/dd"
-                      onChange={onChange}
-                      startDate={startDate}
-                      endDate={endDate}
-                      minDate={minDate}
-                      selectsRange
-                      maxDate={maxDate}
-                      locale={ko}
-                      placeholderText="날짜를 선택해주세요"
-                      dayClassName={(date) =>
-                        `react-datepicker-day ${highlightStartDate(
-                          date
-                        )} ${highlightEndDate(date)}`
-                      }
-                      value={
-                        dateinfo.startDay
-                          ? `${dateinfo.startDay} ${dateinfo.startDayofWeek} - ${dateinfo.endDay} ${dateinfo.endDayofWeek}`
-                          : null
-                      }
-                      withPortal
-                      className="calendar_input"
-                    />
-                  </DateWrapper>
-                  <DateBox style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src="/img/bell.png"
-                      style={{ width: "30px", height: "30px" }}
-                      alt=""
-                    />
-                    <p className="date__info" style={{ paddingLeft: "1.7rem" }}>
-                      <b>날씨예보</b>는 <b style={{ color: "black" }}>접속일</b>
-                      로부터 <br />
-                      <b style={{ color: "tomato" }}>최대 5일</b>까지만
-                      지원합니다
-                    </p>
-                  </DateBox>
-                  <DateBox>
-                    <GuidTitle>어디로?</GuidTitle>
-
-                    <TripPlace
-                      weather={weather}
-                      dateinfo={dateinfo}
-                    ></TripPlace>
-                  </DateBox>
-                </Motionitem>
+                ></Motionitem>
               ) : null}
             </AnimatePresence>
           </MotionBox>
@@ -404,13 +353,21 @@ function Trip() {
             dateinfo={dateinfo}
             selectedAreaName={selectedAreaName}
             saveTourList={saveTourList}
-            deleteSaveTourList={handleDeleteList}
+            handleDeleteList={handleDeleteList}
             handleSlidemode={handleSlidemode}
             isSlideMode={isSlideMode}
+            setMygeolocation={setMygeolocation}
           ></SaveTripInfo>
         </MotionMainContainer>
 
-        <TripMap></TripMap>
+        <TripMap
+          selectedAreaName={selectedAreaName}
+          mygeolocation={mygeolocation}
+          setMygeolocation={setMygeolocation}
+          saveTourList={saveTourList}
+          detailData={detailData}
+          setDetailData={setDetailData}
+        ></TripMap>
       </MotionTripWrapper>
     </AnimatePresence>
   );

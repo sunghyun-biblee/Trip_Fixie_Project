@@ -12,7 +12,7 @@ export const Stepbox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 100%;
+  height: 100vh;
   cursor: pointer;
 `;
 export const StepUl = styled.ul`
@@ -32,4 +32,9 @@ export const StepLi = styled.li`
   text-transform: uppercase;
   font-size: 1.6rem;
   font-weight: 600;
+  &.color {
+    scale: 1;
+    color: #03a9f4;
+    font-weight: 900;
+  }
 `;

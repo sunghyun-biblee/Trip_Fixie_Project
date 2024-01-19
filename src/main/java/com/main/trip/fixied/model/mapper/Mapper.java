@@ -45,4 +45,7 @@ public interface Mapper {
 	@Select(" SELECT TA.CONTENTID, CTITLE, CADDR, CTEL, CSTART, CEND, CFIRSTIMAGE, CSECONDIMAGE, CLATITUDE, CLONGITUDE FROM CONTENTLIST TA JOIN (SELECT CONTENTID FROM FAVORITELIST WHERE FID = #{favorFid} )TB ON TA.CONTENTID = TB.CONTENTID; ")
 	public ArrayList<ContentList> loadFavoriteList(String favorFid);
 	
+	@Select(" SELECT * FROM AREACODE WHERE AREACODE = #{MainAreaCode} ")
+	public AreaCodeDto getLongLat(String MainAreaCode);
+	
 }

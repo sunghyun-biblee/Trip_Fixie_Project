@@ -34,7 +34,7 @@ public class apiController {
 	@GetMapping("/send")
 	public ResponseEntity<String> sayHello(){
 		
-		return ResponseEntity.ok("sexy boy cho sung hyeon");
+		return ResponseEntity.ok("스트리퍼 조성현");
 	}
 	
 	@RequestMapping("/codeout")
@@ -158,4 +158,11 @@ public class apiController {
 		return list;
 	}
 
+	@RequestMapping("/getLongLat")
+	public AreaCodeDto getWeather (@RequestBody String MainAreaCode) {
+		System.out.println("안녕하세요 "+ MainAreaCode);
+		AreaCodeDto AreaDto = biz.getLongLat(MainAreaCode);
+		System.out.println(AreaDto);
+		return AreaDto;
+	}
 }

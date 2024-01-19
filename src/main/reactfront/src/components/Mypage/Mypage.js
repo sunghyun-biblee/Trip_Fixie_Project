@@ -128,6 +128,7 @@ export function Mypage() {
       });
   }, [favorFid]);
 
+  console.log(favoriteList);
   return (
     <MypageWrapper>
       <MypageHeader>MY PlAN</MypageHeader>
@@ -190,6 +191,7 @@ export function Mypage() {
         </MypageSection>
         {isDetail ? (
           <DetailContainer
+            className="eeeeeeee"
             ref={detailBackground}
             onClick={(e) => {
               if (e.target === detailBackground.current) {
