@@ -108,7 +108,7 @@ function Trip() {
     // 필터링된 배열을 원래의 saveTourList 상태로 업데이트합니다.
     setSaveTourList(filteredList);
   };
-  const [detailData, setDetailData] = useState();
+
 
   useEffect(() => {
     const geolocation = async () => {
