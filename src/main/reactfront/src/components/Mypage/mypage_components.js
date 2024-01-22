@@ -1,95 +1,56 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { FontSizemd, FontSizesm } from "../Trip/trip_save_components";
 
 export const MypageWrapper = styled.div`
   /* width: 100%; */
-  height: 100vh;
-  max-width: 1400px;
+  height: 1000px;
+  width: 1600px;
   /* min-width: 1200px; */
+  /* border: 1px solid black; */
   margin: 0 auto;
-`;
-
-export const MypageContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-top: 10%;
-`;
-export const MypageSection = styled.div``;
-export const MypageBox = styled.div`
-  position: relative;
-  padding: 0 3rem;
-  width: 100%;
-`;
-export const UserImgBox = styled.div`
-  padding-top: 4rem;
-`;
-export const UserIMG = styled.img`
-  width: 200px;
-  height: 200px;
-  background-color: blue;
-  object-fit: cover;
-  border-radius: 50%;
-`;
-export const UserInfo = styled.div`
-  width: 270px;
-  height: 500px;
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  border-radius: 15px;
-  border: 2px solid rgba(0, 0, 0, 0.3);
+  display: grid;
+  grid-template-columns: 1.2fr 5.1fr 2.7fr;
+  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
   background-color: white;
 `;
-
-export const UserInfoList = styled.ul`
-  list-style: none;
-  padding: 2rem 1rem;
-  width: 100%;
-  height: 50%;
+export const MypageBackGround = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: #f0f8ff;
+  position: relative;
+  overflow: hidden;
 `;
-export const UserInfoItem = styled.li`
-  width: 100%;
-  height: 50px;
-  padding: 1rem;
-  p {
-    font-size: 2.5rem;
-  }
-`;
-
-export const UserEditBtn = styled.button`
-  width: 80px;
-  cursor: pointer;
-  height: 40px;
+export const BackgroundIcon = styled.div`
+  border-radius: 50%;
   position: absolute;
-  bottom: 1rem;
-  right: 5rem;
-  padding: 1rem;
-  border-radius: 10px;
-  background-color: black;
-  color: white;
-  font-size: 1.3rem;
-  margin-bottom: 1rem;
-`;
-export const EditInput = styled.input`
-  padding: 1rem;
-  font-size: 2rem;
-  width: 90%;
-  height: 50px;
-  &:focus {
-    outline: none;
+  z-index: 0;
+  background-color: #add6ff;
+  &.left {
+    bottom: -70%;
+    left: -15%;
+    width: 50%;
+    height: 100%;
+  }
+  &.right {
+    top: -40%;
+    right: -15%;
+    width: 60%;
+    height: 120%;
   }
 `;
-export const MypageHeader = styled.div`
+export const MypageContainer = styled.div`
   width: 100%;
-
-  background-color: aliceblue;
-  margin: 0 auto;
-  text-align: center;
-  font-size: 5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  backdrop-filter: blur(5px);
+  position: relative;
 `;
+
+export const MypageBox = styled.div``;
 
 const PlanHeaderUl = styled.ul`
   display: grid;
@@ -107,7 +68,6 @@ const PlanHeaderli = styled.li`
 const TripPlanListWrapper = styled.div`
   width: 1000px;
   height: 600px;
-  background-color: aliceblue;
 `;
 
 const PlanUl = styled.ul`
@@ -366,9 +326,334 @@ export const Detail = ({ nickname, favoriteList }) => {
   );
 };
 
+const MypageUl = styled.ul`
+  width: 100%;
+  height: 90%;
+  padding: 0;
+  list-style: none;
+  li {
+    width: 100%;
+    height: 8%;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem 1rem 0;
+    flex: 0 0 100%;
+    z-index: 1;
+  }
+`;
+const ClickState = styled.div`
+  height: 100%;
+  width: 7px;
+  background-color: #92dbe2;
+  border-radius: 0 1rem 1rem 0;
+  transition: background-color 0.5s;
+  &.click {
+    background-color: #00a9bf;
+  }
+`;
+
+export const MypageMenu = () => {
+  const [mode, setMode] = useState("plan");
+  const onClick = (e) => {
+    console.log(e.target);
+    if (e.target.id === "plan") {
+      setMode("plan");
+    } else if (e.target.id === "profile") {
+      setMode("profile");
+    } else if (e.target.id === "faq") {
+      setMode("faq");
+    } else if (e.target.id === "logout") {
+      setMode("logout");
+    }
+  };
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
+        backgroundColor: "#92dbe2",
+        color: "#FBF9F9",
+      }}
+    >
+      <div style={{ height: "5%" }}>
+        <img
+          src="/img/CHlogo.png"
+          alt=""
+          style={{ width: "30px", height: "30px" }}
+        />
+      </div>
+      <MypageUl>
+        <li>
+          <ClickState className={mode === "plan" ? "click" : null} />
+          <img
+            src="/img/mypage/Calendar.svg"
+            alt=""
+            style={{
+              width: "40px",
+              height: "100%",
+              paddingRight: "1rem",
+              marginLeft: "1rem",
+            }}
+          />
+          <FontSizesm onClick={onClick} id="plan" style={{ cursor: "pointer" }}>
+            MY PLAN
+          </FontSizesm>
+        </li>
+        <li>
+          <ClickState className={mode === "profile" ? "click" : null} />
+          <img
+            src="/img/mypage/Profile.svg"
+            alt=""
+            style={{
+              width: "40px",
+              height: "100%",
+              paddingRight: "1rem",
+              marginLeft: "1rem",
+            }}
+          />
+          <FontSizesm
+            onClick={onClick}
+            id="profile"
+            style={{ cursor: "pointer" }}
+          >
+            MY PROFILE
+          </FontSizesm>
+        </li>
+        <li>
+          <ClickState className={mode === "faq" ? "click" : null} />
+          <img
+            src="/img/mypage/FAQ.svg"
+            alt=""
+            style={{
+              width: "40px",
+              height: "100%",
+              paddingRight: "1rem",
+              marginLeft: "1rem",
+            }}
+          />
+          <FontSizesm onClick={onClick} id="faq" style={{ cursor: "pointer" }}>
+            1:1 FAQ
+          </FontSizesm>
+        </li>
+        <li>
+          <ClickState className={mode === "logout" ? "click" : null} />
+          <img
+            src="/img/mypage/Logout.svg"
+            alt=""
+            style={{
+              width: "40px",
+              height: "100%",
+              paddingRight: "1rem",
+              marginLeft: "1rem",
+            }}
+          />
+          <FontSizesm
+            onClick={onClick}
+            id="logout"
+            style={{ cursor: "pointer" }}
+          >
+            LOGOUT
+          </FontSizesm>
+        </li>
+      </MypageUl>
+    </div>
+  );
+};
+
+const SectionBackground = styled.div`
+  width: 100%;
+  position: absolute;
+  top: 0;
+  height: 30%;
+  background-color: #00a9bf;
+  /* background-color: #79c1df; */
+  border-radius: 0 0 30px 30px;
+`;
+const SectionListBox = styled.div`
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+`;
+const ListNav = styled.ul`
+  display: grid;
+  grid-template-columns: 0.05fr 1fr 1.55fr 1fr 1fr;
+  padding: 0;
+  list-style: none;
+  border-radius: 15px;
+  background-color: #92dbe2;
+  p {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+`;
+const ListNavli = styled.li`
+  text-align: center;
+  padding: 1rem;
+  color: #00a9bf;
+`;
+const SectionList = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
+const SectionListIt = styled.li`
+  display: grid;
+  grid-template-columns: 0.05fr 1fr 1.55fr 1fr 1fr;
+  text-align: center;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+`;
+const ListText = styled.div`
+  background-color: white;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  p {
+    font-size: 1.5rem;
+    padding: 0.4rem;
+  }
+`;
+const ListColor = styled.div`
+  background-color: #6de7ed;
+  border-radius: 10px 0 0 10px;
+`;
+
+export const MypageList = () => {
+  return (
+    <div
+      style={{
+        position: "relative",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "#F0F8FF",
+      }}
+    >
+      <SectionBackground></SectionBackground>
+      <SectionListBox>
+        <div
+          id="first_section"
+          style={{
+            height: "22%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <FontSizemd style={{ padding: "2rem 0", color: "#FBF9F9" }}>
+            Plan List
+          </FontSizemd>
+          <ListNav>
+            <div></div>
+            <ListNavli>
+              <p>별명</p>
+            </ListNavli>
+            <ListNavli>
+              <p>날짜/지역</p>
+            </ListNavli>
+            <ListNavli>
+              <p>유저정보</p>
+            </ListNavli>
+            <ListNavli>
+              <p>확인</p>
+            </ListNavli>
+          </ListNav>
+        </div>
+        <div id="second_section" style={{ paddingTop: "3rem" }}>
+          <SectionList>
+            <SectionListWrapper></SectionListWrapper>
+            <SectionListWrapper></SectionListWrapper>
+          </SectionList>
+        </div>
+        <div id="third_section" className="pagenation"></div>
+      </SectionListBox>
+    </div>
+  );
+};
+const SectionListWrapper = () => {
+  return (
+    <SectionListIt>
+      <ListColor />
+      <ListText>
+        <p>TEST ONE</p>
+      </ListText>
+      <ListText>
+        <p>2024.01.20~2024.01.30</p>
+        <p>대구 남구</p>
+      </ListText>
+      <ListText>
+        <p>sunghyun</p>
+      </ListText>
+      <ListText style={{ borderRadius: "0 10px 10px 0" }}>
+        <p>{"=>"}</p>
+      </ListText>
+    </SectionListIt>
+  );
+};
+
+export const ShowListInfo = () => {
+  return (
+    <div style={{ height: "100%", position: "relative" }}>
+      <SectionBackground
+        style={{
+          height: "15%",
+          borderRadius: 0,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            position: "absolute",
+            right: 0,
+            padding: "1rem 2rem",
+            margin: "2rem",
+            border: "1px solid aliceblue",
+            borderRadius: "50px",
+          }}
+        >
+          <FontSizesm
+            style={{
+              padding: "0 2rem 0 1rem",
+              color: "#D2ECEF",
+              marginRight: "0.5rem",
+            }}
+          >
+            sunghyun
+          </FontSizesm>
+          <div
+            style={{
+              width: "30px",
+              height: "30px",
+              border: "1px solid aliceblue",
+              borderRadius: "50%",
+              backgroundImage: `url("/img/MyProfile_IMG.png")`,
+              backgroundSize: "cover",
+            }}
+          ></div>
+        </div>
+      </SectionBackground>
+      <div
+        style={{
+          width: "100%",
+          height: "90%",
+          position: "absolute",
+          borderTopLeftRadius: "50px",
+          bottom: 0,
+          backgroundColor: "#F0F8FF",
+        }}
+      ></div>
+    </div>
+  );
+};
 // motion block
 export const MotionMypageWrapper = motion(MypageContainer);
 
 export const MotionMypageBox = motion(MypageBox);
-
-export const MotionMypageSectio = motion(MypageSection);

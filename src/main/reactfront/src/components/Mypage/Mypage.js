@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+
 import {
   EditInput,
   MypageBox,
@@ -16,10 +17,16 @@ import {
   UserInfoList,
   Detail,
   DetailContainer,
+  MypageBackGround,
+  BackgroundIcon,
+  MypageMenu,
+  MypageList,
+  ShowListInfo,
 } from "./mypage_components";
 import { auth } from "../../firebase";
 import axios from "axios";
-
+import { motion } from "framer-motion";
+const MotionContainer = motion(MypageContainer);
 export function Mypage() {
   const [userInfo, setUserInfo] = useState({
     name: "biblee",
@@ -130,82 +137,99 @@ export function Mypage() {
 
   console.log(favoriteList);
   return (
-    <MypageWrapper>
-      <MypageHeader>MY PlAN</MypageHeader>
-      <MypageContainer>
-        {/* 나의 프로필 */}
-        <MypageSection>
+    <MypageBackGround>
+      <MotionContainer
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <MypageWrapper>
           <MypageBox>
-            <UserInfo>
-              <UserImgBox>
-                <UserIMG src="/img/source1.jpg"></UserIMG>
-              </UserImgBox>
-
-              <UserInfoList>
-                {isEdit ? (
-                  <EditInput
-                    type="text"
-                    placeholder={userInfo.name}
-                    id="EditInput"
-                  />
-                ) : (
-                  <UserInfoItem>
-                    <p>{userInfo.name}</p>
-                  </UserInfoItem>
-                )}
-                <UserInfoItem>
-                  <p>{userInfo.email}</p>
-                </UserInfoItem>
-                <UserInfoItem>
-                  <p>Hello</p>
-                </UserInfoItem>
-              </UserInfoList>
-              <UserEditBtn onClick={EditMode}>
-                {isEdit ? "확인" : "정보 수정"}
-              </UserEditBtn>
-            </UserInfo>
+            <MypageMenu />
           </MypageBox>
-        </MypageSection>
-        {/* 나의 여행 계획 */}
-        <MypageSection>
           <MypageBox>
-            <TripPlanList
-              data={planData(favoriteArray)}
-              setFavorNickname={setFavorNickname}
-              setIsDetail={setIsDetail}
-              setFavorFid={setFavorFid}
-            ></TripPlanList>
-            {/* 최대 5개까지의 plan이 한 페이지에 출력 */}
-            <Pagenagtion
-              page={page}
-              setPage={setPage}
-              postLimit={postLimit}
-              totalPlan={totalPlan}
-              /* 
-              1. page : 현재의 page
-              2. setPage : 변경될 page를 만드는 useState함수
-              3. limit : 한번에 posts의 최대 갯수
-            4. totalPosts : 데이터의 총 posts 갯수*/
-            ></Pagenagtion>
+            <MypageList></MypageList>
           </MypageBox>
-        </MypageSection>
-        {isDetail ? (
-          <DetailContainer
-            className="eeeeeeee"
-            ref={detailBackground}
-            onClick={(e) => {
-              if (e.target === detailBackground.current) {
-                setIsDetail(false);
-              }
-            }}
-          >
-            <Detail
-              nickname={favorNickname}
-              favoriteList={favoriteList}
-            ></Detail>
-          </DetailContainer>
-        ) : null}
-      </MypageContainer>
-    </MypageWrapper>
+          <MypageBox style={{ backgroundColor: "white" }}>
+            <ShowListInfo></ShowListInfo>
+          </MypageBox>
+        </MypageWrapper>
+      </MotionContainer>
+      <BackgroundIcon className="left"></BackgroundIcon>
+      <BackgroundIcon className="right"></BackgroundIcon>
+    </MypageBackGround>
   );
 }
+
+// 유저 프로필
+{
+  /* <UserInfo>
+                <UserImgBox>
+                  <UserIMG src="/img/source1.jpg"></UserIMG>
+                </UserImgBox>
+
+                <UserInfoList>
+                  {isEdit ? (
+                    <EditInput
+                      type="text"
+                      placeholder={userInfo.name}
+                      id="EditInput"
+                    />
+                  ) : (
+                    <UserInfoItem>
+                      <p>{userInfo.name}</p>
+                    </UserInfoItem>
+                  )}
+                  <UserInfoItem>
+                    <p>{userInfo.email}</p>
+                  </UserInfoItem>
+                  <UserInfoItem>
+                    <p>Hello</p>
+                  </UserInfoItem>
+                </UserInfoList>
+                <UserEditBtn onClick={EditMode}>
+                  {isEdit ? "확인" : "정보 수정"}
+                </UserEditBtn>
+              </UserInfo> */
+}
+// 유저 여행계획
+{
+  /* <MypageSection>
+<MypageBox>
+  <TripPlanList
+    data={planData(favoriteArray)}
+    setFavorNickname={setFavorNickname}
+    setIsDetail={setIsDetail}
+    setFavorFid={setFavorFid}
+  ></TripPlanList>
+  // 최대 5개까지의 plan이 한 페이지에 출력 
+  <Pagenagtion
+    page={page}
+    setPage={setPage}
+    postLimit={postLimit}
+    totalPlan={totalPlan}
+     
+  // 1. page : 현재의 page
+  // 2. setPage : 변경될 page를 만드는 useState함수
+  // 3. limit : 한번에 posts의 최대 갯수
+  // 4. totalPosts : 데이터의 총 posts 갯수
+  ></Pagenagtion>
+</MypageBox>
+</MypageSection> */
+}
+// {isDetail ? (
+//   <DetailContainer
+//     className="eeeeeeee"
+//     ref={detailBackground}
+//     onClick={(e) => {
+//       if (e.target === detailBackground.current) {
+//         setIsDetail(false);
+//       }
+//     }}
+//   >
+//     <Detail
+//       nickname={favorNickname}
+//       favoriteList={favoriteList}
+//     ></Detail>
+//   </DetailContainer>
+// ) : null}
