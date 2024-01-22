@@ -345,6 +345,7 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
+                  style={{ width: " 600px", padding: "4rem 1rem 0 1rem" }}
                 >
                   <TripHotel
                     selectedAreaName={selectedAreaName}
@@ -353,8 +354,7 @@ function Trip() {
                     saveTourList={saveTourList}
                     handleDeleteList={handleDeleteList}
                     setDetailData={setDetailData}
-                  >              
-                  </TripHotel>
+                  ></TripHotel>
                 </Motionitem>
               ) : null}
             </AnimatePresence>
