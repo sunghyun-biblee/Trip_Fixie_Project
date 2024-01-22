@@ -131,7 +131,7 @@ export function Mypage() {
   console.log(favoriteList);
   return (
     <MypageWrapper>
-      <MypageHeader>MY PlAN</MypageHeader>
+      <MypageHeader>MY PLAN</MypageHeader>
       <MypageContainer>
         {/* 나의 프로필 */}
         <MypageSection>
