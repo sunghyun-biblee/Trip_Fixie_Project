@@ -26,6 +26,7 @@ import TripPlace from "../components/Trip/TripPlace";
 import { SaveTripInfo } from "../components/Trip/SaveTripInfo";
 import TripMap from "../components/Trip/TripMap";
 import TourSpot from "../components/TourSpot";
+import TripHotel from "../components/Trip/TripHotel";
 
 const MotionMainContainer = styled.div`
   position: relative;
@@ -344,7 +345,17 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                ></Motionitem>
+                >
+                  <TripHotel
+                    selectedAreaName={selectedAreaName}
+                    setSaveTourList={handleAddList}
+                    setIsSlideMode={setIsSlideMode}
+                    saveTourList={saveTourList}
+                    handleDeleteList={handleDeleteList}
+                    setDetailData={setDetailData}
+                  >              
+                  </TripHotel>
+                </Motionitem>
               ) : null}
             </AnimatePresence>
           </MotionBox>

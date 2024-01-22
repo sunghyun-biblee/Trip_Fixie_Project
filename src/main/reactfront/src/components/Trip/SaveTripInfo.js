@@ -220,7 +220,7 @@ export function SaveTripInfo({
                     >
                       {saveTourList.map(
                         (tour, index) =>
-                          tour.contenttypeid !== "12" && (
+                          tour.contenttypeid !== "12" && tour.contenttypeid !== "32" && (
                             <MotionListItems
                               variants={SaveListVariants}
                               key={index}
@@ -309,7 +309,7 @@ export function SaveTripInfo({
                     >
                       {saveTourList.map(
                         (tour, index) =>
-                          tour.contenttypeid !== "12" && (
+                          tour.contenttypeid === "32" && (
                             <MotionListItems
                               variants={SaveListVariants}
                               key={index}
