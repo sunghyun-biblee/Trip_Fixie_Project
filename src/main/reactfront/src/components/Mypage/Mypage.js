@@ -32,6 +32,7 @@ export function Mypage() {
     name: "biblee",
     email: "biblee@biblee.co",
   });
+  const [mypageMode, setMypageMode] = useState("plan");
   const [isEdit, setIsEdit] = useState(false);
   const [favoriteArray, setFavoriteArray] = useState([]);
   const [favorNickname, setFavorNickname] = useState();
@@ -97,7 +98,7 @@ export function Mypage() {
             id: index,
             startDay: favor.fstart,
             endDay: favor.fend,
-            nickname: favor.ftitle,
+            ftitle: favor.ftitle,
             area: favor.farea,
             fid: favor.fid,
           })
@@ -145,14 +146,76 @@ export function Mypage() {
       >
         <MypageWrapper>
           <MypageBox>
-            <MypageMenu />
+            <MypageMenu setMypageMode={setMypageMode} />
           </MypageBox>
-          <MypageBox>
-            <MypageList></MypageList>
-          </MypageBox>
-          <MypageBox style={{ backgroundColor: "white" }}>
-            <ShowListInfo></ShowListInfo>
-          </MypageBox>
+
+          {mypageMode === "plan" ? (
+            <>
+              <MypageBox className="planlist">
+                <MypageList
+                  data={planData(favoriteArray)}
+                  setFavorNickname={setFavorNickname}
+                  setIsDetail={setIsDetail}
+                  setFavorFid={setFavorFid}
+                  page={page}
+                  setPage={setPage}
+                  postLimit={postLimit}
+                  totalPlan={totalPlan}
+                  userInfo={userInfo}
+                ></MypageList>
+              </MypageBox>
+              <MypageBox
+                style={{ backgroundColor: "white" }}
+                className="showlistInfo"
+              >
+                <ShowListInfo></ShowListInfo>
+              </MypageBox>
+            </>
+          ) : mypageMode === "profile" ? (
+            <>
+              <MypageBox className="planlist">
+                <MypageList
+                  data={planData(favoriteArray)}
+                  setFavorNickname={setFavorNickname}
+                  setIsDetail={setIsDetail}
+                  setFavorFid={setFavorFid}
+                  page={page}
+                  setPage={setPage}
+                  postLimit={postLimit}
+                  totalPlan={totalPlan}
+                  userInfo={userInfo}
+                ></MypageList>
+              </MypageBox>
+              <MypageBox
+                style={{ backgroundColor: "white" }}
+                className="showlistInfo"
+              >
+                <ShowListInfo></ShowListInfo>
+              </MypageBox>
+            </>
+          ) : mypageMode === "faq" ? (
+            <>
+              <MypageBox className="planlist">
+                <MypageList
+                  data={planData(favoriteArray)}
+                  setFavorNickname={setFavorNickname}
+                  setIsDetail={setIsDetail}
+                  setFavorFid={setFavorFid}
+                  page={page}
+                  setPage={setPage}
+                  postLimit={postLimit}
+                  totalPlan={totalPlan}
+                  userInfo={userInfo}
+                ></MypageList>
+              </MypageBox>
+              <MypageBox
+                style={{ backgroundColor: "white" }}
+                className="showlistInfo"
+              >
+                <ShowListInfo></ShowListInfo>
+              </MypageBox>
+            </>
+          ) : null}
         </MypageWrapper>
       </MotionContainer>
       <BackgroundIcon className="left"></BackgroundIcon>
@@ -192,31 +255,7 @@ export function Mypage() {
                 </UserEditBtn>
               </UserInfo> */
 }
-// 유저 여행계획
-{
-  /* <MypageSection>
-<MypageBox>
-  <TripPlanList
-    data={planData(favoriteArray)}
-    setFavorNickname={setFavorNickname}
-    setIsDetail={setIsDetail}
-    setFavorFid={setFavorFid}
-  ></TripPlanList>
-  // 최대 5개까지의 plan이 한 페이지에 출력 
-  <Pagenagtion
-    page={page}
-    setPage={setPage}
-    postLimit={postLimit}
-    totalPlan={totalPlan}
-     
-  // 1. page : 현재의 page
-  // 2. setPage : 변경될 page를 만드는 useState함수
-  // 3. limit : 한번에 posts의 최대 갯수
-  // 4. totalPosts : 데이터의 총 posts 갯수
-  ></Pagenagtion>
-</MypageBox>
-</MypageSection> */
-}
+
 // {isDetail ? (
 //   <DetailContainer
 //     className="eeeeeeee"

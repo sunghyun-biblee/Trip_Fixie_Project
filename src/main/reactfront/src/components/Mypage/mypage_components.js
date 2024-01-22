@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { FontSizemd, FontSizesm } from "../Trip/trip_save_components";
+import { auth } from "../../firebase";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export const MypageWrapper = styled.div`
   /* width: 100%; */
@@ -20,6 +22,8 @@ export const MypageBackGround = styled.div`
   height: 100vh;
   background-color: #f0f8ff;
   position: relative;
+  display: flex;
+  justify-content: center;
   overflow: hidden;
 `;
 export const BackgroundIcon = styled.div`
@@ -50,7 +54,9 @@ export const MypageContainer = styled.div`
   position: relative;
 `;
 
-export const MypageBox = styled.div``;
+export const MypageBox = styled.div`
+  position: relative;
+`;
 
 const PlanHeaderUl = styled.ul`
   display: grid;
@@ -149,8 +155,8 @@ export const TripPlanItem = ({
 };
 const PageSection = styled.div`
   position: absolute;
-  bottom: 2rem;
-  width: 1000px;
+  bottom: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
 `;
@@ -353,19 +359,28 @@ const ClickState = styled.div`
   }
 `;
 
-export const MypageMenu = () => {
+export const MypageMenu = ({ setMypageMode }) => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState("plan");
   const onClick = (e) => {
     console.log(e.target);
     if (e.target.id === "plan") {
       setMode("plan");
+      setMypageMode("plan");
     } else if (e.target.id === "profile") {
       setMode("profile");
+      setMypageMode("profile");
     } else if (e.target.id === "faq") {
       setMode("faq");
+      setMypageMode("faq");
     } else if (e.target.id === "logout") {
       setMode("logout");
+    } else if (e.target.id === "trip") {
+      navigate("/trip");
     }
+  };
+  const gomain = () => {
+    navigate("/");
   };
   return (
     <div
@@ -379,11 +394,20 @@ export const MypageMenu = () => {
         color: "#FBF9F9",
       }}
     >
-      <div style={{ height: "5%" }}>
+      <div
+        style={{
+          height: "5%",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+        onClick={gomain}
+        className="here"
+      >
         <img
           src="/img/CHlogo.png"
           alt=""
-          style={{ width: "30px", height: "30px" }}
+          style={{ width: "80px", height: "80px" }}
         />
       </div>
       <MypageUl>
@@ -437,6 +461,22 @@ export const MypageMenu = () => {
           />
           <FontSizesm onClick={onClick} id="faq" style={{ cursor: "pointer" }}>
             1:1 FAQ
+          </FontSizesm>
+        </li>
+        <li>
+          <ClickState className={mode === "trip" ? "click" : null} />
+          <img
+            src="/img/mypage/Logout.svg"
+            alt=""
+            style={{
+              width: "40px",
+              height: "100%",
+              paddingRight: "1rem",
+              marginLeft: "1rem",
+            }}
+          />
+          <FontSizesm onClick={onClick} id="trip" style={{ cursor: "pointer" }}>
+            계획짜기
           </FontSizesm>
         </li>
         <li>
@@ -525,7 +565,18 @@ const ListColor = styled.div`
   border-radius: 10px 0 0 10px;
 `;
 
-export const MypageList = () => {
+export const MypageList = ({
+  data,
+  setFavorNickname,
+  setIsDetail,
+  setFavorFid,
+  page,
+  setPage,
+  postLimit,
+  totalPlan,
+  userInfo,
+}) => {
+  console.log(data);
   return (
     <div
       style={{
@@ -568,31 +619,69 @@ export const MypageList = () => {
         </div>
         <div id="second_section" style={{ paddingTop: "3rem" }}>
           <SectionList>
-            <SectionListWrapper></SectionListWrapper>
-            <SectionListWrapper></SectionListWrapper>
+            {data.map((items) => (
+              <SectionListWrapper
+                key={items.id}
+                {...items}
+                userInfo={userInfo}
+                setFavorNickname={setFavorNickname}
+                setIsDetail={setIsDetail}
+                setFavorFid={setFavorFid}
+              ></SectionListWrapper>
+            ))}
           </SectionList>
+          <Pagenagtion
+            page={page}
+            setPage={setPage}
+            postLimit={postLimit}
+            totalPlan={totalPlan}
+            // 1. page : 현재의 page
+            // 2. setPage : 변경될 page를 만드는 useState함수
+            // 3. limit : 한번에 posts의 최대 갯수
+            // 4. totalPosts : 데이터의 총 posts 갯수
+          ></Pagenagtion>
         </div>
         <div id="third_section" className="pagenation"></div>
       </SectionListBox>
     </div>
   );
 };
-const SectionListWrapper = () => {
+const SectionListWrapper = ({
+  startDay,
+  endDay,
+  ftitle,
+  area,
+  fid,
+  setFavorNickname,
+  setIsDetail,
+  setFavorFid,
+  userInfo,
+}) => {
   return (
     <SectionListIt>
       <ListColor />
       <ListText>
-        <p>TEST ONE</p>
+        <p>{ftitle}</p>
       </ListText>
       <ListText>
-        <p>2024.01.20~2024.01.30</p>
-        <p>대구 남구</p>
+        <p>
+          {startDay}~{endDay}
+        </p>
+        <p>{area}</p>
       </ListText>
       <ListText>
-        <p>sunghyun</p>
+        <p>{userInfo.name}</p>
       </ListText>
       <ListText style={{ borderRadius: "0 10px 10px 0" }}>
-        <p>{"=>"}</p>
+        <p
+          onClick={() => {
+            setFavorNickname(ftitle);
+            setFavorFid(fid);
+            setIsDetail(true);
+          }}
+        >
+          {"=>"}
+        </p>
       </ListText>
     </SectionListIt>
   );
@@ -649,7 +738,9 @@ export const ShowListInfo = () => {
           bottom: 0,
           backgroundColor: "#F0F8FF",
         }}
-      ></div>
+      >
+        {/* show info */}
+      </div>
     </div>
   );
 };
