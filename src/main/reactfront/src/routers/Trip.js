@@ -326,7 +326,10 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                  style={{ width: " 600px", padding: "4rem 1rem 0 1rem" }}
+                  style={{
+                    width: " 600px",
+                    padding: "0 1rem",
+                  }}
                 >
                   <TourSpot
                     selectedAreaName={selectedAreaName}
@@ -345,7 +348,7 @@ function Trip() {
                   animate="itemIn"
                   exit="itemOut"
                   variants={variants}
-                  style={{ width: " 600px", padding: "4rem 1rem 0 1rem" }}
+                  style={{ width: " 600px", padding: "0 1rem" }}
                 >
                   <TripHotel
                     selectedAreaName={selectedAreaName}

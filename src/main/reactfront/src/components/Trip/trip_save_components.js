@@ -62,7 +62,7 @@ export const FontSizeLg = styled.p`
 
 export const SaveBox = styled.div`
   height: 100vh;
-  padding: 4rem 2rem 0 2rem;
+  padding: 3rem 2rem 0 1rem;
   margin-left: 1.1rem;
   display: flex;
   flex-direction: column;
@@ -77,7 +77,6 @@ export const SaveWrapper = styled.div`
   box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px,
     rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
   flex-direction: column;
-  justify-content: space-around;
 `;
 export const SaveTextItems = styled.div`
   display: flex;
@@ -96,7 +95,7 @@ export const SaveTextItems = styled.div`
 
 export const SaveTourListBox = styled.div`
   width: 100%;
-  height: 265px;
+  height: 50vh;
 
   &::-webkit-scrollbar {
     width: 5px;
@@ -145,4 +144,34 @@ export const SaveItemContainer = styled.div`
   width: 260px;
   height: 300px;
   border: 1px solid black;
+`;
+export const SaveItemUl = styled.ul`
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  text-align: center;
+`;
+export const SaveTextArea = styled.textarea`
+  height: 20%;
+  margin-top: 1rem;
+  resize: none;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  font-size: 1.3rem;
+  padding: 1rem;
+  &:focus {
+    outline: none;
+  }
+`;
+export const CompelteBox = styled.div`
+  height: 10%;
+  margin-top: 1rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  span {
+    font-size: 1.5rem;
+  }
 `;

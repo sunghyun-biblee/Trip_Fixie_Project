@@ -3,11 +3,15 @@ import { TourLoadingWrapper } from "./TourSpot";
 import { useEffect, useRef, useState } from "react";
 import { Loading } from "./atoms/Loading";
 import axios from "axios";
-import { FontSizemd, FontSizesm } from "./Trip/trip_save_components";
+import {
+  FontSizeLg,
+  FontSizemd,
+  FontSizesm,
+} from "./Trip/trip_save_components";
 
 const ModeWrapper = styled.div`
   display: flex;
-  padding: 1.5rem;
+  padding: 1rem;
   justify-content: center;
 `;
 const TourModeName = styled.div`
@@ -68,6 +72,8 @@ const TourSpotIMG = styled.img`
   margin: 0 15px;
 `;
 const TourWrapper = styled.div`
+  height: 100%;
+  padding-top: 1rem;
   overflow-y: scroll;
   &::-webkit-scrollbar {
     width: 7px; /* 스크롤바의 너비 */
@@ -84,7 +90,7 @@ const TourWrapper = styled.div`
   }
 `;
 const TourSpotContainer = styled.div`
-  height: 800px;
+  height: 720px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -101,7 +107,7 @@ const TourSpotLi = styled.div`
   align-items: center;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 10px;
-  margin-bottom: 12px;
+
   box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 `;
 const TourSpotItemWrapper = styled.div`
@@ -244,7 +250,7 @@ export const TourSpotList = ({
   // console.log(currtourList);
   return (
     <TourSpotContainer className={isMainLoading ? "off" : null}>
-      <TourWrapper ref={scrollBoxRef}>
+      <TourWrapper ref={scrollBoxRef} className="gere">
         {currtourList ? (
           currtourList.length > 1 ? (
             currtourList.map((tour, index) => (
@@ -301,9 +307,7 @@ export const TourSpotList = ({
               className="ABC"
               style={{ width: "500px", height: "500px" }}
             >
-              <div style={{ fontSize: "3rem" }}>
-                등록된 광광지가 없습니다 ㅠㅠ
-              </div>
+              <FontSizeLg>등록된 관광지가 없습니다</FontSizeLg>
             </TourLoadingWrapper>
           )
         ) : (
@@ -714,7 +718,7 @@ export const Weather = ({ dateinfo, arealonglat }) => {
       ) : dateArray &&
         new Date(dateinfo.startDay) < today &&
         new Date(dateinfo.endDay) < today ? (
-        <div style={{ width: "100%", overflow: "hidden" }}>
+        <div style={{ width: "100%", overflow: "hidden", paddingTop: "3rem" }}>
           <div
             style={{ display: "flex", transform: "translateX(-100%)" }} //처음부터 translateX(-100%)적용하여 원하는 처음 요소가 보일 수 있도록 설정.
             ref={slide}
