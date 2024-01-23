@@ -77,18 +77,71 @@ function TripMap({
     });
 
     saveTourList.map((list, index) => {
-      const marker = new window.naver.maps.Marker({
+      if(list.contenttypeid === "12"){
+        const marker = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(list.clatitude, list.clongitude),
+        icon:{
+          content: [
+            `<div style="display: flex; flex-direction: column; align-items: center; width: 50px; height: 50px;">`,
+            ` <div style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px;">`,
+            ` <img src="/img/tour.png" style="width: 50px; background-color: white; height: 50px; border-radius: 50%;"/>`,
+            ` </div>`,
+            ` <div style="text-align: center; background-color: white; border-radius: 10px; ">${list.ctitle}</div>`,
+            `</div>`
+            ].join(''),
+            size: new window.naver.maps.Size(50, 50),
+            scaledSize: new window.naver.maps.Size(50, 50),
+            origin: new window.naver.maps.Point(0, 0)
+          },
+          map: map,
+        });
+        marker.addListener("click", () => {
+          showInfo(saveTourList[index]);
+        });
+      }else if(list.contenttypeid === "32"){
+        const marker = new window.naver.maps.Marker({
+        position: new window.naver.maps.LatLng(list.clatitude, list.clongitude),
+        icon:{
+          content: [
+            `<div style="display: flex; flex-direction: column; align-items: center; width: 50px; height: 50px;">`,
+            ` <div style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px;">`,
+            ` <img src="/img/hotel.png" style="width: 50px; background-color: white; height: 50px; border-radius: 50%;"/>`,
+            ` </div>`,
+            ` <div style="text-align: center; background-color: white; border-radius: 10px; ">${list.ctitle}</div>`,
+            `</div>`
+            ].join(''),
+            size: new window.naver.maps.Size(50, 50),
+            scaledSize: new window.naver.maps.Size(50, 50),
+            origin: new window.naver.maps.Point(0, 0)
+        },
         map: map,
       });
       marker.addListener("click", () => {
         showInfo(saveTourList[index]);
       });
+    }else{
+      const marker = new window.naver.maps.Marker({
+      position: new window.naver.maps.LatLng(list.clatitude, list.clongitude),
+      icon:{
+        content: [
+          `<div style="display: flex; flex-direction: column; align-items: center; width: 50px; height: 50px;">`,
+          ` <div style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px;">`,
+          ` <img src="/img/festival.png" style="width: 50px; background-color: white; height: 50px; border-radius: 50%;"/>`,
+          ` </div>`,
+          ` <div style="text-align: center; background-color: white; border-radius: 10px; ">${list.ctitle}</div>`,
+          `</div>`
+          ].join(''),
+          size: new window.naver.maps.Size(50, 50),
+          scaledSize: new window.naver.maps.Size(50, 50),
+          origin: new window.naver.maps.Point(0, 0)
+      },
+      map: map,
+    });
+    marker.addListener("click", () => {
+      showInfo(saveTourList[index]);
+    });
+  }
       return null;
-      // window.naver.maps.Event.addListener(marker[index], "click", () => {
-      //   showInfo(index);
-      //   // console.log(saveTourList[index]);
-      // });
     });
   }, [mygeolocation, saveTourList]);
 
