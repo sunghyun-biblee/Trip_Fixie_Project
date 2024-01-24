@@ -39,6 +39,7 @@ export function Mypage() {
   const [favorFid, setFavorFid] = useState();
   const [isDetail, setIsDetail] = useState(false);
   const [favoriteList, setFavoriteList] = useState([]);
+  const [favoriteArea, setFavoriteArea] = useState();
   const detailBackground = useRef();
   const handleAddFavorite = (favorite) => {
     setFavoriteArray((prevList) => [...prevList, favorite]);
@@ -118,8 +119,10 @@ export function Mypage() {
       .then((response) => {
         console.log(response.data);
         const favorlist = response.data;
+        console.log("ㅇㅇㅇㅇ")
+        console.log(favorlist);
         const flist = favorlist.map((list) => ({
-          cid: list.cid,
+          contentid: list.contentid,
           ctitle: list.ctitle,
           caddr: list.caddr,
           ceventstartdate: list.ceventstartdate,
@@ -129,12 +132,23 @@ export function Mypage() {
           clatitude: list.clatitude,
           clongitude: list.clongitude,
           ctel: list.ctel,
+          contenttypeid: list.contenttypeid,
         }));
         setFavoriteList(flist);
       })
       .catch((error) => {
         console.error("favorlist오류", error);
       });
+
+      axios.post("/test/getFavorArea", favorFid)
+      .then((response)=>{
+        const data = response.data;
+        setFavoriteArea(data);
+      })
+      .catch((err)=>{
+        console.log(err);
+      })
+
   }, [favorFid]);
 
   console.log(favoriteList);

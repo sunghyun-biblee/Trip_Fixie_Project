@@ -69,6 +69,13 @@ export function SaveTripInfo({
             fstart: dateinfo.startDay,
             fend: dateinfo.endDay,
             farea: selectedAreaName.mainAreaName,
+            fdate: new Date()
+            .toISOString()
+            .replace(/-/g, "")
+            .replace("T", "")
+            .replace(/:/g, "")
+            .replace("Z", "")
+            .replace(".", ""),
           })
           .then((response) => {
             console.log(response);

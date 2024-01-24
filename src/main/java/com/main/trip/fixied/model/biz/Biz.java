@@ -24,4 +24,5 @@ public interface Biz {
 	public AreaCodeDto getLongLat(String MainAreaCode);
 	public int deleteUser(String uid);
 	public ArrayList<String> selectUidAll();
+	public Favorite getFavorArea(String favorFid);
 }

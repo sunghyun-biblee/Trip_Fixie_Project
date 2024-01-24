@@ -13,12 +13,13 @@ public class ContentList {
 	private String csecondimage;
 	private double clatitude;
 	private double clongitude;
+	private int contenttypeid;
+	
 	public ContentList() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public ContentList(int contentid, String ctitle, String caddr, String ctel, String ceventstartdate,
-			String ceventenddate, String cfirstimage, String csecondimage, double clatitude, double clongitude) {
+			String ceventenddate, String cfirstimage, String csecondimage, double clatitude, double clongitude, int contenttypeid) {
 		super();
 		this.contentid = contentid;
 		this.ctitle = ctitle;
@@ -30,6 +31,7 @@ public class ContentList {
 		this.csecondimage = csecondimage;
 		this.clatitude = clatitude;
 		this.clongitude = clongitude;
+		this.contenttypeid = contenttypeid;
 	}
 	public int getContentid() {
 		return contentid;
@@ -91,12 +93,19 @@ public class ContentList {
 	public void setClongitude(double clongitude) {
 		this.clongitude = clongitude;
 	}
+	public int getContenttypeid() {
+		return contenttypeid;
+	}
+	public void setContenttypeid(int contenttypeid) {
+		this.contenttypeid = contenttypeid;
+	}
 	@Override
 	public String toString() {
 		return "ContentList [contentid=" + contentid + ", ctitle=" + ctitle + ", caddr=" + caddr + ", ctel=" + ctel
 				+ ", ceventstartdate=" + ceventstartdate + ", ceventenddate=" + ceventenddate + ", cfirstimage="
 				+ cfirstimage + ", csecondimage=" + csecondimage + ", clatitude=" + clatitude + ", clongitude="
-				+ clongitude + "]";
+				+ clongitude + ", contenttypeid=" + contenttypeid + "]";
 	}
+	
 	
 }

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import LoginForm from "./LoginForm";
 import "./css/Navi.css";
 import { ModalBox, ModalContainer, signOut } from "./LootSection";
@@ -25,7 +25,15 @@ const NavUl = styled.ul`
 const NavDiv = styled.div``;
 const MypageList = styled.div``;
 function Navi() {
-  const user = auth.currentUser;
+
+const [user, setUser] = useState();
+
+  useEffect(()=>{
+    if(auth){
+    setUser(auth.currentUser);
+    }
+  },[auth.currentUser])
+
   const [modalOpen, setModalOpen] = useState(false);
   const modalBackground = useRef();
 
@@ -44,7 +52,10 @@ function Navi() {
             <StyleLink to="/notfound">고객지원</StyleLink>
             <StyleLink to="/notfound">이용방법</StyleLink>
             {user === null ? (
-              <Span onClick={onClicks}>로그인</Span>
+              <StyleLink to="/login">
+              로그인
+            </StyleLink>
+              // <Span onClick={onClicks}>로그인</Span>
             ) : (
               <>
                 <StyleLink to="/mypage">마이페이지</StyleLink>
@@ -54,7 +65,7 @@ function Navi() {
           </NavUl>
         </div>
       </div>
-      {modalOpen ? (
+      {/* {modalOpen ? (
         <ModalContainer
           ref={modalBackground}
           onClick={(e) => {
@@ -67,7 +78,7 @@ function Navi() {
             <LoginForm closeModal={() => setModalOpen(false)}></LoginForm>
           </ModalBox>
         </ModalContainer>
-      ) : null}
+      ) : null} */}
     </>
   );
 }
