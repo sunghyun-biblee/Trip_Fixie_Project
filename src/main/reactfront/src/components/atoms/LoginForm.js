@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { GithubAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase";
 import "./css/LoginForm.css";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function LoginForm({ closeModal }) {
   const navigate = useNavigate();
@@ -47,6 +48,50 @@ function LoginForm({ closeModal }) {
   const onCancelClick = () => {
     closeModal();
   };
+
+  const signUpGithub = ()=>{
+    const provider = new GithubAuthProvider();
+    signInWithPopup(auth, provider)
+    .then((data)=>{
+      console.log("성공");
+      console.log(data);
+    })
+    .catch((err)=>{
+      console.log(err);
+    })
+    .finally(()=>{
+      console.log(auth.currentUser);
+      const uid = auth.currentUser.uid;
+      const user = auth.currentUser;
+      axios.get("/test/selectUidAll")
+      .then((data)=>{
+        console.log(data);
+        if(data.data.includes(uid)){
+          console.log("이미 가입되있음");
+          closeModal();
+          return;
+        }else{
+          axios.post("/test/signup",{
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            nickname: user.displayName,
+            profile: user.photoURL,
+          })
+          .then(()=>{
+            console.log("서버가입성공")
+            closeModal();
+          })
+          .catch(()=>{
+            console.log("서버실패")
+          })
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+    })
+  }
 
   return (
     <div
@@ -97,6 +142,7 @@ function LoginForm({ closeModal }) {
                 className="Content_Input "
                 type="button"
                 value="gitHub"
+                onClick={signUpGithub}
               ></input>
               <div className="Registe_Box">
                 <p>Don't have Account?</p>

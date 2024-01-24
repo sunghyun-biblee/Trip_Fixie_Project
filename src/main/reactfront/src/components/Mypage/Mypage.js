@@ -43,6 +43,7 @@ export function Mypage() {
   const handleAddFavorite = (favorite) => {
     setFavoriteArray((prevList) => [...prevList, favorite]);
   };
+  const [listMode, setListMode] = useState("mypage");
 
   const [page, setPage] = useState(1); // 페이지
   const postLimit = 5; // 페이지당 보여줄 포스트 갯수
@@ -162,38 +163,18 @@ export function Mypage() {
                   postLimit={postLimit}
                   totalPlan={totalPlan}
                   userInfo={userInfo}
+                  setListMode={setListMode}
                 ></MypageList>
               </MypageBox>
               <MypageBox
                 style={{ backgroundColor: "white" }}
                 className="showlistInfo"
               >
-                <ShowListInfo
+                  <ShowListInfo
                   userInfo={userInfo}
-                  favoriteList={favoriteList}
+                  setListMode={setListMode}
+                  listMode={listMode}
                 ></ShowListInfo>
-              </MypageBox>
-            </>
-          ) : mypageMode === "profile" ? (
-            <>
-              <MypageBox className="planlist">
-                <MypageList
-                  data={planData(favoriteArray)}
-                  setFavorNickname={setFavorNickname}
-                  setIsDetail={setIsDetail}
-                  setFavorFid={setFavorFid}
-                  page={page}
-                  setPage={setPage}
-                  postLimit={postLimit}
-                  totalPlan={totalPlan}
-                  userInfo={userInfo}
-                ></MypageList>
-              </MypageBox>
-              <MypageBox
-                style={{ backgroundColor: "white" }}
-                className="showlistInfo"
-              >
-                <ShowListInfo></ShowListInfo>
               </MypageBox>
             </>
           ) : mypageMode === "faq" ? (
@@ -209,13 +190,18 @@ export function Mypage() {
                   postLimit={postLimit}
                   totalPlan={totalPlan}
                   userInfo={userInfo}
+                  setListMode={setListMode}
                 ></MypageList>
               </MypageBox>
               <MypageBox
                 style={{ backgroundColor: "white" }}
                 className="showlistInfo"
               >
-                <ShowListInfo></ShowListInfo>
+                <ShowListInfo
+                  userInfo={userInfo}
+                  setListMode={setListMode}
+                  listMode={listMode}
+                ></ShowListInfo>
               </MypageBox>
             </>
           ) : null}

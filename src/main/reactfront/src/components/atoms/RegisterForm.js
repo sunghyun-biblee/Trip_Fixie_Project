@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import axios from "axios";
 import "./css/RegisterForm.css";
+import { useNavigate } from "react-router-dom";
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ function RegisterForm() {
   const [nickname, setNickname] = useState("");
   const [profile, setProfile] = useState("");
   const [uid, setUid] = useState("");
+  const navigate = useNavigate();
 
   const onChange = (event) => {
     const {
@@ -38,20 +40,23 @@ function RegisterForm() {
         // ...
         console.log(user);
         setUid(user.uid);
-        alert(user + "님 회원가입 되셨습니다.");
+        serverSignUp(user.uid);
       })
       .catch((error) => {
         console.log(error.code);
         console.log(error.message);
         // ..
-      });
+      })
+      .finally(()=>{
+        navigate("/trip");
+      })
   };
   console.log("");
 
-  const serverSignUp = () => {
+  const serverSignUp = (userid) => {
     axios
       .post("/test/signup", {
-        uid: uid,
+        uid: userid,
         email: email,
         name: name,
         nickname: nickname,
@@ -64,12 +69,12 @@ function RegisterForm() {
       });
   };
 
-  useEffect(() => {
-    if (uid && email && name && nickname) {
-      // uid 값이 존재하는 경우에만 serverSignUp 함수 실행
-      serverSignUp();
-    }
-  }, [uid, email, name, nickname]); // uid 값이 변경될 때마다 useEffect 내의 코드 실행
+  // useEffect(() => {
+  //   if (uid && email && name && nickname) {
+  //     // uid 값이 존재하는 경우에만 serverSignUp 함수 실행
+  //     serverSignUp();
+  //   }
+  // }, [uid, email, name, nickname]); // uid 값이 변경될 때마다 useEffect 내의 코드 실행
   return (
     <div
       style={{

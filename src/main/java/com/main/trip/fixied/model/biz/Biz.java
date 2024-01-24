@@ -22,4 +22,6 @@ public interface Biz {
 	public ArrayList<Favorite> loadFavorites(String userid);
 	public ArrayList<ContentList> loadFavoriteList(String favorFid);
 	public AreaCodeDto getLongLat(String MainAreaCode);
+	public int deleteUser(String uid);
+	public ArrayList<String> selectUidAll();
 }
