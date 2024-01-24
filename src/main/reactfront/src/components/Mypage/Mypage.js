@@ -168,7 +168,10 @@ export function Mypage() {
                 style={{ backgroundColor: "white" }}
                 className="showlistInfo"
               >
-                <ShowListInfo></ShowListInfo>
+                <ShowListInfo
+                  userInfo={userInfo}
+                  favoriteList={favoriteList}
+                ></ShowListInfo>
               </MypageBox>
             </>
           ) : mypageMode === "profile" ? (
