@@ -56,6 +56,7 @@ export const FontSizesm = styled.p`
 export const FontSizemd = styled.p`
   font-size: 2.5rem;
 `;
+
 export const FontSizeLg = styled.p`
   font-size: 4rem;
 `;

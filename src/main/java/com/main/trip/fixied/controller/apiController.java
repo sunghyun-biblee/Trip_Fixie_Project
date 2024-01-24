@@ -52,13 +52,22 @@ public class apiController {
 		dto.setUemail(requestBody.get("email"));
 		dto.setUname(requestBody.get("name"));
 		dto.setUnickname(requestBody.get("nickname"));
-		//dto.setUprofile(null);		나중에 이미지 스토리지 추가하고 로직짠뒤에 추가		
+		if(requestBody.get("profile") != null) {
+			dto.setUprofile(requestBody.get("profile"));
+		}
 
 		if(biz.signUp(dto)>0) {
 			return "잘돼용";
 		}else {
 			return "조땠서요";
 		}
+	}
+	
+	@RequestMapping("/selectUidAll")
+	public ArrayList<String> selectUidAll(){
+		ArrayList<String> list = biz.selectUidAll();
+		
+		return list;
 	}
 	
 	@RequestMapping("/addFavorite")
@@ -165,4 +174,17 @@ public class apiController {
 		System.out.println(AreaDto);
 		return AreaDto;
 	}
+	
+	@RequestMapping("/deleteUser")
+	public String deleteUser(@RequestBody Map<String, String> userid) {
+		String uid = userid.get("userid");
+		if(biz.deleteUser(uid)> 0) {
+			System.out.println("성공");
+		}else {
+			System.out.println("실패");
+		}
+		return "성공";
+	}
+	
+
 }

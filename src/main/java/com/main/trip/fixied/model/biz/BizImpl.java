@@ -72,9 +72,18 @@ public class BizImpl implements Biz{
 	}
 
 	@Override
-	public AreaCodeDto getLongLat(String MainAreaCode) {
-		
+	public AreaCodeDto getLongLat(String MainAreaCode) {		
 		return mapper.getLongLat(MainAreaCode);
+	}
+	
+	@Override
+	public int deleteUser(String uid) {
+		return mapper.deleteUser(uid);
+	}
+	
+	@Override
+	public ArrayList<String> selectUidAll(){
+		return mapper.selectUidAll();
 	}
 
 }

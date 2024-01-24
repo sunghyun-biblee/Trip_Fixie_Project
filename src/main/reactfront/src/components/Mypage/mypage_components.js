@@ -1,9 +1,13 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FontSizemd, FontSizesm } from "../Trip/trip_save_components";
+import { FontSizemd, FontSizemdInput, FontSizesm } from "../Trip/trip_save_components";
 import { auth } from "../../firebase";
 import { Navigate, useNavigate } from "react-router-dom";
+import { EmailAuthProvider, deleteUser, reauthenticateWithCredential, updatePassword } from "firebase/auth";
+import axios from "axios";
+
+
 
 export const MypageWrapper = styled.div`
   /* width: 100%; */
@@ -427,7 +431,7 @@ export const MypageMenu = ({ setMypageMode }) => {
             MY PLAN
           </FontSizesm>
         </li>
-        <li>
+        {/* <li>
           <ClickState className={mode === "profile" ? "click" : null} />
           <img
             src="/img/mypage/Profile.svg"
@@ -446,7 +450,7 @@ export const MypageMenu = ({ setMypageMode }) => {
           >
             MY PROFILE
           </FontSizesm>
-        </li>
+        </li> */}
         <li>
           <ClickState className={mode === "faq" ? "click" : null} />
           <img
@@ -565,6 +569,14 @@ const ListColor = styled.div`
   border-radius: 10px 0 0 10px;
 `;
 
+const UserEditBtn = styled.button`
+  width: 45%;
+  background-color: green;
+  border-radius: 5px;
+  color: black;
+  font-size: 30px;
+`
+
 export const MypageList = ({
   data,
   setFavorNickname,
@@ -575,6 +587,7 @@ export const MypageList = ({
   postLimit,
   totalPlan,
   userInfo,
+  setListMode,
 }) => {
   console.log(data);
   return (
@@ -627,6 +640,7 @@ export const MypageList = ({
                 setFavorNickname={setFavorNickname}
                 setIsDetail={setIsDetail}
                 setFavorFid={setFavorFid}
+                setListMode={setListMode}
               ></SectionListWrapper>
             ))}
           </SectionList>
@@ -656,6 +670,7 @@ const SectionListWrapper = ({
   setIsDetail,
   setFavorFid,
   userInfo,
+  setListMode,
 }) => {
   return (
     <SectionListIt>
@@ -678,6 +693,7 @@ const SectionListWrapper = ({
             setFavorNickname(ftitle);
             setFavorFid(fid);
             setIsDetail(true);
+            setListMode("detail");
           }}
         >
           {"=>"}
@@ -687,9 +703,73 @@ const SectionListWrapper = ({
   );
 };
 
-export const ShowListInfo = () => {
+export const ShowListInfo = ({userInfo, listMode, setListMode}) => {
+  
+  const [isQuit, setIsQuit] = useState(true);
+  const [isDelete, setIsDelete] = useState(true);
+  const navigate = useNavigate();
+  
+  
+  const updatePw = ()=>{
+    const user = auth.currentUser;
+    const pw = document.getElementById("originpw").value;
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      pw
+    );
+    reauthenticateWithCredential(user, credential).then(()=>{
+    }).catch(()=>{
+      alert("기존 비밀번호를 확인해주세요.")
+      return;
+    }).finally(()=>{
+      updatePassword(user, document.getElementById("updatepw").value).then(()=>{
+        console.log("확인");
+        navigate("/");  
+      }).catch((error)=>{
+        console.log("실패");
+      })
+    })    
+  }
+
+  const deleteuser = ()=>{
+    const user = auth.currentUser;
+    const pw = document.getElementById("deletepw").value;
+    const credential = EmailAuthProvider.credential(
+      user.email,
+      pw
+    );
+    const uid = user.uid;
+    reauthenticateWithCredential(user, credential).then(()=>{
+    }).catch(()=>{
+      alert("기존 비밀번호를 확인해주세요.")
+      return;
+    }).finally(()=>{
+      deleteUser(user).then(() => {
+        axios.post("/test/deleteUser",{userid: uid}).then(()=>{
+          console.log("성공");
+        }).catch(()=>{
+          console.log("실패");
+          return;
+        })
+        setIsDelete(false);
+      }).catch((error) => {
+        console.log("에러용");
+      });
+    })
+  }
+
+  useEffect(()=>{
+    if(isDelete == false){
+    setTimeout(() => {
+      navigate("/");
+    }, 6000);
+    }
+  },[isDelete])
+  
   return (
-    <div style={{ height: "100%", position: "relative" }}>
+<>
+    {listMode === "mypage" &&
+       <div style={{ height: "100%", position: "relative" }}>
       <SectionBackground
         style={{
           height: "15%",
@@ -713,9 +793,11 @@ export const ShowListInfo = () => {
               padding: "0 2rem 0 1rem",
               color: "#D2ECEF",
               marginRight: "0.5rem",
+              cursor: "pointer",
             }}
+            onClick={()=>{setListMode("mypage");}}
           >
-            sunghyun
+            {userInfo.name}
           </FontSizesm>
           <div
             style={{
@@ -734,14 +816,220 @@ export const ShowListInfo = () => {
           width: "100%",
           height: "90%",
           position: "absolute",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
           borderTopLeftRadius: "50px",
           bottom: 0,
           backgroundColor: "#F0F8FF",
         }}
       >
-        {/* show info */}
+        <div
+          style={{
+            width: "90%",
+            height: "90%",
+            border: "1px solid black",          
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}>
+            <div
+              style={{
+                paddingTop: "20%",
+              }}>
+                <img src="/img/fairy2.svg" alt=""
+                  style={{
+                    padding: "1rem",
+                    width: "300px",
+                    height: "300px",
+                    borderRadius: "50%",
+                    border: "1px solid black",
+                  }}
+                ></img>
+              </div>
+              <FontSizemd
+                style={{
+                  margin: "15px 0",
+                }}
+              >{userInfo.name}</FontSizemd>
+              <FontSizemd
+                style={{
+                  margin: "10px 0",
+                }}
+              >{userInfo.email}</FontSizemd>
+              {isDelete ?
+                <div
+                style={{
+                  margin: "15px 0",
+                  marginBottom: "15px 0 ",
+                  width: "90%",
+                  height: "5%",
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                {isQuit ?
+                <div>
+                  <UserEditBtn
+                  onClick={()=>{
+                    setListMode("update");
+                  }}
+                >비번수정</UserEditBtn>
+                <UserEditBtn
+                  onClick={()=>{setIsQuit(false)}}
+                >회원탈퇴</UserEditBtn>
+                </div>
+                : 
+                <div>
+                <FontSizemd>삭제하시려면 비밀번호를 입력해주세요</FontSizemd>
+                  <input
+                  id="deletepw" />
+                  <UserEditBtn
+                  onClick={deleteuser}
+                >확인</UserEditBtn>
+                <UserEditBtn
+                  onClick={()=>{setIsQuit(true)}}
+                >뒤로가기</UserEditBtn>
+                </div>
+                }
+
+              </div>
+              :<FontSizemd>유저정보가 삭제 되었습니다. 3초후에 매인페이지로 이동합니다.</FontSizemd>
+              }          
+        </div>
       </div>
     </div>
+    }
+    {listMode === "update" &&
+<div style={{ height: "100%", position: "relative" }}>
+      <SectionBackground
+        style={{
+          height: "15%",
+          borderRadius: 0,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            position: "absolute",
+            right: 0,
+            padding: "1rem 2rem",
+            margin: "2rem",
+            border: "1px solid aliceblue",
+            borderRadius: "50px",
+          }}
+        >
+          
+          <FontSizesm
+            style={{
+              padding: "0 2rem 0 1rem",
+              color: "#D2ECEF",
+              marginRight: "0.5rem",
+              cursor: "pointer"
+            }}
+            onClick={()=>{
+              setListMode("mypage");
+            }}
+          >
+            {userInfo.name}
+          </FontSizesm>
+          <div
+            style={{
+              width: "30px",
+              height: "30px",
+              border: "1px solid aliceblue",
+              borderRadius: "50%",
+              backgroundImage: `url("/img/MyProfile_IMG.png")`,
+              backgroundSize: "cover",
+            }}
+          ></div>
+        </div>
+      </SectionBackground>
+      <div
+        style={{
+          width: "100%",
+          height: "90%",
+          position: "absolute",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          borderTopLeftRadius: "50px",
+          bottom: 0,
+          backgroundColor: "#F0F8FF",
+        }}
+      >
+        <div
+          style={{
+            width: "90%",
+            height: "90%",
+            border: "1px solid black",          
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}>
+            <div
+              style={{
+                paddingTop: "20%",
+              }}>
+                <img src="/img/fairy2.svg" alt=""
+                  style={{
+                    padding: "1rem",
+                    width: "300px",
+                    height: "300px",
+                    borderRadius: "50%",
+                    border: "1px solid black",
+                  }}
+                ></img>
+              </div>
+                <FontSizemd
+                  style={{
+                    margin: "15px 0",
+                  }}              
+                >{userInfo.name}
+                </FontSizemd>
+                <FontSizemd
+                  style={{
+                    margin: "10px 0",
+                  }}
+                >{userInfo.email}</FontSizemd>
+                이전 비밀번호<input type="text" id="originpw"/>
+                새로운 비밀번호<input type="text" id="updatepw" />
+              <div
+                style={{
+                  margin: "15px 0",
+                  width: "90%",
+                  height: "5%",
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+              <UserEditBtn
+                onClick={updatePw}
+              >완료</UserEditBtn>
+              <UserEditBtn
+              onClick={()=>{
+                setListMode("mypage");
+              }}>              
+              뒤로가기</UserEditBtn>
+              
+              </div>
+        </div>
+      </div>
+    </div>
+    }
+    {listMode === "detail" &&
+      <div>
+        <button 
+          style={{width: "100px", height: "20px"}}
+        onClick={()=>{
+          setListMode("mypage")
+        }}>마이페이지로 바꾸기</button>
+        <span>섹스머신 조성현</span>
+
+      </div>
+    }
+    </>
   );
 };
 // motion block

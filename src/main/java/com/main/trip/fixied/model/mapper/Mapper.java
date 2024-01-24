@@ -3,8 +3,10 @@ package com.main.trip.fixied.model.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import com.main.trip.fixied.model.dto.AreaCodeDto;
 import com.main.trip.fixied.model.dto.CHUser;
@@ -18,7 +20,7 @@ public interface Mapper {
 	@Select(" SELECT * FROM AREACODE WHERE AREACODE = #{areacode} ")
 	public AreaCodeDto codeOut(int areacode);
 	
-	@Insert(" INSERT INTO CHUSER VALUES(#{uid}, #{uemail}, #{uname}, #{unickname}, null) ")
+	@Insert(" INSERT INTO CHUSER VALUES(#{uid}, #{uemail}, #{uname}, #{unickname}, #{uprofile}) ")
 	public int signUp(CHUser dto);
 	
 	@Select(" SELECT CONTENTID FROM CONTENTLIST ")
@@ -48,4 +50,9 @@ public interface Mapper {
 	@Select(" SELECT * FROM AREACODE WHERE AREACODE = #{MainAreaCode} ")
 	public AreaCodeDto getLongLat(String MainAreaCode);
 	
+	@Delete(" DELETE FROM CHUSER WHERE UID = #{uid} ")
+	public int deleteUser(String uid);
+	
+	@Select(" SELECT UID FROM CHUSER ")
+	public ArrayList<String> selectUidAll();
 }

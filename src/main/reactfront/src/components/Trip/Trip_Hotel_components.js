@@ -3,6 +3,8 @@ import styled from "styled-components";
 import { TourLoadingWrapper } from "./TripHotel";
 import { Loading } from "../atoms/Loading";
 
+
+
 const TourSpotIMG = styled.img`
   width: 100px;
   height: 100px;
@@ -30,7 +32,7 @@ const TourSpotContainer = styled.div`
   height: 800px;
   display: flex;
   flex-direction: column;
-
+  justify-content: space-around;
   &.off {
     opacity: 0;
   }
@@ -89,7 +91,7 @@ export function Trip_Hotel_components({
   saveTourList,
   handleDeleteList,
   setDetailData,
-}) {
+}){
   const [currHotelList, setCurrHotelList] = useState([]);
   const [isLoading, setIsLoading] = useState();
   const [list, setList] = useState(0);
@@ -158,13 +160,13 @@ export function Trip_Hotel_components({
     }
   };
 
-  return (
-    <TourSpotContainer className={isMainLoading ? "off" : null}>
+    return(
+        <TourSpotContainer className={isMainLoading ? "off" : null}>
       <TourWrapper ref={scrollBoxRef}>
         {currHotelList ? (
           currHotelList.length > 1 ? (
             currHotelList.map((hotel, index) => (
-              <TourSpotBox key={index} className="dafdaf">
+              <TourSpotBox key={index}>
                 <TourSpotLi>
                   {hotel.cfirstimage ? (
                     <TourSpotIMG src={hotel.cfirstimage} alt="" />
@@ -250,4 +252,4 @@ export function Trip_Hotel_components({
       </TourWrapper>
     </TourSpotContainer>
   );
-}
+};
