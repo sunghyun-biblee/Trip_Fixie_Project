@@ -39,6 +39,7 @@ export function Mypage() {
   const [favorFid, setFavorFid] = useState();
   const [isDetail, setIsDetail] = useState(false);
   const [favoriteList, setFavoriteList] = useState([]);
+  const [favoriteArea, setFavoriteArea] = useState();
   const detailBackground = useRef();
   const handleAddFavorite = (favorite) => {
     setFavoriteArray((prevList) => [...prevList, favorite]);
@@ -116,10 +117,11 @@ export function Mypage() {
     axios
       .post("/test/loadFavoriteList", favorFid)
       .then((response) => {
+        console.log("wlsdlq");
         console.log(response.data);
         const favorlist = response.data;
         const flist = favorlist.map((list) => ({
-          cid: list.cid,
+          contentid: list.contentid,
           ctitle: list.ctitle,
           caddr: list.caddr,
           ceventstartdate: list.ceventstartdate,
@@ -129,14 +131,25 @@ export function Mypage() {
           clatitude: list.clatitude,
           clongitude: list.clongitude,
           ctel: list.ctel,
+          contenttypeid: list.contenttypeid,
         }));
         setFavoriteList(flist);
       })
       .catch((error) => {
         console.error("favorlist오류", error);
       });
-  }, [favorFid]);
 
+    axios
+      .post("/test/getFavorArea", favorFid)
+      .then((response) => {
+        const data = response.data;
+        setFavoriteArea(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [favorFid]);
+  console.log(favoriteArea);
   console.log(favoriteList);
   return (
     <MypageBackGround>
@@ -170,7 +183,9 @@ export function Mypage() {
                 style={{ backgroundColor: "white" }}
                 className="showlistInfo"
               >
-                  <ShowListInfo
+                <ShowListInfo
+                  favoriteArea={favoriteArea}
+                  favoriteList={favoriteList}
                   userInfo={userInfo}
                   setListMode={setListMode}
                   listMode={listMode}
