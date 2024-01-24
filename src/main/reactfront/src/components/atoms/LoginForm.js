@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { GithubAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import {
+  GithubAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
 import { auth } from "../../firebase";
 import "./css/LoginForm.css";
 import { useNavigate } from "react-router-dom";
@@ -49,49 +53,59 @@ function LoginForm({ closeModal }) {
     closeModal();
   };
 
-  const signUpGithub = ()=>{
+  const signUpGithub = () => {
     const provider = new GithubAuthProvider();
     signInWithPopup(auth, provider)
-    .then((data)=>{
-      console.log("성공");
-      console.log(data);
-    })
-    .catch((err)=>{
-      console.log(err);
-    })
-    .finally(()=>{
-      console.log(auth.currentUser);
-      const uid = auth.currentUser.uid;
-      const user = auth.currentUser;
-      axios.get("/test/selectUidAll")
-      .then((data)=>{
+      .then((data) => {
+        console.log("성공");
         console.log(data);
-        if(data.data.includes(uid)){
-          console.log("이미 가입되있음");
-          closeModal();
-          return;
-        }else{
-          axios.post("/test/signup",{
-            uid: user.uid,
-            email: user.email,
-            name: user.displayName,
-            nickname: user.displayName,
-            profile: user.photoURL,
-          })
-          .then(()=>{
-            console.log("서버가입성공")
-            closeModal();
-          })
-          .catch(()=>{
-            console.log("서버실패")
-          })
+      })
+      .catch((err) => {
+        console.log("로그인 실패");
+        console.log(err);
+      })
+      .finally(() => {
+        if (auth.currentUser) {
+          console.log(auth.currentUser);
+          const uid = auth.currentUser.uid;
+          const user = auth.currentUser;
+
+          axios
+            .get("/test/selectUidAll")
+            .then((response) => {
+              console.log(response);
+
+              if (response.data.includes(uid)) {
+                console.log("이미 가입되어 있음");
+                navigate("/trip");
+                return;
+              } else {
+                axios
+                  .post("/test/signup", {
+                    uid: user.uid,
+                    email: user.email,
+                    name: user.displayName,
+                    nickname: user.displayName,
+                    profile: user.photoURL,
+                  })
+                  .then((response) => {
+                    console.log("서버 성공");
+                    console.log(response);
+                    navigate("/trip");
+                  })
+                  .catch((error) => {
+                    console.log("서버 실패");
+                    console.log(error);
+                  });
+              }
+            })
+            .catch((error) => {
+              console.log("서버 실패");
+              console.log(error);
+            });
         }
-      })
-      .catch((err)=>{
-        console.log(err)
-      })
-    })
-  }
+      });
+  };
 
   return (
     <div
