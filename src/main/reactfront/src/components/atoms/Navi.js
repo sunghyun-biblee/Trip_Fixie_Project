@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Link, useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import LoginForm from "./LoginForm";
 import "./css/Navi.css";
 import { ModalBox, ModalContainer, signOut } from "./LootSection";
@@ -25,8 +25,14 @@ const NavUl = styled.ul`
 const NavDiv = styled.div``;
 const MypageList = styled.div``;
 function Navi() {
+  const [user, setUser] = useState();
+  useEffect(() => {
+    if (auth) {
+      setUser(auth.currentUser);
+    }
+  }, [auth.currentUser]);
   const navigate = useNavigate("/login");
-  const user = auth.currentUser;
+
   const [modalOpen, setModalOpen] = useState(false);
   const modalBackground = useRef();
 
@@ -46,7 +52,7 @@ function Navi() {
             <StyleLink to="/notfound">고객지원</StyleLink>
             <StyleLink to="/notfound">이용방법</StyleLink>
             {user === null ? (
-              <Span onClick={onClicks}>로그인</Span>
+              <StyleLink onClick={onClicks}>로그인</StyleLink>
             ) : (
               <>
                 <StyleLink to="/mypage">마이페이지</StyleLink>
