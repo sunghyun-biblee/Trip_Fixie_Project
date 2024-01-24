@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef } from "react";
 import LoginForm from "./LoginForm";
 import "./css/Navi.css";
@@ -25,11 +25,13 @@ const NavUl = styled.ul`
 const NavDiv = styled.div``;
 const MypageList = styled.div``;
 function Navi() {
+  const navigate = useNavigate("/login");
   const user = auth.currentUser;
   const [modalOpen, setModalOpen] = useState(false);
   const modalBackground = useRef();
 
   const onClicks = () => {
+    navigate("/login");
     setModalOpen(true);
   };
 
