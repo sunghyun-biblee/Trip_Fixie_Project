@@ -80,10 +80,12 @@ public class apiController {
 		Random rd = new Random();
 		int fid = rd.nextInt(10000);
 		System.out.println("fid ------ " + fid);
+		System.out.println("FID======="+ requestBody.get("fdate"));
 		favorite.setFid(fid);
 		favorite.setFstart((String)requestBody.get("fstart"));
 		favorite.setFend((String)requestBody.get("fend"));
 		favorite.setFarea((String)requestBody.get("farea"));
+		favorite.setFdate((String)requestBody.get("fdate"));
 		biz.addFavorite(favorite);
 
 		//생성된 favorite목록에서 auto increment된 fid값을 불러오는 작업
@@ -122,7 +124,7 @@ public class apiController {
         	ContentList contentlist = new ContentList();
             contentlist.setContentid(Integer.parseInt(saveTourList1.get(i).get("contentid")));
             contentlist.setCtitle(saveTourList1.get(i).get("ctitle"));
-            contentlist.setCaddr(saveTourList1.get(i).get("caddr"));
+            contentlist.setCaddr(saveTourList1.get(i).get("caddr1"));
             contentlist.setCtel(saveTourList1.get(i).get("ctel"));
             contentlist.setCfirstimage(saveTourList1.get(i).get("cfirstimage"));
             contentlist.setCsecondimage(saveTourList1.get(i).get("csecondimage"));
@@ -130,6 +132,7 @@ public class apiController {
             contentlist.setClongitude(Double.parseDouble(saveTourList1.get(i).get("clongitude")));
             contentlist.setCeventstartdate(saveTourList1.get(i).get("ceventstartdate"));
             contentlist.setCeventenddate(saveTourList1.get(i).get("ceventenddate"));
+            contentlist.setContenttypeid(Integer.parseInt(saveTourList1.get(i).get("contenttypeid")));
             System.out.println(saveTourList1.get(i).get("cfirstimg"));
             System.out.println(contentlist.getClatitude());
             System.out.println(contentlist.getClongitude());
@@ -186,5 +189,11 @@ public class apiController {
 		return "성공";
 	}
 	
-
+	@RequestMapping("/getFavorArea")
+	public Favorite getFavorARea(@RequestBody String favorFid) {
+		Favorite favor=new Favorite();
+		favor=biz.getFavorArea(favorFid);
+		return favor;
+		
+	}
 }

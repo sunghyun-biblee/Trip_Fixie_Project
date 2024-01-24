@@ -86,4 +86,9 @@ public class BizImpl implements Biz{
 		return mapper.selectUidAll();
 	}
 
+	@Override
+	public Favorite getFavorArea(String favorFid) {
+		return mapper.getFavorArea(favorFid);
+	}
+
 }

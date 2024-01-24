@@ -1,19 +1,20 @@
 package com.main.trip.fixied.model.dto;
 
 public class Favorite {
-	
+
 	private String uid;
 	private String ftitle;
 	private int fid;
 	private String fstart;
 	private String fend;
 	private String farea;
-	
+	private String fdate;
+
 	public Favorite() {
 		super();
 	}
 
-	public Favorite(String uid, String ftitle, int fid, String fstart, String fend, String farea) {
+	public Favorite(String uid, String ftitle, int fid, String fstart, String fend, String farea, String fdate) {
 		super();
 		this.uid = uid;
 		this.ftitle = ftitle;
@@ -21,7 +22,9 @@ public class Favorite {
 		this.fstart = fstart;
 		this.fend = fend;
 		this.farea = farea;
+		this.fdate = fdate;
 	}
+
 
 	public String getFstart() {
 		return fstart;
@@ -70,6 +73,13 @@ public class Favorite {
 	public void setFarea(String farea) {
 		this.farea = farea;
 	}
-	
-	
+
+
+	public String getFdate() {
+		return fdate;
+	}
+
+	public void setFdate(String fdate) {
+		this.fdate = fdate;
+	}
 }
