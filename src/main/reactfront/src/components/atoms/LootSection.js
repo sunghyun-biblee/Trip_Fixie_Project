@@ -1,12 +1,26 @@
-import React, { /*useEffect,*/ useRef, useState } from "react";
+import React, {
+  /*useEffect,*/ Children,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "./LoginForm";
 import { auth } from "../../firebase";
 import styled from "styled-components";
+import {
+  LootExampleBox,
+  ExampleOne,
+  ExampleTwo,
+  ExampleThree,
+  ExampleFour,
+  ExampleFive,
+} from "./lootsection_components";
 
 const LootSectionContainer = styled.div`
   display: flex;
   align-items: center;
+  flex-direction: column;
 `;
 const LootSectionMainBox = styled.div`
   height: 100vh;
@@ -35,7 +49,7 @@ const MainBtn = styled.button`
     border: 2px solid #4eaae7;
   }
 `;
-const MainImg = styled.img`
+export const MainImg = styled.img`
   width: 100%;
   border-radius: 10px;
 `;
@@ -69,11 +83,75 @@ function LootSection() {
   const [modalOpen, setModalOpen] = useState(false);
   const modalBackground = useRef();
   const navigate = useNavigate();
-
+  const [isBottom, setIsBottom] = useState(false);
   const onClicks = () => {
-      navigate("/trip");
+    navigate("/trip");
   };
+  useEffect(() => {
+    let observer = new IntersectionObserver(
+      (e) => {
+        e.forEach((item) => {
+          if (item.isIntersecting) {
+            item.target.style.opacity = 1;
+            item.target.style.transform = "translateY(0)";
+          } else {
+            item.target.style.opacity = 0;
+            item.target.style.transform = "translateY(-10%)";
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    const box = document.querySelectorAll(".example");
+    // 클래스가 example인 태그들을 배열로 선언한뒤
+    // 해당 배열안에 있는 요소들의 자식태그를 childeren변수에 저장하고,
+    // children안에있는 태그들을 observe 함수의 매개변수로 전달
+    // 이후 observe 매개변수로 전달된 자식태그들이 화면에 감지될때마다 함수를 실행
+    box.forEach((item) => {
+      const children = Array.from(item.children);
+      console.log(children);
+      children.forEach((child) => {
+        console.log(child);
+        observer.observe(child);
+      });
+    });
 
+    return () => {
+      box.forEach((item) => {
+        const children = Array.from(item.children);
+        children.forEach((child) => {
+          observer.unobserve(child);
+        });
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = document.documentElement.scrollTop;
+      const clientHeight = document.documentElement.clientHeight;
+
+      // 스크롤이 맨 아래에 도달했는지 여부를 확인
+      const atBottom = scrollHeight - scrollTop === clientHeight;
+
+      // 맨 아래에 도달했으면 isAtBottom 상태를 true로 설정
+      if (atBottom) {
+        setIsBottom(true);
+      } else {
+        // 맨 아래에 도달하지 않았으면 isAtBottom 상태를 false로 설정
+        setIsBottom(false);
+      }
+    };
+
+    // 스크롤 이벤트 리스너 등록
+    window.addEventListener("scroll", handleScroll);
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 해제
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   return (
     <>
       <LootSectionContainer>
@@ -104,6 +182,22 @@ function LootSection() {
             />
           </LootSectionRightBox>
         </LootSectionMainBox>
+        <LootExampleBox className="example 1" style={{ height: "90vh" }}>
+          <ExampleOne></ExampleOne>
+        </LootExampleBox>
+        <LootExampleBox className="example 2">
+          <ExampleTwo></ExampleTwo>
+        </LootExampleBox>
+        <LootExampleBox className="example 3">
+          <ExampleThree></ExampleThree>
+        </LootExampleBox>
+        <LootExampleBox className="example 4">
+          <ExampleFour></ExampleFour>
+        </LootExampleBox>
+        <LootExampleBox className="example 5">
+          <ExampleFive></ExampleFive>
+        </LootExampleBox>
+        <div></div>
       </LootSectionContainer>
       {modalOpen ? (
         <ModalContainer

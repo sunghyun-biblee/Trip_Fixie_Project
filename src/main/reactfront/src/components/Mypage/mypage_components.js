@@ -687,7 +687,7 @@ const SectionListWrapper = ({
   );
 };
 
-export const ShowListInfo = () => {
+export const ShowListInfo = ({ userInfo, favoriteList }) => {
   return (
     <div style={{ height: "100%", position: "relative" }}>
       <SectionBackground
