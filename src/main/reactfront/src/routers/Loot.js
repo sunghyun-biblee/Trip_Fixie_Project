@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Navi from "../components/atoms/Navi";
 import LootSection from "../components/atoms/LootSection";
 
