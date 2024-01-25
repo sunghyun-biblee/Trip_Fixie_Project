@@ -14,13 +14,11 @@ import com.main.trip.fixied.model.dto.FavoriteList;
 import com.main.trip.fixied.model.mapper.Mapper;
 
 @Service
-public class BizImpl implements Biz{
+public class BizImpl implements Biz {
 
 	@Autowired
 	private Mapper mapper;
-	
 
-	
 	@Override
 	public AreaCodeDto codeOut(int areacode) {
 		return mapper.codeOut(areacode);
@@ -40,12 +38,12 @@ public class BizImpl implements Biz{
 	public int addContentList(ContentList contentlist) {
 		return mapper.addContentList(contentlist);
 	}
-	
+
 	@Override
 	public int addFavorite(Favorite favorite) {
 		return mapper.addFavorite(favorite);
 	}
-	
+
 	@Override
 	public Integer getFid(String ftitle) {
 		return mapper.getFid(ftitle);
@@ -62,7 +60,7 @@ public class BizImpl implements Biz{
 	}
 
 	@Override
-	public ArrayList<Favorite> loadFavorites(String userid) {	
+	public ArrayList<Favorite> loadFavorites(String userid) {
 		return mapper.loadFavorites(userid);
 	}
 
@@ -72,17 +70,17 @@ public class BizImpl implements Biz{
 	}
 
 	@Override
-	public AreaCodeDto getLongLat(String MainAreaCode) {		
+	public AreaCodeDto getLongLat(String MainAreaCode) {
 		return mapper.getLongLat(MainAreaCode);
 	}
-	
+
 	@Override
 	public int deleteUser(String uid) {
 		return mapper.deleteUser(uid);
 	}
-	
+
 	@Override
-	public ArrayList<String> selectUidAll(){
+	public ArrayList<String> selectUidAll() {
 		return mapper.selectUidAll();
 	}
 
@@ -91,4 +89,8 @@ public class BizImpl implements Biz{
 		return mapper.getFavorArea(favorFid);
 	}
 
+	@Override
+	public String getFavorNotepad(String favorFid) {
+		return mapper.getFavorNotepad(favorFid);
+	}
 }
