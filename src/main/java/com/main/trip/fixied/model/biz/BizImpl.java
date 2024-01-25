@@ -88,6 +88,11 @@ public class BizImpl implements Biz {
 	public Favorite getFavorArea(String favorFid) {
 		return mapper.getFavorArea(favorFid);
 	}
+	
+	@Override
+	public String getFavorNotepad(String favorFid) {
+		return mapper.getFavorNotepad(favorFid);
+	}
 
 	@Override
 	public String getFavorNotepad(String favorFid) {
