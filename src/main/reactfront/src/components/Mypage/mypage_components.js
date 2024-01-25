@@ -29,6 +29,7 @@ export const MypageWrapper = styled.div`
   background-color: white;
 `;
 export const MypageBackGround = styled.div`
+  font-family: "NanumGothicLight";
   width: 100vw;
   height: 100vh;
   background-color: #f0f8ff;
@@ -551,6 +552,14 @@ const SectionListBox = styled.div`
   flex-direction: column;
   width: 90%;
 `;
+
+const SectionListBox1 = styled.div`
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+`;
+
 const ListNav = styled.ul`
   display: grid;
   grid-template-columns: 0.05fr 1fr 1.55fr 1fr 1fr;
@@ -563,11 +572,26 @@ const ListNav = styled.ul`
     font-weight: 600;
   }
 `;
+
+const ListNav1 = styled.ul`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  padding: 0;
+  list-style: none;
+  border-radius: 15px;
+  background-color: #92dbe2;
+  p {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+`;
+
 const ListNavli = styled.li`
   text-align: center;
   padding: 1rem;
   color: #00a9bf;
 `;
+
 const SectionList = styled.ul`
   list-style: none;
   padding: 0;
@@ -580,6 +604,7 @@ const SectionListIt = styled.li`
   margin-bottom: 1.5rem;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
 `;
 const ListText = styled.div`
   background-color: white;
@@ -625,7 +650,6 @@ const UserEditBtn = styled.button`
 const MyprofileBox = styled.div`
   width: 95%;
   height: 95%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -718,11 +742,92 @@ export const MypageList = ({
             ></Pagenagtion>
           )}
         </div>
-        <div id="third_section" className="pagenation"></div>
       </SectionListBox>
     </div>
   );
 };
+
+export const MyFaq = ({
+  data,
+  setFavorNickname,
+  setIsDetail,
+  setFavorFid,
+  page,
+  setPage,
+  postLimit,
+  totalPlan,
+  userInfo,
+  setListMode,
+}) => {
+  console.log(data);
+  return (
+    <div
+      style={{
+        position: "relative",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "#F0F8FF",
+      }}
+    >
+      <SectionBackground></SectionBackground>
+      <SectionListBox>
+        <div
+          id="first_section"
+          style={{
+            height: "22%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <FontSizemd style={{ padding: "2rem 0", color: "#FBF9F9" }}>
+            Plan List
+          </FontSizemd>
+          <ListNav1>
+            <div></div>
+            <div></div>
+            <ListNavli>
+              <p>문의사항</p>
+            </ListNavli>
+          </ListNav1>
+        </div>
+        <div style={{ position: "relative", width: "90%", height: "90%" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: "15%",
+              left: "35%",
+              fontSize: "15px",
+            }}
+          >
+            문의사항을 남겨주시면, 신속한 답변 드리겠습니다.
+          </div>
+          <div style={{ position: "absolute", top: "25%" }}>
+            <span>제목 *</span> <input type="text" width={"50px"}></input>
+            <br></br>
+            <span>이메일 *</span> <input type="text" width={"50px"} />{" "}
+            <span>@</span> <input type="text" width={"50px"} />
+            <br></br>
+            <span>문의 내용</span> <textarea cols="100" rows="30" />
+            <br></br>
+            <span>공개여부</span> <input type="checkbox" /> <span>공개</span>{" "}
+            <input type="checkbox" /> <span>비공개</span>
+            <br></br>
+            <span>비밀번호</span>{" "}
+            <input type="text" width={"50px"} placeholder="비밀번호..."></input>
+            <br></br>
+          </div>
+          <div style={{ position: "absolute", top: "85%" }}>
+            <button>목록보기</button>
+            <button>저장하기</button>
+          </div>
+        </div>
+      </SectionListBox>
+    </div>
+  );
+};
+
 const SectionListWrapper = ({
   startDay,
   endDay,
@@ -750,17 +855,25 @@ const SectionListWrapper = ({
       <ListText>
         <p>{userInfo.name}</p>
       </ListText>
-      <ListText style={{ borderRadius: "0 10px 10px 0" }}>
-        <p
+      <ListText
+        style={{
+          borderRadius: "0 10px 10px 0",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <img
+          src="/img/mypage/MYplanCheck.png"
+          style={{ width: "30px", height: "30px" }}
+          alt=""
           onClick={() => {
             setFavorNickname(ftitle);
             setFavorFid(fid);
             setIsDetail(true);
             setListMode("detail");
           }}
-        >
-          {"=>"}
-        </p>
+        ></img>
       </ListText>
     </SectionListIt>
   );
@@ -772,6 +885,7 @@ export const ShowListInfo = ({
   setListMode,
   favoriteList,
   favoriteArea,
+  notepad,
 }) => {
   const [isQuit, setIsQuit] = useState(true);
   const [isDelete, setIsDelete] = useState(true);
@@ -1025,6 +1139,8 @@ export const ShowListInfo = ({
           {listMode === "detail" && (
             <MyprofileBox>
               <MypagePlanInfo
+                notepad={notepad}
+                setListMode={setListMode}
                 favoriteList={favoriteList}
                 favoriteArea={favoriteArea}
               ></MypagePlanInfo>
@@ -1052,7 +1168,7 @@ const InfoMenuUl = styled.ul`
   text-align: center;
 `;
 const ActiveBar = styled.div`
-  width: 139px;
+  width: 33.3%;
   height: 3px;
   transition: transform 0.5s;
   background-color: #52c2f2;
@@ -1061,18 +1177,23 @@ const ActiveBar = styled.div`
     if (props.infoMode === "tour") {
       return "translateX(0)";
     } else if (props.infoMode === "festival") {
-      return "translateX(139px)";
+      return "translateX(99.9%)";
     } else if (props.infoMode === "mt") {
-      return "translateX(278px)";
+      return "translateX(199.8%)";
     } else {
       return "translateX(0)"; // 기본 값
     }
   }};
 `;
-const MypagePlanInfo = ({ favoriteList, favoriteArea }) => {
+const MypagePlanInfo = ({
+  favoriteList,
+  favoriteArea,
+  setListMode,
+  notepad,
+}) => {
   const [infoMode, setInfoMode] = useState("tour");
   console.log(favoriteList);
-
+  console.log(favoriteArea);
   const changeMode = (e) => {
     const targetId = e.target.id;
     if (targetId === "tour" || targetId === "festival" || targetId === "mt") {
@@ -1080,46 +1201,247 @@ const MypagePlanInfo = ({ favoriteList, favoriteArea }) => {
     }
   };
   return (
-    <InfoWrapper>
-      <InfoBox>
-        <FontSizesm>대구</FontSizesm>
-        <FontSizesm>2024.01.24 ~ 2024.01.25</FontSizesm>
-      </InfoBox>
-      <div style={{ paddingTop: "2rem" }}>
-        <InfoMenuUl>
-          <li>
-            <FontSizesm id="tour" onClick={changeMode}>
-              관광지
-            </FontSizesm>
-          </li>
-          <li>
-            <FontSizesm id="festival" onClick={changeMode}>
-              축제
-            </FontSizesm>
-          </li>
-          <li>
-            <FontSizesm id="mt" onClick={changeMode}>
-              숙소
-            </FontSizesm>
-          </li>
-        </InfoMenuUl>
-        <ActiveBar infoMode={infoMode}></ActiveBar>
-      </div>
-      <div>
-        {infoMode === "tour" &&
-          favoriteList.map(
-            (item) =>
-              item.contenttypeid === 12 && (
-                <div key={item.contentid}>{item.ctitle}</div>
-              )
+    favoriteArea &&
+    favoriteList && (
+      <InfoWrapper>
+        <InfoBox>
+          <FontSizesm style={{ padding: "1rem 0.5rem" }}>
+            일정 : {favoriteArea.fstart}~{favoriteArea.fend}
+          </FontSizesm>
+          <FontSizesm style={{ padding: "1rem 0.5rem" }}>
+            지역 : {favoriteArea.farea}
+          </FontSizesm>
+        </InfoBox>
+        <div style={{ paddingTop: "2rem", width: "100%" }}>
+          <InfoMenuUl style={{ cursor: "pointer" }}>
+            <li>
+              <FontSizesm id="tour" onClick={changeMode}>
+                관광지
+              </FontSizesm>
+            </li>
+            <li>
+              <FontSizesm id="festival" onClick={changeMode}>
+                축제
+              </FontSizesm>
+            </li>
+            <li>
+              <FontSizesm id="mt" onClick={changeMode}>
+                숙소
+              </FontSizesm>
+            </li>
+          </InfoMenuUl>
+          <ActiveBar infoMode={infoMode}></ActiveBar>
+        </div>
+        <div>
+          {infoMode === "tour" && (
+            <Infobox style={{ marginTop: "1.5rem" }}>
+              {favoriteList.map(
+                (item) =>
+                  item.contenttypeid === 12 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "95%",
+                        alignItems: "center",
+                        border: "1px solid rgba(0,0,0,0.3)",
+                        borderRadius: "15px",
+                        margin: "1rem 0",
+                      }}
+                    >
+                      <img
+                        src={
+                          item.cfirstimage
+                            ? item.cfirstimage
+                            : "/img/TourSpot_No_IMG.svg"
+                        }
+                        alt=""
+                        style={{
+                          width: "30%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: "10px 0 0 10px",
+                        }}
+                      ></img>
+                      <div style={{ padding: "0.5rem 0 0.5rem 2rem" }}>
+                        <p
+                          key={item.contentid}
+                          style={{
+                            paddingBottom: "1rem",
+                            fontSize: "1.8rem",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.ctitle}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "1.2rem",
+                            fontWeight: 600,
+                            color: "gray",
+                          }}
+                        >
+                          {item.caddr}
+                        </p>
+                      </div>
+                    </div>
+                  )
+              )}
+            </Infobox>
           )}
-        {infoMode === "festival" && "축제"}
-        {infoMode === "mt" && "숙소"}
-      </div>
-    </InfoWrapper>
+          {infoMode === "festival" && (
+            <Infobox style={{ marginTop: "1.5rem" }}>
+              {favoriteList.map(
+                (item) =>
+                  item.contenttypeid !== 12 &&
+                  item.contenttypeid !== 32 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "95%",
+                        alignItems: "center",
+                        border: "1px solid rgba(0,0,0,0.3)",
+                        borderRadius: "15px",
+                        margin: "1rem 0",
+                      }}
+                    >
+                      <img
+                        src={
+                          item.cfirstimage
+                            ? item.cfirstimage
+                            : "/img/TourSpot_No_IMG.svg"
+                        }
+                        alt=""
+                        style={{
+                          width: "30%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: "10px 0 0 10px",
+                        }}
+                      ></img>
+                      <div style={{ padding: "0.5rem 0 0.5rem 2rem" }}>
+                        <p
+                          key={item.contentid}
+                          style={{
+                            paddingBottom: "1rem",
+                            fontSize: "1.8rem",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.ctitle}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "1.2rem",
+                            fontWeight: 600,
+                            color: "gray",
+                          }}
+                        >
+                          {item.caddr}
+                        </p>
+                      </div>
+                    </div>
+                  )
+              )}
+            </Infobox>
+          )}
+          {infoMode === "mt" && (
+            <Infobox style={{ marginTop: "1.5rem" }}>
+              {favoriteList.map(
+                (item) =>
+                  item.contenttypeid === 32 && (
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "95%",
+                        alignItems: "center",
+                        border: "1px solid rgba(0,0,0,0.3)",
+                        borderRadius: "15px",
+                        margin: "1rem 0",
+                      }}
+                    >
+                      <img
+                        src={
+                          item.cfirstimage
+                            ? item.cfirstimage
+                            : "/img/TourSpot_No_IMG.svg"
+                        }
+                        alt=""
+                        style={{
+                          width: "30%",
+                          height: "100%",
+                          objectFit: "cover",
+                          borderRadius: "10px 0 0 10px",
+                        }}
+                      ></img>
+                      <div style={{ padding: "0.5rem 0 0.5rem 2rem" }}>
+                        <p
+                          key={item.contentid}
+                          style={{
+                            paddingBottom: "1rem",
+                            fontSize: "1.8rem",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {item.ctitle}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: "1.2rem",
+                            fontWeight: 600,
+                            color: "gray",
+                          }}
+                        >
+                          {item.caddr}
+                        </p>
+                      </div>
+                    </div>
+                  )
+              )}
+            </Infobox>
+          )}
+        </div>
+        <div style={{ paddingTop: "5rem" }}>
+          <FontSizemd style={{ padding: "2rem 0" }}>작성메모</FontSizemd>
+          <div
+            className="Memo"
+            style={{
+              height: "10vh",
+              backgroundColor: "rgba(0,0,0,0.4)",
+            }}
+          ></div>
+        </div>
+        <div
+          style={{ position: "absolute", top: "1%", right: "5%", zIndex: 1 }}
+          onClick={() => {
+            setListMode("mypage");
+          }}
+        >
+          <img src="/img/MYpageColse.png" alt="" style={{ width: "40px" }} />
+        </div>
+      </InfoWrapper>
+    )
   );
 };
+const Infobox = styled.div`
+  height: 30vh;
+  overflow: scroll;
+  overflow-x: hidden;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 30%;
+    border-radius: 1rem;
+    background-color: #00a9bf;
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 1rem;
+    background-color: rgba(33, 122, 244, 0.1);
+  }
+`;
+
 // motion block
+
 export const MotionMypageWrapper = motion(MypageContainer);
 
 export const MotionMypageBox = motion(MypageBox);
