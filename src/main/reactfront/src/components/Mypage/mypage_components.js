@@ -551,6 +551,14 @@ const SectionListBox = styled.div`
   flex-direction: column;
   width: 90%;
 `;
+
+const SectionListBox1 = styled.div`
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+`;
+
 const ListNav = styled.ul`
   display: grid;
   grid-template-columns: 0.05fr 1fr 1.55fr 1fr 1fr;
@@ -563,11 +571,26 @@ const ListNav = styled.ul`
     font-weight: 600;
   }
 `;
+
+const ListNav1 = styled.ul`
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  padding: 0;
+  list-style: none;
+  border-radius: 15px;
+  background-color: #92dbe2;
+  p {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+`;
+
 const ListNavli = styled.li`
   text-align: center;
   padding: 1rem;
   color: #00a9bf;
 `;
+
 const SectionList = styled.ul`
   list-style: none;
   padding: 0;
@@ -723,6 +746,88 @@ export const MypageList = ({
     </div>
   );
 };
+
+export const MyFaq = ({
+  data,
+  setFavorNickname,
+  setIsDetail,
+  setFavorFid,
+  page,
+  setPage,
+  postLimit,
+  totalPlan,
+  userInfo,
+  setListMode,
+}) => {
+  console.log(data);
+  return (
+    <div
+      style={{
+        position: "relative",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "#F0F8FF",
+            }}
+    >
+      <SectionBackground></SectionBackground>
+      <SectionListBox>
+        <div
+          id="first_section"
+          style={{
+            height: "22%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <FontSizemd style={{ padding: "2rem 0", color: "#FBF9F9" }}>
+            Plan List
+          </FontSizemd>
+          <ListNav1>
+            <div></div>
+            <div></div>
+            <ListNavli>
+              <p>문의사항</p>
+            </ListNavli>
+          </ListNav1>
+        </div>    
+        <div
+          style={{position: "relative", width: "90%", height: "90%"}}
+        >
+          <div 
+            style={{position: "absolute",
+                    top: "15%",
+                    left: "35%",
+                    fontSize: "15px",
+                  }}>문의사항을 남겨주시면, 신속한 답변 드리겠습니다.
+          </div>
+          <div
+            style={{position: "absolute",
+                    top: "25%",          
+                  }}
+          >
+            <span>제목 *</span> <input type="text" width={"50px"}></input><br></br>
+            <span>이메일 *</span> <input type="text" width={"50px"} /> <span>@</span> <input type="text" width={"50px"} /><br></br>
+            <span>문의 내용</span> <textarea cols="100" rows="30" /><br></br>
+            <span>공개여부</span> <input type="checkbox" /> <span>공개</span> <input type="checkbox" /> <span>비공개</span><br></br>
+            <span>비밀번호</span> <input type="text" width={"50px"} placeholder="비밀번호..."></input><br></br>
+          </div>            
+          <div
+            style={{position: "absolute",
+                    top: "85%",
+          }}
+          >
+            <button>목록보기</button>
+            <button>저장하기</button>
+          </div>
+        </div>
+
+      </SectionListBox>
+    </div>
+  )
+}
+
 const SectionListWrapper = ({
   startDay,
   endDay,
@@ -776,27 +881,35 @@ export const ShowListInfo = ({
   const [isQuit, setIsQuit] = useState(true);
   const [isDelete, setIsDelete] = useState(true);
   const navigate = useNavigate();
-
+  console.log(auth.currentUser);
   const updatePw = () => {
     const user = auth.currentUser;
-    const pw = document.getElementById("originpw").value;
-    const credential = EmailAuthProvider.credential(user.email, pw);
-    reauthenticateWithCredential(user, credential)
-      .then(() => {})
-      .catch(() => {
-        alert("기존 비밀번호를 확인해주세요.");
-        return;
-      })
-      .finally(() => {
-        updatePassword(user, document.getElementById("updatepw").value)
+    const originpw = document.getElementById("originpw").value;
+    const credential = EmailAuthProvider.credential(user.email, originpw);
+    const updatepw = document.getElementById("updatepw").value;
+    if(originpw === updatepw){      //원래는 파이어베이스에서 제대로 된 비밀번호를 받아와서 비교해야하나 그까지는 시간부족 구현 x
+      alert("기존비밀번호와 동일한 비밀번호는 사용 할 수 없습니다.");
+    }else{
+      if (user.providerData[0].providerId === "password") {
+        reauthenticateWithCredential(user, credential)
           .then(() => {
-            console.log("확인");
+            // 기존 비밀번호 인증 성공
+            return updatePassword(user, updatepw);
+          })
+          .then(() => {
+            // 비밀번호 업데이트 성공
+            alert("비밀번호가 변경되었습니다.");
             navigate("/");
           })
-          .catch((error) => {
-            console.log("실패");
+          .catch(() => {
+            // 기존 비밀번호 인증 실패
+            alert("기존 비밀번호를 확인해주세요.");
           });
-      });
+      } else {
+        alert("소셜로그인은 해당 웹에서 비밀번호 변경이 불가합니다.");
+        setListMode("mypage");
+      }
+    }
   };
 
   const deleteuser = () => {
@@ -804,14 +917,11 @@ export const ShowListInfo = ({
     const pw = document.getElementById("deletepw").value;
     const credential = EmailAuthProvider.credential(user.email, pw);
     const uid = user.uid;
-    reauthenticateWithCredential(user, credential)
-      .then(() => {})
-      .catch(() => {
-        alert("기존 비밀번호를 확인해주세요.");
-        return;
-      })
-      .finally(() => {
-        deleteUser(user)
+
+    if (user.providerData[0].providerId === "password") {
+      reauthenticateWithCredential(user, credential)
+      .then(() => {
+        deleteUser(user)    //위에있는 deleteuser과는 다른 함수
           .then(() => {
             axios
               .post("/test/deleteUser", { userid: uid })
@@ -827,14 +937,21 @@ export const ShowListInfo = ({
           .catch((error) => {
             console.log("에러용");
           });
-      });
+      })
+      .catch(() => {
+        alert("기존 비밀번호를 확인해주세요.");
+      })
+    }else{
+      alert("소셜로그인은 해당 웹에서 회원탈퇴가 불가합니다.");
+      setIsQuit(true);
+    }
   };
 
   useEffect(() => {
     if (isDelete == false) {
       setTimeout(() => {
         navigate("/");
-      }, 6000);
+      }, 3000);
     }
   }, [isDelete]);
   console.log(favoriteList);

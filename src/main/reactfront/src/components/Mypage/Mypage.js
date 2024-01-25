@@ -22,6 +22,7 @@ import {
   MypageMenu,
   MypageList,
   ShowListInfo,
+  MyFaq,
 } from "./mypage_components";
 import { auth } from "../../firebase";
 import axios from "axios";
@@ -45,6 +46,8 @@ export function Mypage() {
     setFavoriteArray((prevList) => [...prevList, favorite]);
   };
   const [listMode, setListMode] = useState("mypage");
+  
+  const [notepad, setNotepad] = useState();
 
   const [page, setPage] = useState(1); // 페이지
   const postLimit = 5; // 페이지당 보여줄 포스트 갯수
@@ -120,19 +123,40 @@ export function Mypage() {
         console.log("wlsdlq");
         console.log(response.data);
         const favorlist = response.data;
-        const flist = favorlist.map((list) => ({
-          contentid: list.contentid,
-          ctitle: list.ctitle,
-          caddr: list.caddr,
-          ceventstartdate: list.ceventstartdate,
-          ceventenddate: list.ceventenddate,
-          cfirstimage: list.cfirstimage,
-          csecondimage: list.csecondimage,
-          clatitude: list.clatitude,
-          clongitude: list.clongitude,
-          ctel: list.ctel,
-          contenttypeid: list.contenttypeid,
-        }));
+        const flist = [];
+        favorlist.map((list) =>{
+          axios.get(`http://apis.data.go.kr/B551011/KorService1/detailCommon1?MobileOS=ETC&MobileApp=APPTest&serviceKey=cHlc2k2XcgjG10dgBDyoxMaS6KxKLHiHN4xtTP6q86EBe%2BUO09zOLEg6ZTpX9TWrdJPSJcFQYCZ%2B6fqhkD2ZVA%3D%3D&contentId=${list.contentid}&overviewYN=Y&_type=json&defaultYN=Y`)
+          .then((response)=>{
+            const overview = response.data.response.body.items.item[0].overview;
+            let homepage = "";
+              if (response.data.response.body.items.item[0].homepage) {
+                const url = response.data.response.body.items.item[0].homepage;
+                const pattern = /<a\s[^>]*?href\s*=\s*['"]([^'"]*?)['"][^>]*?>/g;
+                const matches = [...url.matchAll(pattern)];
+                homepage = matches.map((match) => match[1]);
+                console.log(homepage);
+              }
+
+              flist.push({
+                contentid: list.contentid,
+                ctitle: list.ctitle,
+                caddr: list.caddr,
+                ceventstartdate: list.ceventstartdate,
+                ceventenddate: list.ceventenddate,
+                cfirstimage: list.cfirstimage,
+                csecondimage: list.csecondimage,
+                clatitude: list.clatitude,
+                clongitude: list.clongitude,
+                ctel: list.ctel,
+                contenttypeid: list.contenttypeid,
+                homepage: homepage,
+                overview: overview,
+              })
+          })
+        })
+
+        console.log("에프");
+        console.log(flist);
         setFavoriteList(flist);
       })
       .catch((error) => {
@@ -148,6 +172,16 @@ export function Mypage() {
       .catch((error) => {
         console.error(error);
       });
+
+      axios
+      .post("/test/getFavorNotepad", favorFid)
+      .then((response) =>{
+        setNotepad(response.data);
+      })
+      .catch((err)=>{
+        console.log(err);
+      });
+
   }, [favorFid]);
   console.log(favoriteArea);
   console.log(favoriteList);
@@ -195,18 +229,9 @@ export function Mypage() {
           ) : mypageMode === "faq" ? (
             <>
               <MypageBox className="planlist">
-                <MypageList
-                  data={planData(favoriteArray)}
-                  setFavorNickname={setFavorNickname}
-                  setIsDetail={setIsDetail}
-                  setFavorFid={setFavorFid}
-                  page={page}
-                  setPage={setPage}
-                  postLimit={postLimit}
-                  totalPlan={totalPlan}
-                  userInfo={userInfo}
-                  setListMode={setListMode}
-                ></MypageList>
+                <MyFaq>
+
+                </MyFaq>
               </MypageBox>
               <MypageBox
                 style={{ backgroundColor: "white" }}

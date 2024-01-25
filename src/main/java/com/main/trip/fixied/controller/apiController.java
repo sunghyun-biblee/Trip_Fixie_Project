@@ -86,6 +86,8 @@ public class apiController {
 		favorite.setFend((String)requestBody.get("fend"));
 		favorite.setFarea((String)requestBody.get("farea"));
 		favorite.setFdate((String)requestBody.get("fdate"));
+		favorite.setFnotepad((String)requestBody.get("fnotepad"));
+		System.out.println("note-----------" + (String)requestBody.get("fnotepad"));
 		biz.addFavorite(favorite);
 
 		//생성된 favorite목록에서 auto increment된 fid값을 불러오는 작업
@@ -166,7 +168,6 @@ public class apiController {
 	@RequestMapping("/loadFavoriteList")
 	public ArrayList<ContentList> loadFavoriteList(@RequestBody String favorFid){
 		ArrayList<ContentList> list = biz.loadFavoriteList(favorFid);
-		
 		return list;
 	}
 
@@ -191,9 +192,15 @@ public class apiController {
 	
 	@RequestMapping("/getFavorArea")
 	public Favorite getFavorARea(@RequestBody String favorFid) {
-		Favorite favor=new Favorite();
+		Favorite favor= new Favorite();
 		favor=biz.getFavorArea(favorFid);
-		return favor;
-		
+		return favor;		
 	}
+	
+	@RequestMapping("/getFavorNotepad")
+	public String getFavorNotepad(@RequestBody String favorFid) {
+		String note = biz.getFavorNotepad(favorFid);
+		return note;
+	}
+	
 }

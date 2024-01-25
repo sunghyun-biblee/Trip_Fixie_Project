@@ -29,7 +29,7 @@ public interface Mapper {
 	@Insert(" INSERT INTO CONTENTLIST VALUES(#{contentid}, #{ctitle}, #{caddr}, #{ctel}, #{ceventstartdate}, #{ceventenddate}, #{cfirstimage}, #{csecondimage}, #{clatitude}, #{clongitude} ,#{contenttypeid}) ")
 	public int addContentList(ContentList contentlist);
 	
-	@Insert(" INSERT INTO FAVORITE VALUES(#{uid}, #{ftitle}, #{fid}, #{fstart}, #{fend}, #{farea}, #{fdate}) ")
+	@Insert(" INSERT INTO FAVORITE VALUES(#{uid}, #{ftitle}, #{fid}, #{fstart}, #{fend}, #{farea}, #{fdate}, #{fnotepad}) ")
 	public int addFavorite(Favorite favorite);
 	
 	@Select(" SELECT FID FROM FAVORITE WHERE FTITLE = #{ftitle} ")
@@ -58,4 +58,7 @@ public interface Mapper {
 	
 	@Select("SELECT * FROM FAVORITE WHERE FID= #{favorFid}")
 	public Favorite getFavorArea(String favorFid);
+	
+	@Select(" SELECT FNOTEPAD FROM FAVORITE WHERE FID = #{favorFid} ")
+	public String getFavorNotepad(String favorFid);
 }

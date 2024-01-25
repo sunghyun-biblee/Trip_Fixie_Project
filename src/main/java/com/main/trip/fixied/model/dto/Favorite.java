@@ -9,12 +9,13 @@ public class Favorite {
 	private String fend;
 	private String farea;
 	private String fdate;
+	private String fnotepad;
 
 	public Favorite() {
 		super();
 	}
 
-	public Favorite(String uid, String ftitle, int fid, String fstart, String fend, String farea, String fdate) {
+	public Favorite(String uid, String ftitle, int fid, String fstart, String fend, String farea, String fdate, String fnotepad) {
 		super();
 		this.uid = uid;
 		this.ftitle = ftitle;
@@ -23,6 +24,7 @@ public class Favorite {
 		this.fend = fend;
 		this.farea = farea;
 		this.fdate = fdate;
+		this.fnotepad = fnotepad;
 	}
 
 
@@ -81,5 +83,13 @@ public class Favorite {
 
 	public void setFdate(String fdate) {
 		this.fdate = fdate;
+	}
+	
+	public String getFnotepad() {
+		return fnotepad;
+	}
+	
+	public void setFnotepad(String fnotepad) {
+		this.fnotepad = fnotepad;
 	}
 }
