@@ -161,60 +161,6 @@ function LoginForm({ closeModal }) {
       });
   };
 
-  const signUpGoogle = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
-      .then((data) => {
-        console.log("성공");
-        console.log(data);
-      })
-      .catch((err) => {
-        console.log("로그인 실패");
-        console.log(err);
-      })
-      .finally(() => {
-        if (auth.currentUser) {
-          console.log(auth.currentUser);
-          const uid = auth.currentUser.uid;
-          const user = auth.currentUser;
-
-          axios
-            .get("/test/selectUidAll")
-            .then((response) => {
-              console.log(response);
-
-              if (response.data.includes(uid)) {
-                console.log("이미 가입되어 있음");
-                navigate("/trip");
-                return;
-              } else {
-                axios
-                  .post("/test/signup", {
-                    uid: user.uid,
-                    email: user.email,
-                    name: user.displayName,
-                    nickname: user.displayName,
-                    profile: user.photoURL,
-                  })
-                  .then((response) => {
-                    console.log("서버 성공");
-                    console.log(response);
-                    navigate("/trip");
-                  })
-                  .catch((error) => {
-                    console.log("서버 실패");
-                    console.log(error);
-                  });
-              }
-            })
-            .catch((error) => {
-              console.log("서버 실패");
-              console.log(error);
-            });
-        }
-      });
-  };
-
   return (
     <div
       style={{
