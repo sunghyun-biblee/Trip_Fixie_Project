@@ -54,7 +54,7 @@ export function SaveTripInfo({
   const [isCompelte, setIsCompelte] = useState(false);
   const saveServer = () => {
     const ftitle = document.getElementById("ftitle").value;
-
+    const notepad = document.getElementById("notepad").value;
     if (auth.currentUser) {
       auth.onAuthStateChanged((user) => {
         console.log("adfdsafdafadf");
@@ -76,6 +76,7 @@ export function SaveTripInfo({
               .replace(/:/g, "")
               .replace("Z", "")
               .replace(".", ""),
+            fnotepad: notepad,
           })
           .then((response) => {
             console.log(response);
@@ -437,7 +438,10 @@ export function SaveTripInfo({
                     )}
 
                     <FontSizesm>여행메모</FontSizesm>
-                    <SaveTextArea placeholder="메모(선택사항)"></SaveTextArea>
+                    <SaveTextArea
+                      id="notepad"
+                      placeholder="메모(선택사항)"
+                    ></SaveTextArea>
 
                     {isCompelte === true ? (
                       <CompelteBox>
