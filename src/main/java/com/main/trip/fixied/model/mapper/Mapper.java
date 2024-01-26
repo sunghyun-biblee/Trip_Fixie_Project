@@ -61,5 +61,8 @@ public interface Mapper {
 
 	@Select(" SELECT FNOTEPAD FROM FAVORITE WHERE FID = #{favorFid} ")
 	public String getFavorNotepad(String favorFid);
+	
+	@Update(" UPDATE CHUSER SET UPROFILE = #{uprofile} WHERE UID = #{uid} ")
+	public String updateProfile(String uid, String uprofile);
 
 }

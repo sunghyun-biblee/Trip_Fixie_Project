@@ -32,7 +32,7 @@ function LoginForm({ closeModal }) {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        alert("sex");
+        alert("로그인!");
         console.log(user);
 
         navigate("/trip");
@@ -40,8 +40,7 @@ function LoginForm({ closeModal }) {
         // ...
       })
       .catch((error) => {
-        console.log(error.code);
-        console.log(error.message);
+        alert("아이디와 비밀번호를 확인해주세요.")
       });
   };
 
@@ -205,17 +204,20 @@ function LoginForm({ closeModal }) {
                 className="Content_Input "
                 type="submit"
                 value="Login"
+                style={{cursor: "pointer"}}
               ></input>
               <input
                 className="Content_Input "
                 type="button"
                 value="gitHub"
+                style={{cursor: "pointer"}}
                 onClick={signUpGithub}
               ></input>
               <input
                 className="Content_Input "
                 type="button"
                 value="google"
+                style={{cursor: "pointer"}}
                 onClick={signUpGoogle}
               ></input>
               <div className="Registe_Box">
@@ -224,6 +226,7 @@ function LoginForm({ closeModal }) {
                   className="Register"
                   type="button"
                   value="Create Account"
+                  style={{cursor: "pointer"}}
                   onClick={onCreateAccount}
                 ></input>
               </div>

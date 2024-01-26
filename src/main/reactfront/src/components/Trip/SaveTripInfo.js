@@ -478,6 +478,7 @@ export function SaveTripInfo({
                           placeholder="별명을 지어주세요"
                           autoComplete="off"
                           required
+                          maxLength= "13"
                         ></SaveInput>
                         <SaveBtn type="submit">저장</SaveBtn>
                       </form>
