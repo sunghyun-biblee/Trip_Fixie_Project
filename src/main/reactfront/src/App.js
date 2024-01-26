@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import { Mypage } from "./components/Mypage/Mypage";
 import { Loading } from "./components/atoms/Loading";
+
 const LoadingScreen = styled.div`
   width: 100vw;
   height: 100vh;
@@ -101,17 +102,17 @@ function App() {
   useEffect(() => {
     init();
   }, []);
-    
+
   return (
     <>
-        {isLoading ? 
-          <LoadingScreen>
-            <h1>Loading</h1>
-            <Loading></Loading>
-          </LoadingScreen>
-         : 
-          <RouterProvider router={router} />
-        }
+      {isLoading ? (
+        <LoadingScreen>
+          <h1>Loading</h1>
+          <Loading></Loading>
+        </LoadingScreen>
+      ) : (
+        <RouterProvider router={router} />
+      )}
     </>
   );
 }

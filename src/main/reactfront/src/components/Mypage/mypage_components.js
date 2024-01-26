@@ -1,20 +1,19 @@
 import styled from "styled-components";
+import "../../fonts/font.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import {
-  FontSizemd,
-  FontSizemdInput,
-  FontSizesm,
-} from "../Trip/trip_save_components";
-import { auth } from "../../firebase";
+import { FontSizemd, FontSizesm } from "../Trip/trip_save_components";
+import { auth, storage } from "../../firebase";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
   EmailAuthProvider,
   deleteUser,
   reauthenticateWithCredential,
   updatePassword,
+  updateProfile,
 } from "firebase/auth";
 import axios from "axios";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export const MypageWrapper = styled.div`
   /* width: 100%; */
@@ -29,7 +28,6 @@ export const MypageWrapper = styled.div`
   background-color: white;
 `;
 export const MypageBackGround = styled.div`
-  font-family: "NanumGothicLight";
   width: 100vw;
   height: 100vh;
   background-color: #f0f8ff;
@@ -425,6 +423,8 @@ export const MypageMenu = ({ setMypageMode }) => {
         height: "100%",
         backgroundColor: "#92dbe2",
         color: "#FBF9F9",
+        fontFamily: "NanumSquare",
+        letterSpacing: 1.4,
       }}
     >
       <div
@@ -493,18 +493,18 @@ export const MypageMenu = ({ setMypageMode }) => {
             }}
           />
           <FontSizesm onClick={onClick} id="faq" style={{ cursor: "pointer" }}>
-            1:1 FAQ
+            문의,건의하기
           </FontSizesm>
         </li>
         <li>
           <ClickState className={mode === "trip" ? "click" : null} />
           <img
-            src="/img/mypage/Logout.svg"
+            src="/img/mypage/goTripPlan.png"
             alt=""
             style={{
               width: "40px",
-              height: "100%",
-              paddingRight: "1rem",
+              height: "40px",
+              paddingRight: "1.5rem",
               marginLeft: "1rem",
             }}
           />
@@ -551,6 +551,7 @@ const SectionListBox = styled.div`
   display: flex;
   flex-direction: column;
   width: 90%;
+  font-family: "NanumSquare";
 `;
 
 const SectionListBox1 = styled.div`
@@ -574,8 +575,6 @@ const ListNav = styled.ul`
 `;
 
 const ListNav1 = styled.ul`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   padding: 0;
   list-style: none;
   border-radius: 15px;
@@ -604,7 +603,8 @@ const SectionListIt = styled.li`
   margin-bottom: 1.5rem;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-family: "NanumSquare";
+  font-weight: 600;
 `;
 const ListText = styled.div`
   background-color: white;
@@ -654,6 +654,7 @@ const MyprofileBox = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
+  font-family: "NotoSans";
 `;
 const MyprofileImg = styled.img`
   padding: 1rem;
@@ -683,6 +684,7 @@ export const MypageList = ({
         display: "flex",
         justifyContent: "center",
         backgroundColor: "#F0F8FF",
+        fontFamily: "NanumSquare",
       }}
     >
       <SectionBackground></SectionBackground>
@@ -746,19 +748,66 @@ export const MypageList = ({
     </div>
   );
 };
-
-export const MyFaq = ({
-  data,
-  setFavorNickname,
-  setIsDetail,
-  setFavorFid,
-  page,
-  setPage,
-  postLimit,
-  totalPlan,
-  userInfo,
-  setListMode,
-}) => {
+const FaqBox = styled.div`
+  background-color: #f0f8ff;
+  display: flex;
+  border-radius: 15px;
+  align-items: center;
+  padding: 2rem;
+`;
+const FaqUl = styled.ul`
+  position: relative;
+  width: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  justify-content: center;
+`;
+const FaqItem = styled.li`
+  width: 100%;
+  padding: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  input[type="text"],
+  input[type="password"] {
+    width: 28%;
+    height: 2.5vh;
+    padding: 0.5rem;
+    font-size: 1.3rem;
+    font-family: "Nanum";
+  }
+  input[type="password"] {
+    width: 40%;
+  }
+  textarea {
+    resize: none;
+    width: 50%;
+    height: 15vh;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-family: "Nanum";
+  }
+  input,
+  textarea {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    &:focus {
+      outline: none;
+    }
+  }
+`;
+const FaqBtn = styled.button`
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border-radius: 10px;
+  width: 45%;
+  font-size: 1.2rem;
+  font-family: "NanumSquare";
+  background-color: #92dbe2;
+  font-weight: 600;
+`;
+export const MyFaq = ({ data }) => {
   console.log(data);
   return (
     <div
@@ -775,7 +824,7 @@ export const MyFaq = ({
         <div
           id="first_section"
           style={{
-            height: "22%",
+            height: "20%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -785,43 +834,78 @@ export const MyFaq = ({
             Plan List
           </FontSizemd>
           <ListNav1>
-            <div></div>
-            <div></div>
             <ListNavli>
-              <p>문의사항</p>
+              <p>문의 사항</p>
             </ListNavli>
           </ListNav1>
         </div>
-        <div style={{ position: "relative", width: "90%", height: "90%" }}>
-          <div
+        <div
+          className="Box"
+          style={{
+            marginTop: "5rem",
+            paddingTop: "1rem",
+            borderRadius: "15px",
+            backgroundColor: "#F0F8FF",
+            border: "1px solid rgba(0,0,0,0.1)",
+            boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+          }}
+        >
+          <FontSizesm
             style={{
-              position: "absolute",
-              top: "15%",
-              left: "35%",
-              fontSize: "15px",
+              textAlign: "center",
+              paddingBottom: "1rem",
             }}
           >
-            문의사항을 남겨주시면, 신속한 답변 드리겠습니다.
-          </div>
-          <div style={{ position: "absolute", top: "25%" }}>
-            <span>제목 *</span> <input type="text" width={"50px"}></input>
-            <br></br>
-            <span>이메일 *</span> <input type="text" width={"50px"} />{" "}
-            <span>@</span> <input type="text" width={"50px"} />
-            <br></br>
-            <span>문의 내용</span> <textarea cols="100" rows="30" />
-            <br></br>
-            <span>공개여부</span> <input type="checkbox" /> <span>공개</span>{" "}
-            <input type="checkbox" /> <span>비공개</span>
-            <br></br>
-            <span>비밀번호</span>{" "}
-            <input type="text" width={"50px"} placeholder="비밀번호..."></input>
-            <br></br>
-          </div>
-          <div style={{ position: "absolute", top: "85%" }}>
-            <button>목록보기</button>
-            <button>저장하기</button>
-          </div>
+            문의사항 혹은 건의사항을 남겨주시면, 신속한 답변 드리겠습니다.
+          </FontSizesm>
+          <FaqBox>
+            <FaqUl>
+              <FaqItem>
+                <FontSizesm style={{ width: "13%" }}>제목</FontSizesm>{" "}
+                <input type="text" placeholder="제목을 입력해주세요" />
+              </FaqItem>
+              <FaqItem>
+                <FontSizesm style={{ width: "13%" }}>이메일</FontSizesm>{" "}
+                <input
+                  type="text"
+                  placeholder="연락받을 이메일을 입력해주세요"
+                />
+              </FaqItem>
+              <FaqItem>
+                <FontSizesm style={{ width: "13%" }}>비밀번호</FontSizesm>{" "}
+                <input
+                  type="password"
+                  placeholder="게시글을 조회하기 위한 비밀번호를 입력해주세요"
+                />
+              </FaqItem>
+              <FaqItem>
+                <FontSizesm style={{ width: "13%" }}>문의 내용</FontSizesm>
+                <textarea
+                  name=""
+                  id=""
+                  placeholder="문의사항이나 건의사항을 입력해주세요"
+                ></textarea>
+              </FaqItem>
+
+              <FaqItem>
+                <FontSizesm style={{ width: "13%" }}>비공개</FontSizesm>
+                <input type="checkbox" />
+              </FaqItem>
+              <div
+                style={{
+                  width: "30%",
+                  position: "absolute",
+                  bottom: 0,
+                  right: 0,
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <FaqBtn>목록보기</FaqBtn>
+                <FaqBtn>저장하기</FaqBtn>
+              </div>
+            </FaqUl>
+          </FaqBox>
         </div>
       </SectionListBox>
     </div>
@@ -879,6 +963,7 @@ const SectionListWrapper = ({
   );
 };
 
+const ProfileLabel = styled.label``;
 export const ShowListInfo = ({
   userInfo,
   listMode,
@@ -887,12 +972,13 @@ export const ShowListInfo = ({
   favoriteArea,
   notepad,
 }) => {
+  const user = auth.currentUser;
+  const [profileIMG, setProfileIMG] = useState(user?.photoURL);
   const [isQuit, setIsQuit] = useState(true);
   const [isDelete, setIsDelete] = useState(true);
   const navigate = useNavigate();
 
   const updatePw = () => {
-    const user = auth.currentUser;
     const pw = document.getElementById("originpw").value;
     const credential = EmailAuthProvider.credential(user.email, pw);
     reauthenticateWithCredential(user, credential)
@@ -914,7 +1000,6 @@ export const ShowListInfo = ({
   };
 
   const deleteuser = () => {
-    const user = auth.currentUser;
     const pw = document.getElementById("deletepw").value;
     const credential = EmailAuthProvider.credential(user.email, pw);
     const uid = user.uid;
@@ -953,6 +1038,48 @@ export const ShowListInfo = ({
   }, [isDelete]);
   console.log(favoriteList);
   console.log(userInfo);
+
+  const changeIMG = async (event) => {
+    const { files } = event.target;
+    if (!user) {
+      return;
+    }
+    if (files && files.length === 1) {
+      // 사진업로드시 즉각적으로 화면에 띄우고 싶을떄
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // reader.readAsDataURL(files[0]); 정보가 있으면 실행됨
+        document.getElementById("miniprofile").src = e.target.result;
+        //파일정보를 string으로 변경해서 src에 적용
+        document.getElementById("myimg").src = e.target.result;
+        //파일정보를 string으로 변경해서 src에 적용
+      };
+
+      reader.readAsDataURL(files[0]); // 업로드된 파일 정보읽기
+
+      // 파일이 선택되었고, 선택된 파일의 길이(갯수)가 1일떄
+      const file = files[0];
+      // file 변수에 첫 번째 파일을 할당
+      const locationRef = ref(storage, `avatars/${user?.uid}`);
+      // 유저 프로필사진을 저장하기위한 경로 지정
+      /* 
+      "tweets"폴더가이닌 "avatars"폴더에 프로필에 대한 정보를 저장할 수있도록
+       > "avatars"폴더에 유저 id로 사진을 업로드함
+       위와 같이 작성하면 유저가 프로필사진을 변경해도 동일한 파일 이름을 업로드가 되어 덮어쓰기가 됨
+       > 사용자가 이전에 올렸던 이미지는 필요가 없고 변경될할것이기 때문에 
+       > 유저는 유저 이미지를 많이 변경하기 때문에 
+         한명의 유저를 위해 100개의 이미지를 저장할 필요는 없다
+       */
+      const result = await uploadBytes(locationRef, file);
+      // 업로드
+      const avatarUrl = await getDownloadURL(result.ref);
+      // 업로드한 해당 url을 가져옴
+      setProfileIMG(avatarUrl);
+      // 유저이미지를 <AvatarImg src={avatar} /> 해당 컴포넌트에 출력하기때문에 사진이 변경되면 setAvatar를 해주어 변경된 avatar의 사진을 보여줌
+      await updateProfile(user, { photoURL: avatarUrl });
+    }
+  };
   return (
     <>
       <div style={{ height: "100%", position: "relative" }}>
@@ -988,16 +1115,14 @@ export const ShowListInfo = ({
             >
               {userInfo.name}
             </FontSizesm>
-            <div
-              style={{
-                width: "30px",
-                height: "30px",
-                border: "1px solid aliceblue",
-                borderRadius: "50%",
-                backgroundImage: `url("/img/MyProfile_IMG.png")`,
-                backgroundSize: "cover",
-              }}
-            ></div>
+            <div>
+              <img
+                id="miniprofile"
+                src={user?.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"}
+                alt=""
+                style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+              />
+            </div>
           </div>
         </SectionBackground>
         <div
@@ -1015,13 +1140,27 @@ export const ShowListInfo = ({
         >
           {listMode === "mypage" && (
             <MyprofileBox>
-              <div
+              <ProfileLabel
+                htmlFor="avatar"
                 style={{
                   paddingTop: "10%",
                 }}
               >
-                <MyprofileImg src="/img/fairy2.svg" alt=""></MyprofileImg>
-              </div>
+                <MyprofileImg
+                  id="myimg"
+                  src={
+                    user?.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"
+                  }
+                  alt=""
+                ></MyprofileImg>
+                <input
+                  onChange={changeIMG}
+                  id="avatar"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                ></input>
+              </ProfileLabel>
               <div style={{ width: "100%", padding: "2rem 5rem" }}>
                 <FontSizemd style={{ padding: "1rem 0" }}>
                   {userInfo.name}
@@ -1088,9 +1227,24 @@ export const ShowListInfo = ({
           )}
           {listMode === "update" && (
             <MyprofileBox>
-              <div style={{ paddingTop: "20%" }}>
-                <MyprofileImg src="/img/fairy2.svg" alt=""></MyprofileImg>
-              </div>
+              <ProfileLabel
+                htmlFor="avatar"
+                style={{
+                  paddingTop: "10%",
+                }}
+              >
+                <MyprofileImg
+                  src={profileIMG ? profileIMG : "/img/MyProfile_IMG.png"}
+                  alt=""
+                ></MyprofileImg>
+                <input
+                  onClick={changeIMG}
+                  id="avatar"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                ></input>
+              </ProfileLabel>
               <div style={{ width: "100%", padding: "2rem 5rem" }}>
                 <FontSizemd style={{ padding: "1rem 0" }}>
                   {userInfo.name}
@@ -1124,14 +1278,15 @@ export const ShowListInfo = ({
                   <input type="text" id="updatepw" style={{ width: "60%" }} />
                 </div>
                 <EditBtnBox style={{ padding: "2rem 5rem" }}>
-                  <UserEditBtn onClick={updatePw}>완료</UserEditBtn>
                   <UserEditBtn
                     onClick={() => {
                       setListMode("mypage");
                     }}
+                    style={{ backgroundColor: "#F0F8FF", color: "gray" }}
                   >
                     뒤로가기
                   </UserEditBtn>
+                  <UserEditBtn onClick={updatePw}>완료</UserEditBtn>
                 </EditBtnBox>
               </div>
             </MyprofileBox>
@@ -1166,6 +1321,7 @@ const InfoMenuUl = styled.ul`
   list-style: none;
   grid-template-columns: repeat(3, 1fr);
   text-align: center;
+  font-family: "NanumSquare";
 `;
 const ActiveBar = styled.div`
   width: 33.3%;
@@ -1401,14 +1557,14 @@ const MypagePlanInfo = ({
           )}
         </div>
         <div style={{ paddingTop: "5rem" }}>
-          <FontSizemd style={{ padding: "2rem 0" }}>작성메모</FontSizemd>
-          <div
-            className="Memo"
-            style={{
-              height: "10vh",
-              backgroundColor: "rgba(0,0,0,0.4)",
-            }}
-          ></div>
+          <FontSizemd style={{ padding: "2rem 0", fontFamily: "NanumSquare" }}>
+            작성메모
+          </FontSizemd>
+          <Memo className="Memo">
+            <FontSizesm>
+              {favoriteArea.fnotepad && favoriteArea.fnotepad}
+            </FontSizesm>
+          </Memo>
         </div>
         <div
           style={{ position: "absolute", top: "1%", right: "5%", zIndex: 1 }}
@@ -1422,6 +1578,26 @@ const MypagePlanInfo = ({
     )
   );
 };
+const Memo = styled.div`
+  height: 10vh;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  overflow: scroll;
+  overflow-x: hidden;
+  border-radius: 5px;
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {
+    height: 30%;
+    border-radius: 1rem;
+    background-color: #00a9bf;
+  }
+  &::-webkit-scrollbar-track {
+    border-radius: 1rem;
+    background-color: rgba(33, 122, 244, 0.1);
+  }
+`;
 const Infobox = styled.div`
   height: 30vh;
   overflow: scroll;

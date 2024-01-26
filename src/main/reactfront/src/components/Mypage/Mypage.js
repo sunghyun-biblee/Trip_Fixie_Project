@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-
+import "../../fonts/font.css";
 import {
   EditInput,
   MypageBox,
