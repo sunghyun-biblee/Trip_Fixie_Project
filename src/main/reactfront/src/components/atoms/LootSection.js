@@ -16,7 +16,7 @@ import {
   ExampleFour,
   ExampleFive,
 } from "./lootsection_components";
-
+import "../../fonts/font.css";
 const LootSectionContainer = styled.div`
   display: flex;
   align-items: center;
@@ -32,6 +32,7 @@ const LootSectionMainBox = styled.div`
 const LootSectionLeftBox = styled.div`
   display: flex;
   flex-direction: column;
+  font-family: "NotoSans";
   gap: 20px;
 `;
 const MainBtn = styled.button`
