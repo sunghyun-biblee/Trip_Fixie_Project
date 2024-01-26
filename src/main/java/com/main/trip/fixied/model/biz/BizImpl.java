@@ -93,9 +93,10 @@ public class BizImpl implements Biz {
 	public String getFavorNotepad(String favorFid) {
 		return mapper.getFavorNotepad(favorFid);
 	}
-
+	
 	@Override
-	public String getFavorNotepad(String favorFid) {
-		return mapper.getFavorNotepad(favorFid);
+	public String updateProfile(String uid, String uprofile) {
+		return mapper.updateProfile(uid, uprofile);
 	}
+
 }

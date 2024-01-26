@@ -479,6 +479,7 @@ export function SaveTripInfo({
                           autoComplete="off"
                           maxlength="13"
                           required
+                          maxLength= "13"
                         ></SaveInput>
                         <SaveBtn type="submit">저장</SaveBtn>
                       </form>

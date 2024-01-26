@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { motion } from "framer-motion";
 import "../../fonts/font.css";
+
 export const TripWrapper = styled.div`
   display: flex;
   height: 100vh;

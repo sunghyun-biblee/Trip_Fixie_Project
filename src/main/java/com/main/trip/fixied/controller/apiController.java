@@ -52,9 +52,9 @@ public class apiController {
 		dto.setUname(requestBody.get("name"));
 		dto.setUnickname(requestBody.get("nickname"));
 		if (requestBody.get("profile") != null) {
-			dto.setUprofile(requestBody.get("profile"));
+			dto.setUprofile((String)requestBody.get("profile"));
 		}
-
+		
 		if (biz.signUp(dto) > 0) {
 			return "잘돼용";
 		} else {
@@ -201,5 +201,16 @@ public class apiController {
 	public String getFavorNotepad(@RequestBody String favorFid) {
 		String note = biz.getFavorNotepad(favorFid);
 		return note;
+	}
+	
+	@RequestMapping("/updateProfile")
+	public String updateProfile(@RequestBody Map<String, String> requestBody) {
+		String uid = requestBody.get("uid");
+		String uprofile = requestBody.get("uprofile");
+		
+		if(biz.updateProfile(uid, uprofile) > 0) {
+			return "성공"; 
+		}else
+			return "실패";
 	}
 }

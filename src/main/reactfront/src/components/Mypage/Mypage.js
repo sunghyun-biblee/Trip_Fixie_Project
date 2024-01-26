@@ -82,6 +82,7 @@ export function Mypage() {
         setUserInfo({
           name: response.data.uname,
           email: response.data.uemail,
+          profile: response.data.uprofile,
         });
         console.log(response);
       })

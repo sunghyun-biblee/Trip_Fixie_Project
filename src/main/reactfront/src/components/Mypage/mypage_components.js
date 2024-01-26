@@ -2,7 +2,11 @@ import styled from "styled-components";
 import "../../fonts/font.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FontSizemd, FontSizesm } from "../Trip/trip_save_components";
+import {
+  FontSizemd,
+  FontSizemdInput,
+  FontSizesm,
+} from "../Trip/trip_save_components";
 import { auth, storage } from "../../firebase";
 import { Navigate, useNavigate } from "react-router-dom";
 import {
@@ -10,10 +14,9 @@ import {
   deleteUser,
   reauthenticateWithCredential,
   updatePassword,
-  updateProfile,
 } from "firebase/auth";
 import axios from "axios";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { deleteObject, ref } from "firebase/storage";
 
 export const MypageWrapper = styled.div`
   /* width: 100%; */
@@ -28,6 +31,7 @@ export const MypageWrapper = styled.div`
   background-color: white;
 `;
 export const MypageBackGround = styled.div`
+  font-family: "NanumGothicLight";
   width: 100vw;
   height: 100vh;
   background-color: #f0f8ff;
@@ -493,7 +497,7 @@ export const MypageMenu = ({ setMypageMode }) => {
             }}
           />
           <FontSizesm onClick={onClick} id="faq" style={{ cursor: "pointer" }}>
-            문의,건의하기
+            문의, 건의하기
           </FontSizesm>
         </li>
         <li>
@@ -748,6 +752,7 @@ export const MypageList = ({
     </div>
   );
 };
+
 const FaqBox = styled.div`
   background-color: #f0f8ff;
   display: flex;
@@ -807,6 +812,7 @@ const FaqBtn = styled.button`
   background-color: #92dbe2;
   font-weight: 600;
 `;
+
 export const MyFaq = ({ data }) => {
   console.log(data);
   return (
@@ -963,7 +969,6 @@ const SectionListWrapper = ({
   );
 };
 
-const ProfileLabel = styled.label``;
 export const ShowListInfo = ({
   userInfo,
   listMode,
@@ -972,114 +977,100 @@ export const ShowListInfo = ({
   favoriteArea,
   notepad,
 }) => {
-  const user = auth.currentUser;
-  const [profileIMG, setProfileIMG] = useState(user?.photoURL);
   const [isQuit, setIsQuit] = useState(true);
   const [isDelete, setIsDelete] = useState(true);
   const navigate = useNavigate();
 
   const updatePw = () => {
-    const pw = document.getElementById("originpw").value;
-    const credential = EmailAuthProvider.credential(user.email, pw);
-    reauthenticateWithCredential(user, credential)
-      .then(() => {})
-      .catch(() => {
-        alert("기존 비밀번호를 확인해주세요.");
-        return;
-      })
-      .finally(() => {
-        updatePassword(user, document.getElementById("updatepw").value)
+    const user = auth.currentUser;
+    const originpw = document.getElementById("originpw").value;
+    const credential = EmailAuthProvider.credential(user.email, originpw);
+    const updatepw = document.getElementById("updatepw").value;
+    if(originpw === updatepw){      //원래는 파이어베이스에서 제대로 된 비밀번호를 받아와서 비교해야하나 그까지는 시간부족 구현 x
+      alert("기존비밀번호와 동일한 비밀번호는 사용 할 수 없습니다.");
+    }else{
+      if (user.providerData[0].providerId === "password") {
+        reauthenticateWithCredential(user, credential)
           .then(() => {
-            console.log("확인");
+            // 기존 비밀번호 인증 성공
+            return updatePassword(user, updatepw);
+          })
+          .then(() => {
+            // 비밀번호 업데이트 성공
+            alert("비밀번호가 변경되었습니다.");
             navigate("/");
           })
-          .catch((error) => {
-            console.log("실패");
+          .catch(() => {
+            // 기존 비밀번호 인증 실패
+            alert("기존 비밀번호를 확인해주세요.");
           });
-      });
+        } else {
+          alert("소셜로그인은 해당 웹에서 비밀번호 변경이 불가합니다.");
+          setListMode("mypage");
+        }
+      }
   };
-
   const deleteuser = () => {
+    const user = auth.currentUser;
     const pw = document.getElementById("deletepw").value;
     const credential = EmailAuthProvider.credential(user.email, pw);
     const uid = user.uid;
-    reauthenticateWithCredential(user, credential)
-      .then(() => {})
-      .catch(() => {
-        alert("기존 비밀번호를 확인해주세요.");
-        return;
-      })
-      .finally(() => {
-        deleteUser(user)
-          .then(() => {
-            axios
-              .post("/test/deleteUser", { userid: uid })
-              .then(() => {
-                console.log("성공");
-              })
-              .catch(() => {
-                console.log("실패");
-                return;
-              });
-            setIsDelete(false);
+  
+    axios.post("/test/loadProfile",{uid: uid}).then((chuser)=>{
+      
+      const email = chuser.data.uemail;
+      
+      if (user.providerData[0].providerId === "password") {
+        reauthenticateWithCredential(user, credential)
+        .then(() => {
+          deleteUser(user)    //위에있는 deleteuser과는 다른 함수
+            .then(() => {
+              axios
+                .post("/test/deleteUser", { userid: uid })
+                .then(() => {
+                  
+                  const deleteRef = ref(storage, `imageBox/${email}`);
+                  
+                  deleteObject(deleteRef).then(() =>{
+                    console.log("파이어베이스스토리지삭제")
+                  }).catch((err)=>{
+                    console.log("파이어베이스스토리지삭제실패")
+                    console.error(err);
+                  });
+  
+                  console.log("성공");
+                })
+                .catch(() => {
+                  console.log("실패");
+                  return;
+                });
+              setIsDelete(false);
+            })
+            .catch((error) => {
+              console.log("에러용");
+            });
           })
-          .catch((error) => {
-            console.log("에러용");
-          });
-      });
+          .catch(() => {
+            alert("기존 비밀번호를 확인해주세요.");
+          })
+        }else{
+          alert("소셜로그인은 해당 웹에서 회원탈퇴가 불가합니다.");
+          setIsQuit(true);
+        }
+    }).catch(()=>{
+      console.log("에러입니다.")
+    })
   };
 
   useEffect(() => {
     if (isDelete == false) {
       setTimeout(() => {
         navigate("/");
-      }, 6000);
+      }, 3000);
     }
   }, [isDelete]);
   console.log(favoriteList);
   console.log(userInfo);
-
-  const changeIMG = async (event) => {
-    const { files } = event.target;
-    if (!user) {
-      return;
-    }
-    if (files && files.length === 1) {
-      // 사진업로드시 즉각적으로 화면에 띄우고 싶을떄
-
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        // reader.readAsDataURL(files[0]); 정보가 있으면 실행됨
-        document.getElementById("miniprofile").src = e.target.result;
-        //파일정보를 string으로 변경해서 src에 적용
-        document.getElementById("myimg").src = e.target.result;
-        //파일정보를 string으로 변경해서 src에 적용
-      };
-
-      reader.readAsDataURL(files[0]); // 업로드된 파일 정보읽기
-
-      // 파일이 선택되었고, 선택된 파일의 길이(갯수)가 1일떄
-      const file = files[0];
-      // file 변수에 첫 번째 파일을 할당
-      const locationRef = ref(storage, `avatars/${user?.uid}`);
-      // 유저 프로필사진을 저장하기위한 경로 지정
-      /* 
-      "tweets"폴더가이닌 "avatars"폴더에 프로필에 대한 정보를 저장할 수있도록
-       > "avatars"폴더에 유저 id로 사진을 업로드함
-       위와 같이 작성하면 유저가 프로필사진을 변경해도 동일한 파일 이름을 업로드가 되어 덮어쓰기가 됨
-       > 사용자가 이전에 올렸던 이미지는 필요가 없고 변경될할것이기 때문에 
-       > 유저는 유저 이미지를 많이 변경하기 때문에 
-         한명의 유저를 위해 100개의 이미지를 저장할 필요는 없다
-       */
-      const result = await uploadBytes(locationRef, file);
-      // 업로드
-      const avatarUrl = await getDownloadURL(result.ref);
-      // 업로드한 해당 url을 가져옴
-      setProfileIMG(avatarUrl);
-      // 유저이미지를 <AvatarImg src={avatar} /> 해당 컴포넌트에 출력하기때문에 사진이 변경되면 setAvatar를 해주어 변경된 avatar의 사진을 보여줌
-      await updateProfile(user, { photoURL: avatarUrl });
-    }
-  };
   return (
     <>
       <div style={{ height: "100%", position: "relative" }}>
@@ -1115,14 +1106,16 @@ export const ShowListInfo = ({
             >
               {userInfo.name}
             </FontSizesm>
-            <div>
-              <img
-                id="miniprofile"
-                src={user?.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"}
-                alt=""
-                style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-              />
-            </div>
+            <div
+              style={{
+                width: "30px",
+                height: "30px",
+                border: "1px solid aliceblue",
+                borderRadius: "50%",
+                backgroundImage: `url("/img/MyProfile_IMG.png")`,
+                backgroundSize: "cover",
+              }}
+            ></div>
           </div>
         </SectionBackground>
         <div
@@ -1140,27 +1133,13 @@ export const ShowListInfo = ({
         >
           {listMode === "mypage" && (
             <MyprofileBox>
-              <ProfileLabel
-                htmlFor="avatar"
+              <div
                 style={{
                   paddingTop: "10%",
                 }}
               >
-                <MyprofileImg
-                  id="myimg"
-                  src={
-                    user?.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"
-                  }
-                  alt=""
-                ></MyprofileImg>
-                <input
-                  onChange={changeIMG}
-                  id="avatar"
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                ></input>
-              </ProfileLabel>
+                <MyprofileImg src={userInfo.profile} alt=""></MyprofileImg>
+              </div>
               <div style={{ width: "100%", padding: "2rem 5rem" }}>
                 <FontSizemd style={{ padding: "1rem 0" }}>
                   {userInfo.name}
@@ -1227,24 +1206,9 @@ export const ShowListInfo = ({
           )}
           {listMode === "update" && (
             <MyprofileBox>
-              <ProfileLabel
-                htmlFor="avatar"
-                style={{
-                  paddingTop: "10%",
-                }}
-              >
-                <MyprofileImg
-                  src={profileIMG ? profileIMG : "/img/MyProfile_IMG.png"}
-                  alt=""
-                ></MyprofileImg>
-                <input
-                  onClick={changeIMG}
-                  id="avatar"
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                ></input>
-              </ProfileLabel>
+              <div style={{ paddingTop: "20%" }}>
+                <MyprofileImg src={userInfo.profile} alt=""></MyprofileImg>
+              </div>
               <div style={{ width: "100%", padding: "2rem 5rem" }}>
                 <FontSizemd style={{ padding: "1rem 0" }}>
                   {userInfo.name}
@@ -1321,7 +1285,6 @@ const InfoMenuUl = styled.ul`
   list-style: none;
   grid-template-columns: repeat(3, 1fr);
   text-align: center;
-  font-family: "NanumSquare";
 `;
 const ActiveBar = styled.div`
   width: 33.3%;
@@ -1341,6 +1304,8 @@ const ActiveBar = styled.div`
     }
   }};
 `;
+
+
 const MypagePlanInfo = ({
   favoriteList,
   favoriteArea,
@@ -1578,6 +1543,7 @@ const MypagePlanInfo = ({
     )
   );
 };
+
 const Memo = styled.div`
   height: 10vh;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -1598,6 +1564,7 @@ const Memo = styled.div`
     background-color: rgba(33, 122, 244, 0.1);
   }
 `;
+
 const Infobox = styled.div`
   height: 30vh;
   overflow: scroll;
