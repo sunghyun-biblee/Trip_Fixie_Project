@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import "../../fonts/font.css";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -680,6 +680,7 @@ export const MypageList = ({
   setListMode,
 }) => {
   console.log(data);
+
   return (
     <div
       style={{
@@ -969,6 +970,8 @@ const SectionListWrapper = ({
   );
 };
 
+const ProfileLabel = styled.label``;
+
 export const ShowListInfo = ({
   userInfo,
   listMode,
@@ -979,16 +982,17 @@ export const ShowListInfo = ({
 }) => {
   const [isQuit, setIsQuit] = useState(true);
   const [isDelete, setIsDelete] = useState(true);
+  const [profilesrc, setProfilesrc] = useState();
   const navigate = useNavigate();
-
+  const user = auth.currentUser;
   const updatePw = () => {
-    const user = auth.currentUser;
     const originpw = document.getElementById("originpw").value;
     const credential = EmailAuthProvider.credential(user.email, originpw);
     const updatepw = document.getElementById("updatepw").value;
-    if(originpw === updatepw){      //원래는 파이어베이스에서 제대로 된 비밀번호를 받아와서 비교해야하나 그까지는 시간부족 구현 x
+    if (originpw === updatepw) {
+      //원래는 파이어베이스에서 제대로 된 비밀번호를 받아와서 비교해야하나 그까지는 시간부족 구현 x
       alert("기존비밀번호와 동일한 비밀번호는 사용 할 수 없습니다.");
-    }else{
+    } else {
       if (user.providerData[0].providerId === "password") {
         reauthenticateWithCredential(user, credential)
           .then(() => {
@@ -1004,62 +1008,64 @@ export const ShowListInfo = ({
             // 기존 비밀번호 인증 실패
             alert("기존 비밀번호를 확인해주세요.");
           });
-        } else {
-          alert("소셜로그인은 해당 웹에서 비밀번호 변경이 불가합니다.");
-          setListMode("mypage");
-        }
+      } else {
+        alert("소셜로그인은 해당 웹에서 비밀번호 변경이 불가합니다.");
+        setListMode("mypage");
       }
+    }
   };
   const deleteuser = () => {
-    const user = auth.currentUser;
     const pw = document.getElementById("deletepw").value;
     const credential = EmailAuthProvider.credential(user.email, pw);
     const uid = user.uid;
-  
-    axios.post("/test/loadProfile",{uid: uid}).then((chuser)=>{
-      
-      const email = chuser.data.uemail;
-      
-      if (user.providerData[0].providerId === "password") {
-        reauthenticateWithCredential(user, credential)
-        .then(() => {
-          deleteUser(user)    //위에있는 deleteuser과는 다른 함수
+
+    axios
+      .post("/test/loadProfile", { uid: uid })
+      .then((chuser) => {
+        const email = chuser.data.uemail;
+
+        if (user.providerData[0].providerId === "password") {
+          reauthenticateWithCredential(user, credential)
             .then(() => {
-              axios
-                .post("/test/deleteUser", { userid: uid })
+              deleteUser(user) //위에있는 deleteuser과는 다른 함수
                 .then(() => {
-                  
-                  const deleteRef = ref(storage, `imageBox/${email}`);
-                  
-                  deleteObject(deleteRef).then(() =>{
-                    console.log("파이어베이스스토리지삭제")
-                  }).catch((err)=>{
-                    console.log("파이어베이스스토리지삭제실패")
-                    console.error(err);
-                  });
-  
-                  console.log("성공");
+                  axios
+                    .post("/test/deleteUser", { userid: uid })
+                    .then(() => {
+                      const deleteRef = ref(storage, `imageBox/${email}`);
+
+                      deleteObject(deleteRef)
+                        .then(() => {
+                          console.log("파이어베이스스토리지삭제");
+                        })
+                        .catch((err) => {
+                          console.log("파이어베이스스토리지삭제실패");
+                          console.error(err);
+                        });
+
+                      console.log("성공");
+                    })
+                    .catch(() => {
+                      console.log("실패");
+                      return;
+                    });
+                  setIsDelete(false);
                 })
-                .catch(() => {
-                  console.log("실패");
-                  return;
+                .catch((error) => {
+                  console.log("에러용");
                 });
-              setIsDelete(false);
             })
-            .catch((error) => {
-              console.log("에러용");
+            .catch(() => {
+              alert("기존 비밀번호를 확인해주세요.");
             });
-          })
-          .catch(() => {
-            alert("기존 비밀번호를 확인해주세요.");
-          })
-        }else{
+        } else {
           alert("소셜로그인은 해당 웹에서 회원탈퇴가 불가합니다.");
           setIsQuit(true);
         }
-    }).catch(()=>{
-      console.log("에러입니다.")
-    })
+      })
+      .catch(() => {
+        console.log("에러입니다.");
+      });
   };
 
   useEffect(() => {
@@ -1069,8 +1075,23 @@ export const ShowListInfo = ({
       }, 3000);
     }
   }, [isDelete]);
-  console.log(favoriteList);
-  console.log(userInfo);
+
+  const onChageIMG = (event) => {
+    const { files } = event.target;
+    if (!user) {
+      return;
+    }
+    if (files && files.length === 1) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("miniprofile").src = e.target.result;
+        document.getElementById("myimg").src = e.target.result;
+        setProfilesrc(e.target.result);
+      };
+      reader.readAsDataURL(files[0]);
+    }
+  };
+
   return (
     <>
       <div style={{ height: "100%", position: "relative" }}>
@@ -1106,16 +1127,14 @@ export const ShowListInfo = ({
             >
               {userInfo.name}
             </FontSizesm>
-            <div
-              style={{
-                width: "30px",
-                height: "30px",
-                border: "1px solid aliceblue",
-                borderRadius: "50%",
-                backgroundImage: `url("/img/MyProfile_IMG.png")`,
-                backgroundSize: "cover",
-              }}
-            ></div>
+            <div>
+              <img
+                id="miniprofile"
+                src={user?.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"}
+                alt=""
+                style={{ width: "40px", height: "40px", borderRadius: "50%" }}
+              />
+            </div>
           </div>
         </SectionBackground>
         <div
@@ -1133,13 +1152,31 @@ export const ShowListInfo = ({
         >
           {listMode === "mypage" && (
             <MyprofileBox>
-              <div
+              <ProfileLabel
+                htmlFor="avatar"
                 style={{
                   paddingTop: "10%",
                 }}
               >
-                <MyprofileImg src={userInfo.profile} alt=""></MyprofileImg>
-              </div>
+                <MyprofileImg
+                  id="myimg"
+                  src={
+                    user?.photoURL
+                      ? user.photoURL
+                      : profilesrc
+                      ? profilesrc
+                      : "/img/MyProfile_IMG.png"
+                  }
+                  alt=""
+                ></MyprofileImg>
+                <input
+                  onChange={onChageIMG}
+                  id="avatar"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                ></input>
+              </ProfileLabel>
               <div style={{ width: "100%", padding: "2rem 5rem" }}>
                 <FontSizemd style={{ padding: "1rem 0" }}>
                   {userInfo.name}
@@ -1206,9 +1243,31 @@ export const ShowListInfo = ({
           )}
           {listMode === "update" && (
             <MyprofileBox>
-              <div style={{ paddingTop: "20%" }}>
-                <MyprofileImg src={userInfo.profile} alt=""></MyprofileImg>
-              </div>
+              <ProfileLabel
+                htmlFor="avatar"
+                style={{
+                  paddingTop: "10%",
+                }}
+              >
+                <MyprofileImg
+                  id="myimg"
+                  src={
+                    user?.photoURL
+                      ? user.photoURL
+                      : profilesrc
+                      ? profilesrc
+                      : "/img/MyProfile_IMG.png"
+                  }
+                  alt=""
+                ></MyprofileImg>
+                <input
+                  onChange={onChageIMG}
+                  id="avatar"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                ></input>
+              </ProfileLabel>
               <div style={{ width: "100%", padding: "2rem 5rem" }}>
                 <FontSizemd style={{ padding: "1rem 0" }}>
                   {userInfo.name}
@@ -1289,9 +1348,21 @@ const InfoMenuUl = styled.ul`
 const ActiveBar = styled.div`
   width: 33.3%;
   height: 3px;
-  transition: transform 0.5s;
+  transition: transform 0.5s, display 0.5s;
   background-color: #52c2f2;
   margin-top: 0.5rem;
+  display: ${(props) => {
+    if (!props.infoMode) {
+      return "none";
+    }
+    if (props.infoMode === "tour") {
+      return "block";
+    } else if (props.infoMode === "festival") {
+      return "block";
+    } else if (props.infoMode === "mt") {
+      return "block";
+    }
+  }};
   transform: ${(props) => {
     if (props.infoMode === "tour") {
       return "translateX(0)";
@@ -1304,16 +1375,27 @@ const ActiveBar = styled.div`
     }
   }};
 `;
-
-
+const rotateAnimation = keyframes`
+  from {
+    transform:  rotateZ(-90deg) translateX(0)
+  }
+  to {
+    transform: rotateZ(-90deg) translateX(-10px)
+  }
+  `;
+const UpArrow = styled.img`
+  width: 40px;
+  height: 40px;
+  animation: ${rotateAnimation} 0.5s infinite alternate;
+`;
 const MypagePlanInfo = ({
   favoriteList,
   favoriteArea,
   setListMode,
   notepad,
 }) => {
-  const [infoMode, setInfoMode] = useState("tour");
-  console.log(favoriteList);
+  const [infoMode, setInfoMode] = useState();
+
   console.log(favoriteArea);
   const changeMode = (e) => {
     const targetId = e.target.id;
@@ -1321,6 +1403,10 @@ const MypagePlanInfo = ({
       setInfoMode(targetId);
     }
   };
+  useEffect(() => {
+    setInfoMode();
+  }, [favoriteList]);
+
   return (
     favoriteArea &&
     favoriteList && (
@@ -1354,170 +1440,314 @@ const MypagePlanInfo = ({
           <ActiveBar infoMode={infoMode}></ActiveBar>
         </div>
         <div>
+          {!infoMode && (
+            <div
+              style={{
+                height: "30vh",
+                display: "flex",
+                flexDirection: "column",
+                paddingTop: "4rem",
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3,1fr)",
+                  paddingBottom: "4rem",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <UpArrow src="/img/mypage/UpArrow.png"></UpArrow>
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <UpArrow src="/img/mypage/UpArrow.png"></UpArrow>
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                  <UpArrow src="/img/mypage/UpArrow.png"></UpArrow>
+                </div>
+              </div>
+              <FontSizesm style={{ textAlign: "center" }}>
+                조회할 카테고리를 클릭해주세요!
+              </FontSizesm>
+            </div>
+          )}
           {infoMode === "tour" && (
             <Infobox style={{ marginTop: "1.5rem" }}>
-              {favoriteList.map(
-                (item) =>
-                  item.contenttypeid === 12 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        width: "95%",
-                        alignItems: "center",
-                        border: "1px solid rgba(0,0,0,0.3)",
-                        borderRadius: "15px",
-                        margin: "1rem 0",
-                      }}
-                    >
-                      <img
-                        src={
-                          item.cfirstimage
-                            ? item.cfirstimage
-                            : "/img/TourSpot_No_IMG.svg"
-                        }
-                        alt=""
+              {favoriteList &&
+                favoriteList.map(
+                  (item) =>
+                    item.contenttypeid === 12 && (
+                      <div
                         style={{
-                          width: "30%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "10px 0 0 10px",
+                          display: "flex",
+                          width: "97%",
+                          alignItems: "center",
+                          border: "1px solid rgba(0,0,0,0.3)",
+                          borderRadius: "15px",
+                          margin: "1rem 0",
                         }}
-                      ></img>
-                      <div style={{ padding: "0.5rem 0 0.5rem 2rem" }}>
-                        <p
-                          key={item.contentid}
+                      >
+                        <img
+                          src={
+                            item.cfirstimage
+                              ? item.cfirstimage
+                              : "/img/TourSpot_No_IMG.svg"
+                          }
+                          alt=""
                           style={{
-                            paddingBottom: "1rem",
-                            fontSize: "1.8rem",
-                            fontWeight: 600,
+                            width: "30%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: "10px 0 0 10px",
+                          }}
+                        ></img>
+                        <div
+                          style={{
+                            padding: "0.5rem 0 0.5rem 1rem",
+                            width: "100%",
                           }}
                         >
-                          {item.ctitle}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "1.2rem",
-                            fontWeight: 600,
-                            color: "gray",
-                          }}
-                        >
-                          {item.caddr}
-                        </p>
+                          <p
+                            key={item.contentid}
+                            style={{
+                              width: "100%",
+                              paddingBottom: "1rem",
+                              fontSize: "1.8rem",
+                              fontWeight: 600,
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {item.ctitle}
+                            {item.homepage && (
+                              <a
+                                href={item.homepage}
+                                target="_blank"
+                                style={{
+                                  fontSize: "1.2rem",
+                                  paddingRight: "1rem",
+                                }}
+                              >
+                                <img
+                                  src="/img/Homepage.png"
+                                  alt=""
+                                  style={{ width: "25px", height: "25px" }}
+                                />
+                              </a>
+                            )}
+                          </p>
+
+                          <p
+                            style={{
+                              fontSize: "1.2rem",
+                              fontWeight: 600,
+                              color: "gray",
+                            }}
+                          >
+                            {item.caddr}
+                          </p>
+                          {item.ctel && (
+                            <p
+                              style={{
+                                fontSize: "1.2rem",
+                                fontWeight: 600,
+                                color: "gray",
+                              }}
+                            >
+                              {item.ctel}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )
-              )}
+                    )
+                )}
             </Infobox>
           )}
           {infoMode === "festival" && (
             <Infobox style={{ marginTop: "1.5rem" }}>
-              {favoriteList.map(
-                (item) =>
-                  item.contenttypeid !== 12 &&
-                  item.contenttypeid !== 32 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        width: "95%",
-                        alignItems: "center",
-                        border: "1px solid rgba(0,0,0,0.3)",
-                        borderRadius: "15px",
-                        margin: "1rem 0",
-                      }}
-                    >
-                      <img
-                        src={
-                          item.cfirstimage
-                            ? item.cfirstimage
-                            : "/img/TourSpot_No_IMG.svg"
-                        }
-                        alt=""
+              {favoriteList &&
+                favoriteList.map(
+                  (item) =>
+                    item.contenttypeid !== 12 &&
+                    item.contenttypeid !== 32 && (
+                      <div
                         style={{
-                          width: "30%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "10px 0 0 10px",
+                          display: "flex",
+                          width: "97%",
+                          alignItems: "center",
+                          border: "1px solid rgba(0,0,0,0.3)",
+                          borderRadius: "15px",
+                          margin: "1rem 0",
                         }}
-                      ></img>
-                      <div style={{ padding: "0.5rem 0 0.5rem 2rem" }}>
-                        <p
-                          key={item.contentid}
+                      >
+                        <img
+                          src={
+                            item.cfirstimage
+                              ? item.cfirstimage
+                              : "/img/TourSpot_No_IMG.svg"
+                          }
+                          alt=""
                           style={{
-                            paddingBottom: "1rem",
-                            fontSize: "1.8rem",
-                            fontWeight: 600,
+                            width: "30%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: "10px 0 0 10px",
+                          }}
+                        ></img>
+                        <div
+                          style={{
+                            padding: "0.5rem 0 0.5rem 1rem",
+                            width: "100%",
                           }}
                         >
-                          {item.ctitle}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "1.2rem",
-                            fontWeight: 600,
-                            color: "gray",
-                          }}
-                        >
-                          {item.caddr}
-                        </p>
+                          <p
+                            key={item.contentid}
+                            style={{
+                              width: "100%",
+                              paddingBottom: "1rem",
+                              fontSize: "1.8rem",
+                              fontWeight: 600,
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {item.ctitle}
+                            {item.homepage && (
+                              <a
+                                href={item.homepage}
+                                target="_blank"
+                                style={{
+                                  fontSize: "1.2rem",
+                                  paddingRight: "1rem",
+                                }}
+                              >
+                                <img
+                                  src="/img/Homepage.png"
+                                  alt=""
+                                  style={{ width: "25px", height: "25px" }}
+                                />
+                              </a>
+                            )}
+                          </p>
+
+                          <p
+                            style={{
+                              fontSize: "1.2rem",
+                              fontWeight: 600,
+                              color: "gray",
+                            }}
+                          >
+                            {item.caddr}
+                          </p>
+                          {item.ctel && (
+                            <p
+                              style={{
+                                fontSize: "1.2rem",
+                                fontWeight: 600,
+                                color: "gray",
+                              }}
+                            >
+                              {item.ctel}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )
-              )}
+                    )
+                )}
             </Infobox>
           )}
           {infoMode === "mt" && (
             <Infobox style={{ marginTop: "1.5rem" }}>
-              {favoriteList.map(
-                (item) =>
-                  item.contenttypeid === 32 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        width: "95%",
-                        alignItems: "center",
-                        border: "1px solid rgba(0,0,0,0.3)",
-                        borderRadius: "15px",
-                        margin: "1rem 0",
-                      }}
-                    >
-                      <img
-                        src={
-                          item.cfirstimage
-                            ? item.cfirstimage
-                            : "/img/TourSpot_No_IMG.svg"
-                        }
-                        alt=""
+              {favoriteList &&
+                favoriteList.map(
+                  (item) =>
+                    item.contenttypeid === 32 && (
+                      <div
                         style={{
-                          width: "30%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "10px 0 0 10px",
+                          display: "flex",
+                          width: "97%",
+                          alignItems: "center",
+                          border: "1px solid rgba(0,0,0,0.3)",
+                          borderRadius: "15px",
+                          margin: "1rem 0",
                         }}
-                      ></img>
-                      <div style={{ padding: "0.5rem 0 0.5rem 2rem" }}>
-                        <p
-                          key={item.contentid}
+                      >
+                        <img
+                          src={
+                            item.cfirstimage
+                              ? item.cfirstimage
+                              : "/img/TourSpot_No_IMG.svg"
+                          }
+                          alt=""
                           style={{
-                            paddingBottom: "1rem",
-                            fontSize: "1.8rem",
-                            fontWeight: 600,
+                            width: "30%",
+                            height: "100%",
+                            objectFit: "cover",
+                            borderRadius: "10px 0 0 10px",
+                          }}
+                        ></img>
+                        <div
+                          style={{
+                            padding: "0.5rem 0 0.5rem 1rem",
+                            width: "100%",
                           }}
                         >
-                          {item.ctitle}
-                        </p>
-                        <p
-                          style={{
-                            fontSize: "1.2rem",
-                            fontWeight: 600,
-                            color: "gray",
-                          }}
-                        >
-                          {item.caddr}
-                        </p>
+                          <p
+                            key={item.contentid}
+                            style={{
+                              width: "100%",
+                              paddingBottom: "1rem",
+                              fontSize: "1.8rem",
+                              fontWeight: 600,
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {item.ctitle}
+                            {item.homepage && (
+                              <a
+                                href={item.homepage}
+                                target="_blank"
+                                style={{
+                                  fontSize: "1.2rem",
+                                  paddingRight: "1rem",
+                                }}
+                              >
+                                <img
+                                  src="/img/Homepage.png"
+                                  alt=""
+                                  style={{ width: "25px", height: "25px" }}
+                                />
+                              </a>
+                            )}
+                          </p>
+
+                          <p
+                            style={{
+                              fontSize: "1.2rem",
+                              fontWeight: 600,
+                              color: "gray",
+                            }}
+                          >
+                            {item.caddr}
+                          </p>
+                          {item.ctel && (
+                            <p
+                              style={{
+                                fontSize: "1.2rem",
+                                fontWeight: 600,
+                                color: "gray",
+                              }}
+                            >
+                              {item.ctel}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )
-              )}
+                    )
+                )}
             </Infobox>
           )}
         </div>

@@ -87,9 +87,9 @@ function TripMap({
             content: [
               `<div style="display: flex; flex-direction: column; align-items: center; width: 50px; height: 50px;">`,
               ` <div style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px;">`,
-              ` <img src="/img/tour.png" style="width: 50px; background-color: white; height: 50px; border-radius: 50%;"/>`,
+              ` <img src="/img/tour.png" style="width: 50px; height: 50px; border-radius: 50%;"/>`,
               ` </div>`,
-              ` <div style="text-align: center; background-color: white; border-radius: 10px; ">${list.ctitle}</div>`,
+
               `</div>`,
             ].join(""),
             size: new window.naver.maps.Size(50, 50),
@@ -111,9 +111,9 @@ function TripMap({
             content: [
               `<div style="display: flex; flex-direction: column; align-items: center; width: 50px; height: 50px;">`,
               ` <div style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px;">`,
-              ` <img src="/img/hotel.png" style="width: 50px; background-color: white; height: 50px; border-radius: 50%;"/>`,
+              ` <img src="/img/hotel.png" style="width: 50px;  height: 50px; border-radius: 50%;"/>`,
               ` </div>`,
-              ` <div style="text-align: center; background-color: white; border-radius: 10px; ">${list.ctitle}</div>`,
+
               `</div>`,
             ].join(""),
             size: new window.naver.maps.Size(50, 50),
@@ -135,9 +135,8 @@ function TripMap({
             content: [
               `<div style="display: flex; flex-direction: column; align-items: center; width: 50px; height: 50px;">`,
               ` <div style="display: flex; justify-content: center; align-items: center; width: 50px; height: 50px;">`,
-              ` <img src="/img/festival.png" style="width: 50px; background-color: white; height: 50px; border-radius: 50%;"/>`,
+              ` <img src="/img/festival.png" style="width: 50px; height: 50px; border-radius: 50%;"/>`,
               ` </div>`,
-              ` <div style="text-align: center; background-color: white; border-radius: 10px; ">${list.ctitle}</div>`,
               `</div>`,
             ].join(""),
             size: new window.naver.maps.Size(50, 50),
