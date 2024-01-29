@@ -95,7 +95,7 @@ public class BizImpl implements Biz {
 	}
 	
 	@Override
-	public String updateProfile(String uid, String uprofile) {
+	public int updateProfile(String uid, String uprofile) {
 		return mapper.updateProfile(uid, uprofile);
 	}
 

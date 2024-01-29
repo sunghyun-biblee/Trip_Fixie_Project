@@ -63,6 +63,6 @@ public interface Mapper {
 	public String getFavorNotepad(String favorFid);
 	
 	@Update(" UPDATE CHUSER SET UPROFILE = #{uprofile} WHERE UID = #{uid} ")
-	public String updateProfile(String uid, String uprofile);
+	public int updateProfile(String uid, String uprofile);
 
 }
