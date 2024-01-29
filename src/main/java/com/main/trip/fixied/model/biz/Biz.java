@@ -26,5 +26,5 @@ public interface Biz {
 	public ArrayList<String> selectUidAll();
 	public Favorite getFavorArea(String favorFid);
 	public String getFavorNotepad(String favorFid);
-	public String updateProfile(String uid, String uprofile);
+	public int updateProfile(String uid, String uprofile);
 }
