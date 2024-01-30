@@ -87,9 +87,10 @@
   color: #f0f4f5;
 }
 .Registe_Box {
-  width: 50%;
+  width: 55%;
   display: flex;
   align-items: center;
+  justify-content: center;
   p {
     font-size: 2rem;
     color: #f0f4f5;
