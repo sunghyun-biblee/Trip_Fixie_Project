@@ -284,80 +284,80 @@ export const Pagenagtion = ({ postLimit, totalPlan, page, setPage }) => {
   );
 };
 
-export const DetailContainer = styled.div`
-  width: 100vw;
-  height: 100vh;
-  z-index: 1;
-  position: fixed;
-  top: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+// export const DetailContainer = styled.div`
+//   width: 100vw;
+//   height: 100vh;
+//   z-index: 1;
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// `;
 
-export const Detail = ({ nickname, favoriteList }) => {
-  const DetailWrap = styled.div`
-    background-color: white;
-    margin: 0 auto;
-    margin-left: 2%;
-    margin-bottom: 5%;
-    width: 1350px;
-    height: 80%;
-    padding: 10px;
-    border: 5px solid black;
-    border-radius: 20px;
-    position: absolute;
-    z-index: 2;
-    background-color: white;
-  `;
-  const DetailHeader = styled.header``;
-  const DetailHeaderUl = styled.ul``;
-  const DetailHeaderLi = styled.li`
-    float: left;
-    font-size: 50px;
-    list-style: none;
-  `;
+// export const Detail = ({ nickname, favoriteList }) => {
+//   const DetailWrap = styled.div`
+//     background-color: white;
+//     margin: 0 auto;
+//     margin-left: 2%;
+//     margin-bottom: 5%;
+//     width: 1350px;
+//     height: 80%;
+//     padding: 10px;
+//     border: 5px solid black;
+//     border-radius: 20px;
+//     position: absolute;
+//     z-index: 2;
+//     background-color: white;
+//   `;
+//   const DetailHeader = styled.header``;
+//   const DetailHeaderUl = styled.ul``;
+//   const DetailHeaderLi = styled.li`
+//     float: left;
+//     font-size: 50px;
+//     list-style: none;
+//   `;
 
-  const ListContainer = styled.div`
-    position: absolute;
-    top: 15%;
-    width: 98%;
-    height: 80%;
-    border: 2px solid black;
-    overflow-y: scroll;
-  `;
-  const ListOne = styled.div`
-    display: inline-block;
-    width: 100%;
-    height: 40%;
-    border: 1px solid black;
-  `;
+//   const ListContainer = styled.div`
+//     position: absolute;
+//     top: 15%;
+//     width: 98%;
+//     height: 80%;
+//     border: 2px solid black;
+//     overflow-y: scroll;
+//   `;
+//   const ListOne = styled.div`
+//     display: inline-block;
+//     width: 100%;
+//     height: 40%;
+//     border: 1px solid black;
+//   `;
 
-  let today = new Date().toLocaleDateString();
+//   let today = new Date().toLocaleDateString();
 
-  return (
-    <DetailWrap>
-      <DetailHeader>
-        <DetailHeaderUl>
-          <DetailHeaderLi>{today}</DetailHeaderLi>
-          <DetailHeaderLi>{nickname}</DetailHeaderLi>
-        </DetailHeaderUl>
-      </DetailHeader>
-      <ListContainer>
-        {favoriteList.map((list) => (
-          <ListOne>
-            <img
-              src={list.cfirstimage}
-              style={{ height: "100%", width: "30%" }}
-            ></img>
-            {list.ctitle}
-          </ListOne>
-        ))}
-      </ListContainer>
-    </DetailWrap>
-  );
-};
+//   return (
+//     <DetailWrap>
+//       <DetailHeader>
+//         <DetailHeaderUl>
+//           <DetailHeaderLi>{today}</DetailHeaderLi>
+//           <DetailHeaderLi>{nickname}</DetailHeaderLi>
+//         </DetailHeaderUl>
+//       </DetailHeader>
+//       <ListContainer>
+//         {favoriteList.map((list) => (
+//           <ListOne>
+//             <img
+//               src={list.cfirstimage}
+//               style={{ height: "100%", width: "30%" }}
+//             ></img>
+//             {list.ctitle}
+//           </ListOne>
+//         ))}
+//       </ListContainer>
+//     </DetailWrap>
+//   );
+// };
 
 const MypageUl = styled.ul`
   width: 100%;
@@ -437,15 +437,13 @@ export const MypageMenu = ({ setMypageMode }) => {
           width: "100%",
           display: "flex",
           justifyContent: "center",
+          alignItems: "center",
+          marginTop: "1rem",
         }}
         onClick={gomain}
         className="here"
       >
-        <img
-          src="/img/CHlogo.png"
-          alt=""
-          style={{ width: "80px", height: "80px" }}
-        />
+        <FontSizesm>마이페이지</FontSizesm>
       </div>
       <MypageUl>
         <li>
@@ -556,13 +554,6 @@ const SectionListBox = styled.div`
   flex-direction: column;
   width: 90%;
   font-family: "NanumSquare";
-`;
-
-const SectionListBox1 = styled.div`
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  width: 40%;
 `;
 
 const ListNav = styled.ul`

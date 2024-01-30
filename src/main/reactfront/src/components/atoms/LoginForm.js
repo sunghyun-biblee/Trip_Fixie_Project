@@ -40,7 +40,7 @@ function LoginForm({ closeModal }) {
         // ...
       })
       .catch((error) => {
-        alert("아이디와 비밀번호를 확인해주세요.")
+        alert("아이디와 비밀번호를 확인해주세요.");
       });
   };
 
@@ -204,29 +204,50 @@ function LoginForm({ closeModal }) {
                 className="Content_Input "
                 type="submit"
                 value="Login"
-                style={{cursor: "pointer"}}
+                style={{ cursor: "pointer" }}
               ></input>
-              <input
-                className="Content_Input "
-                type="button"
-                value="gitHub"
-                style={{cursor: "pointer"}}
-                onClick={signUpGithub}
-              ></input>
-              <input
-                className="Content_Input "
-                type="button"
-                value="google"
-                style={{cursor: "pointer"}}
-                onClick={signUpGoogle}
-              ></input>
+
+              <div
+                style={{
+                  display: "flex",
+                  width: "55%",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div className="github" style={{ backgroundColor: "#24292F" }}>
+                  <img
+                    src="/img/github-mark-white.svg"
+                    alt=""
+                    style={{ width: "30px", height: "30px" }}
+                  />
+                  <input
+                    type="button"
+                    value="GitHub Login"
+                    style={{ cursor: "pointer" }}
+                    onClick={signUpGithub}
+                  />
+                </div>
+                <div className="google" style={{ backgroundColor: "#f0f4f5" }}>
+                  <img
+                    src="/img/googleIcon.png"
+                    alt=""
+                    style={{ width: "30px", height: "30px" }}
+                  />
+                  <input
+                    type="button"
+                    value="Google Login"
+                    style={{ cursor: "pointer" }}
+                    onClick={signUpGoogle}
+                  />
+                </div>
+              </div>
               <div className="Registe_Box">
                 <p>Don't have Account?</p>
                 <input
                   className="Register"
                   type="button"
                   value="Create Account"
-                  style={{cursor: "pointer"}}
+                  style={{ cursor: "pointer" }}
                   onClick={onCreateAccount}
                 ></input>
               </div>
