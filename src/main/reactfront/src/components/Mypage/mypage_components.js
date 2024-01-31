@@ -14,9 +14,10 @@ import {
   deleteUser,
   reauthenticateWithCredential,
   updatePassword,
+  updateProfile,
 } from "firebase/auth";
 import axios from "axios";
-import { deleteObject, ref } from "firebase/storage";
+import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 export const MypageWrapper = styled.div`
   /* width: 100%; */
@@ -462,26 +463,6 @@ export const MypageMenu = ({ setMypageMode }) => {
             MY PLAN
           </FontSizesm>
         </li>
-        {/* <li>
-          <ClickState className={mode === "profile" ? "click" : null} />
-          <img
-            src="/img/mypage/Profile.svg"
-            alt=""
-            style={{
-              width: "40px",
-              height: "100%",
-              paddingRight: "1rem",
-              marginLeft: "1rem",
-            }}
-          />
-          <FontSizesm
-            onClick={onClick}
-            id="profile"
-            style={{ cursor: "pointer" }}
-          >
-            MY PROFILE
-          </FontSizesm>
-        </li> */}
         <li>
           <ClickState className={mode === "faq" ? "click" : null} />
           <img
@@ -1081,7 +1062,21 @@ export const ShowListInfo = ({
       };
       reader.readAsDataURL(files[0]);
     }
+        const storageRef = ref(storage, `imageBox/${userInfo.email}`);
+        const uploadTask = uploadBytes(storageRef, files[0]);
+
+        const uidx = auth.currentUser
+        uploadTask.then((snapshot)=>{
+          getDownloadURL(snapshot.ref).then((downloadURL)=>{
+            console.log(downloadURL);
+            axios.post("/test/updateProfile", {uid: uidx.uid, uprofile: downloadURL})
+            .then(()=>{console.log("성공")}).catch(()=>{console.log("실패")});
+
+            updateProfile(user, {photoURL: downloadURL});
+          });
+        });
   };
+
 
   return (
     <>
@@ -1121,7 +1116,7 @@ export const ShowListInfo = ({
             <div>
               <img
                 id="miniprofile"
-                src={user?.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"}
+                src={user.photoURL ? user.photoURL : "/img/MyProfile_IMG.png"}
                 alt=""
                 style={{ width: "40px", height: "40px", borderRadius: "50%" }}
               />

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -63,6 +64,6 @@ public interface Mapper {
 	public String getFavorNotepad(String favorFid);
 	
 	@Update(" UPDATE CHUSER SET UPROFILE = #{uprofile} WHERE UID = #{uid} ")
-	public int updateProfile(String uid, String uprofile);
+	public int updateProfile(@Param("uid") String uid, @Param("uprofile") String uprofile);
 
 }

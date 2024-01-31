@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import axios from "axios";
 import "./css/RegisterForm.css";
@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { FirebaseStorage } from "firebase/storage";
 import { storage } from "../../firebase";
-import { FontSizesm } from "../Trip/trip_save_components";
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -20,6 +19,8 @@ function RegisterForm() {
   const [uid, setUid] = useState("");
   const [preview, setPreview] = useState(false);
   const navigate = useNavigate();
+  
+
 
   const onChange = (event) => {
     const {
@@ -29,69 +30,74 @@ function RegisterForm() {
       setEmail(value);
     } else if (name === "password") {
       setPassword(value);
-    } else if (name === "passwordCheck") {
+    }else if(name === "passwordCheck"){
       setPasswordCheck(value);
-    } else if (name === "name") {
+    }else if (name === "name") {
       setName(value);
     } else if (name === "nickname") {
       setNickname(value);
     } else {
-      if (files && files.length > 0) {
-        const reader = new FileReader();
+      if(files && files.length > 0){        
+        const reader = new FileReader();        
         reader.readAsDataURL(files[0]);
-        reader.onload = function (e) {
+        reader.onload = function(e) {
           setPreProfile(e.target.result);
-        };
-        setProfile(files[0]);
+        }
+      setProfile(files[0]);
       }
     }
   };
 
-  useEffect(() => {
-    if (profile) {
-      if (preview === false) {
-        setPreview(true);
-      }
+  useEffect(()=>{
+    if(profile){
+        if(preview === false){
+          setPreview(true);
+        }
     }
-  }, [profile]);
+  },[profile])
+
 
   const signUp = async (event) => {
     event.preventDefault();
-    if (password === passwordCheck) {
+    if(password === passwordCheck){
       await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed in
-          const user = userCredential.user;
-          // ...
-          console.log(user);
-          setUid(user.uid);
-          console.log(profile);
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        // ...
+        console.log(user);
+        setUid(user.uid);
+        console.log(profile);
 
-          const storageRef = ref(storage, `imageBox/${email}`);
-          const uploadTask = uploadBytes(storageRef, profile);
+        const storageRef = ref(storage, `imageBox/${email}`);
+        const uploadTask = uploadBytes(storageRef, profile);
 
-          uploadTask.then((snapshot) => {
-            getDownloadURL(snapshot.ref).then((downloadURL) => {
-              console.log("불러오기", downloadURL);
-              setPreProfile(downloadURL);
-              serverSignUp(user.uid, downloadURL);
-            });
+        uploadTask.then((snapshot)=>{
+          getDownloadURL(snapshot.ref).then((downloadURL)=>{
+            console.log("불러오기", downloadURL);
+            setPreProfile(downloadURL);
+            serverSignUp(user.uid, downloadURL);
+
+            updateProfile(user, {photoURL: downloadURL});
           });
-        })
-        .catch((error) => {
-          console.log(error.code);
-          console.log(error.message);
-          // ..
-        })
-        .finally(() => {
-          navigate("/trip");
         });
-    } else {
+      })
+      .catch((error) => {
+        console.log(error.code);
+        console.log(error.message);
+        // ..
+      })
+      .finally(()=>{
+        navigate("/trip");
+      })
+    }else{
       alert("비밀번호를 정확하게 입력해주세요.");
       return;
     }
+
   };
 
+  
   const serverSignUp = (userid, uprofile) => {
     axios
       .post("/test/signup", {
@@ -109,6 +115,8 @@ function RegisterForm() {
       });
   };
 
+
+
   return (
     <div
       style={{
@@ -120,11 +128,9 @@ function RegisterForm() {
     >
       <div className="regist_Container">
         <div className="regist_BackgroundImg">
-          {preview ? (
+          {preview ?
             <img src={preProfile} alt="" />
-          ) : (
-            <img src="/img/registe_Background.jpg" alt="" />
-          )}
+            :<img src="/img/registe_Background.jpg" alt="" />}
         </div>
         <div className="register_box_wrapper">
           <div className="register_box">
@@ -170,27 +176,13 @@ function RegisterForm() {
                 onChange={onChange}
                 autoComplete="off"
               />
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: "1rem 0",
-                }}
-              >
-                <label htmlFor="file">PROFILE (선택)</label>
-                <FontSizesm style={{ cursor: "pointer", color: "#465A65" }}>
-                  프로필 등록하기
-                </FontSizesm>
-              </div>
-
+              
+              <label>PROFILE</label>
               <input
-                id="file"
                 type="file"
                 name="profile"
                 onChange={onChange}
                 autoComplete="off"
-                style={{ display: "none" }}
               />
 
               <input
