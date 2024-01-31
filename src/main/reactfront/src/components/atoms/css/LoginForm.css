@@ -1,3 +1,17 @@
+@font-face {
+  font-family: "Nanum";
+  src: url("../../../fonts/NanumGothic.ttf");
+}
+
+@font-face {
+  font-family: "NanumSquare";
+  src: url("../../../fonts/NanumSquareRoundR.ttf");
+}
+@font-face {
+  font-family: "NotoSans";
+  src: url("../../../fonts/NotoSansKR-VariableFont_wght.ttf");
+}
+
 .LoginForm_container {
   height: 80vh;
 
@@ -44,7 +58,7 @@
   padding: 10px 20px;
   border-radius: 50px;
   border: none;
-  width: 50%;
+  width: 55%;
   font-size: 16px;
   border: 1px solid gray;
   margin-bottom: 1.5rem;
@@ -62,7 +76,7 @@
   }
 }
 .Content_Input {
-  width: 50%;
+  width: 55%;
   border-radius: 10px;
   border: none;
   background-color: #003220;
@@ -73,9 +87,10 @@
   color: #f0f4f5;
 }
 .Registe_Box {
-  width: 50%;
+  width: 55%;
   display: flex;
   align-items: center;
+  justify-content: center;
   p {
     font-size: 2rem;
     color: #f0f4f5;
@@ -93,4 +108,28 @@
   font-weight: 600;
   background-color: #0094f6;
   color: #f0f4f5;
+}
+
+.github,
+.google {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 47%;
+  padding: 1rem;
+  border-radius: 15px;
+  input {
+    font-family: "NotoSans";
+    border-radius: 10px;
+    border: none;
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+}
+
+.github {
+  input {
+    background-color: #24292f;
+    color: #f0f4f5;
+  }
 }

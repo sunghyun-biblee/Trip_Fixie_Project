@@ -48,9 +48,6 @@ function Navi() {
           <div className="logo"></div>
 
           <NavUl>
-            <StyleLink to="/notfound">여행지</StyleLink>
-            <StyleLink to="/notfound">고객지원</StyleLink>
-            <StyleLink to="/notfound">이용방법</StyleLink>
             {user === null ? (
               <StyleLink onClick={onClicks}>로그인</StyleLink>
             ) : (

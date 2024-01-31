@@ -1,22 +1,9 @@
 import { useEffect, useState, useRef } from "react";
 import "../../fonts/font.css";
 import {
-  EditInput,
   MypageBox,
   MypageContainer,
-  MypageHeader,
-  MypageSection,
   MypageWrapper,
-  Pagenagtion,
-  TripPlanList,
-  UserEditBtn,
-  UserIMG,
-  UserImgBox,
-  UserInfo,
-  UserInfoItem,
-  UserInfoList,
-  Detail,
-  DetailContainer,
   MypageBackGround,
   BackgroundIcon,
   MypageMenu,
