@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import axios from "axios";
 import "./css/RegisterForm.css";
@@ -77,9 +77,10 @@ function RegisterForm() {
             console.log("불러오기", downloadURL);
             setPreProfile(downloadURL);
             serverSignUp(user.uid, downloadURL);
+
+            updateProfile(user, {photoURL: downloadURL});
           });
         });
-        
       })
       .catch((error) => {
         console.log(error.code);
@@ -93,8 +94,10 @@ function RegisterForm() {
       alert("비밀번호를 정확하게 입력해주세요.");
       return;
     }
+
   };
 
+  
   const serverSignUp = (userid, uprofile) => {
     axios
       .post("/test/signup", {
