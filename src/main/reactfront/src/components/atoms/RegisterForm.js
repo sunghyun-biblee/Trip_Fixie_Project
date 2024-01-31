@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import { FirebaseStorage } from "firebase/storage";
 import { storage } from "../../firebase";
+import { FontSizesm } from "../Trip/trip_save_components";
 
 function RegisterForm() {
   const [email, setEmail] = useState("");
@@ -177,12 +178,26 @@ function RegisterForm() {
                 autoComplete="off"
               />
               
-              <label>PROFILE</label>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: "1rem 0",
+                }}
+              >
+                <label htmlFor="file">PROFILE (선택)</label>
+                <FontSizesm style={{ cursor: "pointer", color: "#465A65" }}>
+                  프로필 등록하기
+                </FontSizesm>
+              </div>
+
               <input
+                id="file"
                 type="file"
                 name="profile"
                 onChange={onChange}
                 autoComplete="off"
+                style={{ display: "none" }}
               />
 
               <input
