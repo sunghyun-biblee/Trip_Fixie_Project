@@ -1,6 +1,6 @@
 # Trip_Fixied 여행계획 도움 서비스
 
-<img src="./src/img/PreviewIMG/mainpage2.jpg" width="300px" >
+<img src="./mainpage2.jpg" width="300px" >
 
 
  > ## ✔    개발인원 , 개발기간 및 역할 
