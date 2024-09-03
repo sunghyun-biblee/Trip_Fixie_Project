@@ -141,7 +141,7 @@ useState를 사용하여 로그인 상태를 관리하려 했지만, 페이지�
    초기 로그인 상태에 맞게 이용 가능 하도록 하기위해 authStateReady( )를 사용
 2. `authStateReady()` 메서드를 사용하여 페이지에 들어오게 되면 로그인 여부를 파악하고, 삼항연산자를 이용해 로그인 여부가 확인되면 삼항 연산자를 통해 특정 컴포넌트를 렌더링하도록 해결
 
-authStateReady() ➡ friebase javascript 릴리스 노트 버전 10.1.0 - 2023년 7월 20일 추가된 것으로 확인
+authStateReady() ➡ `friebase javascript 릴리스 노트 버전 10.1.0 - 2023년 7월 20일` 추가된 것으로 확인
 
 <br/>
 
