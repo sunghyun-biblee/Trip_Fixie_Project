@@ -24,7 +24,7 @@
 <img src="https://img.shields.io/badge/Framer-0055FF?style=for-the-badge&logo=Framer&logoColor=white"height="25px">
 </div>
 
-<hr/>
+
 
 ### Back-End
 <div style={display:flex}>
@@ -33,7 +33,7 @@
 <img src="https://img.shields.io/badge/DBeaver-382923?style=for-the-badge&logo=DBeaver&logoColor=white">
 </div>
 
-<hr/>
+
 
 ### ETC
 <img src="https://img.shields.io/badge/Sourcetree-0052CC?style=for-the-badge&logo=Sourcetree&logoColor=white">
